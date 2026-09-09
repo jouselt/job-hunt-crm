@@ -1,0 +1,23 @@
+{
+  "status": "success",
+  "executive_summary": "Wrote a full (greenfield) specification for Job Hunt CRM defining WHAT must be true post-change across 4 domains: Applications CRUD (record shape + per-user RLS isolation), Stage lifecycle & promotion (canonical stage set applied→screened→interview→offer + terminal rejected, forward-order promotion, +7-day follow-up scheduling), Follow-up reminders (due detection follow_up_date<=today, next-follow-ups list, daily 9am summary cron), and Pipeline analytics (per-stage count/%, avg days-in-stage, canonical key shape). Reconciled proposal/design/tasks inconsistencies into authoritative contracts and recorded the remaining choice (ORM) as an implementation-decision risk for design/tasks.",
+  "artifacts": {
+    "engram": {
+      "topic_key": "sdd/job-hunt-crm/spec",
+      "observation_id": 133,
+      "type": "architecture",
+      "project": "07-job-hunt-crm"
+    },
+    "disk_mirror": "/home/joe/dev/portfolio-projects/07-job-hunt-crm/spec.md"
+  },
+  "next_recommended": "route to sdd-tasks (or design) to reconcile the ORM decision (TypeORM vs Prisma) and align design.md Mongoose-style snippets with the spec's canonical stage/source enums and data semantics.",
+  "risks": [
+    "ORM choice unresolved: design.md mixes Mongoose findByIdAndUpdate/$push, TypeORM mention, and Prisma-style Promise<T>. Spec pins behavior-level semantics only; design/tasks MUST pick ONE ORM and fix the service snippets.",
+    "Stage enum reconciliation: pinned applied|screened|interview|offer|rejected; rejected is terminal (not a Kanban column). UI/tasks listed only 4 active stages. Confirmed by spec but tasks/design must implement rejected specifically as out-of-board.",
+    "Source enum pinned linkedin|indeed|referral|other (added 'other' vs proposal's 3 values); tasks/design seed data and DTOs must include 'other'.",
+    "Analytics legacy keys 'interviewing'/'offers' in design sketch replaced with canonical 'interview'/'offer'; design/tasks must update the PipelineStats type/response shape.",
+    "Avg days-in-stage for non-applied stages depends on stage-entry timestamps not in the current data model; spec makes applied-stage days-in-stage MUST and others SHOULD (labeled), flagged for design to decide whether to track stage-entry timestamps.",
+    "avgDaysInStage in original design sketch is a single number vs. design acceptance showing per-stage; spec pins single top-level avgDaysInStage (applied days-in-stage) plus per-stage counts/percentages."
+  ],
+  "skill_resolution": "none"
+}
