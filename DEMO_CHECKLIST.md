@@ -6,7 +6,7 @@ recruiter-signal demo is reproducible. Run in order; each step is a gate.
 ## Prerequisites
 - [ ] Docker running (`docker info` succeeds)
 - [ ] PostgreSQL available (local or `docker run postgres:15`)
-- [ ] `backend/.env` filled from `.env.example` (DATABASE_URL, JWT_SECRET)
+- [ ] Root `.env` filled from `.env.example` (single file — `DATABASE_URL`, `JWT_SECRET`); backend reads it directly
 - [ ] Node 20+ installed
 
 ## 1. Backend boots + DB connects
@@ -17,6 +17,18 @@ npm run migration:run      # creates table + indexes + RLS
 npm run start:dev          # → http://localhost:3000
 ```
 - [ ] `curl localhost:3000/api/health` → `200`
+
+## 1b. Auth (login to get a token)
+```bash
+curl -X POST localhost:3000/api/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"userId":"00000000-0000-0000-0000-000000000001","email":"dev@example.com"}'
+```
+- [ ] Returns `{ "access_token": "..." }` (223-char JWT)
+- [ ] **KNOWN GAP:** login is credential-less today (any `userId`/`email` mints a
+      token — see `design.md` §4 / `spec.md` Domain 0). After Domain 0 lands this
+      step becomes real register + password login; replace the body above with
+      registered credentials.
 
 ## 2. Seed test data
 ```bash
