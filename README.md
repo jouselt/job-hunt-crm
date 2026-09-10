@@ -222,34 +222,38 @@ Ver `tasks.md` tasks 12-15:
 
 ---
 
-## Deploy (NixOS + Caddy, subpath-first)
+## Deploy (portable Docker Compose + Caddy, subpath-first)
 
-Self-hosted, never Vercel/Render. Three containers behind your host Caddy:
+Self-hosted, never Vercel/Render. The stack is **portable**: it runs on any
+Docker host with `docker compose`. On nix99 it sits behind Caddy like your
+other apps; on a fresh VPS it runs the same way behind any proxy.
+
+The backend **self-runs migrations on boot** (`backend/docker-entrypoint.sh`),
+so a fresh clone needs no manual migration step.
 
 ```bash
-# 1. Configure secrets
-cp .env.example .env          # fill DB + JWT_SECRET
-cp backend/.env.example backend/.env
+# 1. Configure secrets (single file — backend reads it directly)
+cp .env.example .env          # set JWT_SECRET (openssl rand -hex 32)
 
-# 2. Build + run the stack (no published ports; Caddy proxies)
+# 2. Build + run (no published ports; a proxy in front routes to the network)
 docker compose up -d --build
 
-# 3. Run migrations + seed inside the backend container
-docker compose exec backend npm run migration:run
-docker compose exec backend npm run seed
+# 3. Optional sample data (one-shot)
+docker compose run --rm backend npm run seed
 ```
 
-Caddy routes (see `Caddyfile.example`, wire into your NixOS Caddy):
+Caddy routes (see `Caddyfile.example` — Variant A = JWT only, Variant B =
+optional Authelia SSO in front; the app keeps its own login either way):
 
 ```
-handle_path /job-hunt-crm/*     { reverse_proxy frontend:80 }
-handle_path /job-hunt-crm/api/* { reverse_proxy backend:3000 }
+handle /job-hunt-crm/api/* { uri strip_prefix /job-hunt-crm; reverse_proxy backend:3000 }
+handle /job-hunt-crm/*     { reverse_proxy frontend:80 }
 ```
 
-- Frontend SPA is served by nginx from `/usr/share/nginx/html/job-hunt-crm` with
+- Frontend SPA served by nginx from `/usr/share/nginx/html/job-hunt-crm` with
   `base-href /job-hunt-crm/` and prod API URL `/job-hunt-crm/api`.
-- Backend has no published port; only Caddy reaches it on the compose network.
-- For declarative NixOS wiring, see `nixos-module.example.nix`.
+- Backend has no published port; only the proxy reaches it on the compose network.
+- For declarative NixOS wiring (optional), see `nixos-module.example.nix`.
 
 ---
 

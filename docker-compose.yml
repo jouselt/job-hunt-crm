@@ -1,14 +1,20 @@
-# Job Hunt CRM — local deployment (NixOS + Caddy)
+# Job Hunt CRM — portable deployment (any Docker host)
 #
-# This Compose file runs the three services. Caddy (your host NixOS service)
-# reverse-proxies them, so the app is reachable at:
-#   https://<your-domain>/job-hunt-crm/      -> frontend (nginx)
-#   https://<your-domain>/job-hunt-crm/api/  -> backend (nestjs)
+# Self-contained: postgres + backend (NestJS) + frontend (nginx static).
+# The backend self-runs migrations on boot (see backend/docker-entrypoint.sh),
+# so a fresh clone + `docker compose up -d` is enough — no manual migration step.
 #
-# The backend container has NO published port; only Caddy reaches it over the
-# compose network. The frontend (nginx) also has no published port.
+# No published ports: a reverse proxy (Caddy/Traefik/nginx) in front of this
+# stack routes to the compose network. Two Caddy examples are in Caddyfile.example
+# (subpath, with and without Authelia SSO). For local-only testing without a proxy,
+# uncomment the `ports:` lines on backend/frontend.
 #
-# Secrets live in .env (gitignored). Copy .env.example to .env and fill in.
+# Setup:
+#   1. cp .env.example .env        # fill JWT_SECRET (and DB creds if you change them)
+#   2. docker compose up -d --build
+#   3. docker compose run --rm backend npm run seed   # optional sample data
+#
+# Secrets: .env is gitignored. Never commit it.
 
 services:
   postgres:
@@ -20,6 +26,11 @@ services:
       POSTGRES_DB: ${DB_NAME:-job_hunt_crm}
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     networks:
       - jobhunt
 
@@ -27,24 +38,27 @@ services:
     build: ./backend
     restart: unless-stopped
     env_file:
-      - ./backend/.env
+      - ./.env
     environment:
       # Compose-internal DB host; DATABASE_URL in .env should use this host.
       DB_HOST: postgres
       PORT: "3000"
-      # Tighten CORS to the Caddy origin when set; empty = permissive (dev).
       CORS_ORIGIN: "${CORS_ORIGIN:-}"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+    # ports:
+    #   - "127.0.0.1:3100:3000"   # local-only, behind no proxy
     networks:
       - jobhunt
 
   frontend:
     build: ./frontend
     restart: unless-stopped
-    # No published ports: Caddy proxies to this service on the compose network.
     depends_on:
       - backend
+    # ports:
+    #   - "127.0.0.1:8080:80"     # local-only, behind no proxy
     networks:
       - jobhunt
 
