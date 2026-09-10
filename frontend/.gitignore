@@ -40,13 +40,3 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
-# Local Pi runtime state
-.atl/
-
-# Secrets / local env (keep *.example tracked)
-.env
-.env.*
-!.env.example
-# Caddyfile may contain site-specific secrets
-Caddyfile
-Caddyfile.*

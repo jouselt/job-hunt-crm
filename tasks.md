@@ -106,10 +106,13 @@ Chain strategy: stacked-to-main
 ### Task 13: README
 - `README.md`: step-by-step deploy (Angular + NestJS + PostgreSQL/Supabase), recruiter flow ("Ask me about my search and I'll show you my pipeline"), required env vars (`DATABASE_URL`, `JWT_SECRET`, `SENDGRID_API_KEY`, `SENDGRID_FROM_EMAIL`, `NEXT_PUBLIC_API_URL` → `API_URL`), local run commands, test commands.
 
-### Task 14: Deploy NestJS API + Angular to Vercel
-- Deploy NestJS API to Vercel (serverless) or Render; set env vars. Deploy Angular to Vercel; set `API_URL` to live API.
-- `vercel.json` for both if applicable.
-- **Verify:** live URL loads; add/promote/view pipeline against live API.
+### Task 14: Deploy via Docker + NixOS Caddy (subpath-first)
+- Self-hosted, never Vercel/Render (standing rule). Docker Compose: postgres + backend (NestJS) + frontend (nginx static). Backend and frontend have NO published ports; host Caddy reverse-proxies the compose network.
+- `backend/Dockerfile` (multi-stage node:20 → dist), `frontend/Dockerfile` (ng build → nginx, output under `/usr/share/nginx/html/job-hunt-crm`), `frontend/nginx.conf` (SPA fallback + asset cache).
+- `docker-compose.yml` wires the three services on a private network.
+- `frontend/src/environments/environment.prod.ts`: `apiUrl: '/job-hunt-crm/api'`; `angular.json` production config uses `baseHref: /job-hunt-crm/` + fileReplacements.
+- `Caddyfile.example` + `nixos-module.example.nix`: routes `/job-hunt-crm/` → frontend, `/job-hunt-crm/api/` → backend.
+- **Verify:** `docker compose up -d --build` + Caddy route → `https://<domain>/job-hunt-crm/` loads, add/promote/view pipeline end-to-end.
 
 ### Task 15: End-to-end demo checklist
 - `(1) ng serve` + `nest start`, `(2)` open browser, `(3)` add 3 sample apps distinct stages, `(4)` promote one via Kanban, `(5)` view pipeline overview + next follow-ups, `(6)` recruiter scenario: candidate opens CRM → shows organized pipeline + next follow-up.

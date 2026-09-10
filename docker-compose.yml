@@ -1,0 +1,56 @@
+# Job Hunt CRM — local deployment (NixOS + Caddy)
+#
+# This Compose file runs the three services. Caddy (your host NixOS service)
+# reverse-proxies them, so the app is reachable at:
+#   https://<your-domain>/job-hunt-crm/      -> frontend (nginx)
+#   https://<your-domain>/job-hunt-crm/api/  -> backend (nestjs)
+#
+# The backend container has NO published port; only Caddy reaches it over the
+# compose network. The frontend (nginx) also has no published port.
+#
+# Secrets live in .env (gitignored). Copy .env.example to .env and fill in.
+
+services:
+  postgres:
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASS:-postgres}
+      POSTGRES_DB: ${DB_NAME:-job_hunt_crm}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - jobhunt
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    environment:
+      # Compose-internal DB host; DATABASE_URL in .env should use this host.
+      DB_HOST: postgres
+      PORT: "3000"
+      # Tighten CORS to the Caddy origin when set; empty = permissive (dev).
+      CORS_ORIGIN: "${CORS_ORIGIN:-}"
+    depends_on:
+      - postgres
+    networks:
+      - jobhunt
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    # No published ports: Caddy proxies to this service on the compose network.
+    depends_on:
+      - backend
+    networks:
+      - jobhunt
+
+networks:
+  jobhunt:
+    name: jobhunt
+
+volumes:
+  pgdata:
