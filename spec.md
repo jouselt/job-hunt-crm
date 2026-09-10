@@ -34,6 +34,86 @@ and tasks going forward:
 
 ---
 
+## Domain 0: Authentication & User Identity
+
+### Purpose
+
+The system MUST authenticate users before any application, analytics, or
+follow-up data is accessible. The current implementation mints a JWT from any
+`userId`/`email` posted to `/auth/login` with no credential check — this is a
+security hole and MUST be replaced by real credential-based auth. Every
+"authenticated user" referenced in Domains 1–4 MUST resolve to a verified
+identity backed by a persisted user record.
+
+### Requirements
+
+#### Requirement: User entity
+
+The system MUST persist a `User` record with at least:
+- `id` (UUID, system-generated, primary key)
+- `email` (string, unique, required)
+- `password` (string, required) — stored ONLY as a bcrypt (or equivalent)
+  password hash; raw passwords MUST NOT be persisted.
+
+#### Requirement: Registration
+
+The system MUST provide a registration flow (`POST /auth/register`) that:
+- accepts `email` and `password`,
+- rejects duplicate emails with a validation error,
+- hashes the password (bcrypt or equivalent) before storage,
+- returns a JWT for the new user (or requires a subsequent login).
+
+For a personal/single-owner deployment, registration MAY be closed after the
+first user exists via a config flag `ALLOW_REGISTRATION` (default `true` for
+first run, settable to `false` to lock the instance to its sole owner).
+
+#### Requirement: Login verifies credentials
+
+The system MUST provide `POST /auth/login` that verifies the supplied `email`
+and `password` against the stored hash. On success it returns a JWT whose
+subject (`sub`) is the verified user's `id`. On failure (unknown email or wrong
+password) it MUST reject with `401 Unauthorized` and MUST NOT issue a token.
+
+#### Scenario: Login with valid credentials
+
+- GIVEN a registered user with email `dev@example.com` and a known password
+- WHEN they POST `/auth/login` with that email and password
+- THEN they receive a JWT whose subject is that user's id.
+
+#### Scenario: Login with wrong password is rejected
+
+- GIVEN a registered user
+- WHEN they POST `/auth/login` with the correct email but a wrong password
+- THEN the response is `401` and no token is issued.
+
+#### Scenario: Login with unknown email is rejected
+
+- GIVEN no user with email `ghost@example.com`
+- WHEN a login is attempted for that email
+- THEN the response is `401` and no token is issued.
+
+#### Requirement: Tokens bind to a real user
+
+Every protected endpoint MUST derive `user_id` from the verified JWT subject,
+not from a client-supplied `userId` in the request body. The per-user
+isolation guarantees in Domain 1 (RLS + service-layer `where: { user_id }`)
+MUST be keyed to this authenticated identity.
+
+#### Scenario: Impersonation is impossible
+
+- GIVEN user A is authenticated (token subject = A)
+- WHEN A sends a request claiming `userId` = B in the body
+- THEN the system uses A's id for ownership/isolation, never B's.
+
+#### Requirement: Daily reminder maps user to email
+
+The daily reminder (Domain 3) MUST resolve each due user to their registered
+`User.email` from the users table (not a static `SENDGRID_TO_EMAIL`
+fallback). The `SENDGRID_TO_EMAIL` env MAY remain as an override for a
+single-owner deployment but MUST NOT be required once users exist.
+
+---
+
 ## Domain 1: Applications CRUD
 
 ### Purpose
@@ -392,3 +472,45 @@ derivable from the data described above and require no manual record-keeping.
 - WHEN they open the CRM dashboard
 - THEN they can see their per-stage distribution and their next follow-up
   date immediately.
+
+---
+
+## Cross-cutting: Deployment & Operations
+
+These requirements cover what makes the app a first-class citizen of a
+self-hosted NixOS homelab alongside the other services (issue track referenced
+from the resume task).
+
+#### Requirement: Data is backed up
+
+The application's durable state (the PostgreSQL database) MUST be included in
+the host backup routine. For the Docker Compose deployment the state lives in
+the named volume `pgdata`; it MUST be snapshotted/backed up to the same
+location as the other self-hosted apps (e.g. `/home/shared/data/job-hunt-crm/`)
+so it survives a host reinstall. Back up the volume, not the container.
+
+#### Requirement: Listed in the service dashboard
+
+The app MUST appear in the homelab service dashboard (Homepage, driven by
+`services.json`) with its subpath URL `https://<host>/job-hunt-crm/` so it is
+discoverable like the other self-hosted apps.
+
+#### Requirement: CORS restricted to the public origin
+
+The backend `CORS_ORIGIN` MUST be set to the app's public origin (e.g.
+`https://nixos-x99.tailf8f9a2.ts.net`) in deployment. A wildcard/`true` CORS
+policy is acceptable only for local development; production MUST pin the
+origin so the API cannot be called from arbitrary sites.
+
+#### Requirement: Container healthchecks
+
+The `backend` and `frontend` Compose services MUST declare a healthcheck
+(postgres already does). The backend healthcheck SHOULD probe `/api/health`;
+the frontend healthcheck SHOULD probe the nginx root. This lets the stack
+report real readiness and restart on failure.
+
+#### Requirement: Clean first-run (no leftover sample data)
+
+A fresh deployment MUST NOT ship the verification seed data as the user's
+real data. The seed script is a developer convenience only; a production
+first-run starts with an empty applications table for the registered owner.
