@@ -3,7 +3,7 @@
 ## Purpose
 
 This specification defines WHAT must be true after the Job Hunt CRM change is
-complete. The system is a job application tracking web app (Angular 15 +
+complete. The system is a job application tracking web app (Angular 22 +
 NestJS 10 + PostgreSQL) that lets a candidate log applications, track stage
 lifecycle, schedule follow-ups, and view pipeline analytics — producing a
 professional "recruiter signal" (show stage + next follow-up date on demand).

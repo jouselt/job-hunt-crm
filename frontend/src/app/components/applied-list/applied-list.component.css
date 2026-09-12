@@ -1,0 +1,14 @@
+.list-container { max-width: 900px; margin: 20px auto; }
+.app-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); }
+.app-table th { background: #f5f5f5; padding: 12px; text-align: left; font-weight: 600; }
+.app-table td { padding: 12px; border-bottom: 1px solid #eee; }
+.app-table tr:last-child td { border-bottom: none; }
+.app-table tr:hover { background: #fafafa; }
+.due-soon { background: #fff5f5; }
+.due-soon td:first-child { border-left: 4px solid #dc3545; }
+.actions { text-align: right; white-space: nowrap; }
+.btn-promote { background: #28a745; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9em; }
+.btn-promote:hover { background: #218838; }
+.btn-reject { background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9em; margin-left: 6px; }
+.btn-reject:hover { background: #c82333; }
+.empty { text-align: center; color: #999; padding: 40px; }

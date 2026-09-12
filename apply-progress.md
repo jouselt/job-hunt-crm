@@ -6,9 +6,11 @@
 - Tasks 1-5 complete. `npm test` 5 suites/27 pass, `npm run test:e2e` isolation pass, `tsc --noEmit` clean.
 - `main.ts`: `enableCors` honors `CORS_ORIGIN` env (permissive when unset).
 
-## PR 2 — Frontend: DONE
-- Tasks 6-11 complete. Prod build verified: base-href `/job-hunt-crm/`, bundle apiUrl `/job-hunt-crm/api`, hashed, no localhost leak.
-- Fixed: `frontend/angular.json` key renamed `job-hunt-crm-temp` → `job-hunt-crm` (prod config was silently ignored).
+## PR 2 — Frontend: DONE (re-scaffolded Angular 15 → 22)
+- Tasks 6-11 complete. Re-scaffolded to Angular **22** (latest stable) standalone + routing + karma/Jasmine.
+- `JobHuntService` token-free (reads `localStorage('jobhunt_token')`), named observables `applications$`/`pipelineStats$`; native HTML5 drag/drop (no CDK); lazy routes per view.
+- 14/14 Jasmine tests PASS (ChromeHeadless), `ng build` clean.
+- Restored PR 3 deploy config for v22: `frontend/Dockerfile` (output `dist/frontend/browser`), `frontend/nginx.conf`, `angular.json` prod `baseHref`/`fileReplacements`. Verified `<base href="/job-hunt-crm/">` + prod `apiUrl` `/job-hunt-crm/api` baked, no `localhost` leak.
 
 ## PR 3 + Pivot — Seed/README/Deploy: DONE (portable)
 - Deploy re-scoped Vercel/Render → Docker Compose + NixOS Caddy (subpath `/job-hunt-crm/`).
@@ -33,3 +35,4 @@ docker compose run --rm backend npm run seed → "Seeded 3 applications"
 ## Deviations from original tasks.md
 - Task 14: Vercel/Render → Docker Compose + Caddy subpath.
 - `CORS_ORIGIN` env added; self-migrating entrypoint added; seed is one-shot.
+- Angular 15 → **Angular 22** (latest stable) per review feedback; frontend fully re-scaffolded to standalone components.

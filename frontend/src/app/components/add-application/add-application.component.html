@@ -1,0 +1,58 @@
+<div class="add-form">
+  <h2>Add Application</h2>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="field">
+      <label for="company">Company *</label>
+      <input id="company" formControlName="company" type="text" placeholder="Acme Corp" />
+    </div>
+
+    <div class="field">
+      <label for="role">Role *</label>
+      <input id="role" formControlName="role" type="text" placeholder="Senior Developer" />
+    </div>
+
+    <div class="field">
+      <label for="source">Source</label>
+      <select id="source" formControlName="source">
+        <option value="linkedin">LinkedIn</option>
+        <option value="indeed">Indeed</option>
+        <option value="referral">Referral</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="stage">Stage</label>
+      <select id="stage" formControlName="stage">
+        <option value="applied">Applied</option>
+        <option value="screened">Screened</option>
+        <option value="interview">Interview</option>
+        <option value="offer">Offer</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="applied_date">Applied Date</label>
+      <input id="applied_date" formControlName="applied_date" type="date" />
+    </div>
+
+    <div class="field">
+      <label for="follow_up_date">Follow-up Date</label>
+      <input id="follow_up_date" formControlName="follow_up_date" type="date" />
+    </div>
+
+    <div class="field">
+      <label for="notes">Notes</label>
+      <textarea id="notes" formControlName="notes" rows="3" placeholder="Additional notes..."></textarea>
+    </div>
+
+    @if (form.get('company')?.touched && form.get('company')?.invalid) {
+      <div class="errors">Company is required</div>
+    }
+    @if (form.get('role')?.touched && form.get('role')?.invalid) {
+      <div class="errors">Role is required</div>
+    }
+
+    <button type="submit" [disabled]="form.invalid">Add Application</button>
+  </form>
+</div>

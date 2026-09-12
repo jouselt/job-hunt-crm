@@ -1,0 +1,32 @@
+<div class="kanban">
+  @for (col of columns; track col.stage) {
+    <div class="column" (dragover)="$event.preventDefault()" (drop)="onDrop(col)">
+      <div class="column-header">
+        <h3>{{ col.title | titlecase }}</h3>
+        <span class="count">{{ col.applications.length }}</span>
+      </div>
+      <div class="cards">
+        @for (app of col.applications; track app.id) {
+          <div
+            class="card"
+            draggable="true"
+            (dragstart)="onDragStart(app.id)"
+          >
+            <app-stage-badge [application]="app" />
+            <div class="card-body">
+              <div class="card-company">{{ app.company }}</div>
+              <div class="card-role">{{ app.role }}</div>
+              <div class="card-source">via {{ app.source | titlecase }}</div>
+            </div>
+            <div class="card-actions">
+              @if (app.stage !== 'offer') {
+                <button class="btn-next" (click)="promote(app)">Next</button>
+              }
+              <button class="btn-reject" (click)="reject(app)">Reject</button>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

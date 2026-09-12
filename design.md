@@ -1,4 +1,4 @@
-# Job Hunt CRM — Design (Angular 15 + NestJS 10 + PostgreSQL)
+# Job Hunt CRM — Design (Angular 22 + NestJS 10 + PostgreSQL)
 
 > This document owns **HOW**, reconciling the WHAT pinned in `spec.md`. It is the
 > source-so-far; the mirror lives at `design.md` and the Engram topic key
@@ -381,7 +381,7 @@ list for UI display (company, stage, follow-up date).
 
 ---
 
-## 10. Frontend Behavior Contracts (Angular 15 standalone)
+## 10. Frontend Behavior Contracts (Angular 22 standalone)
 
 The spec owns the WHAT; the Angular side is expressed here at the **behavior
 contract** level, not as a broken code sketch. The prior `JobHuntService` sketch

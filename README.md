@@ -8,7 +8,7 @@ Aplicación web para candidatos que busca organizar su búsqueda de empleo como 
 
 | Capas     | Tecnología                                                                 |
 |-----------|----------------------------------------------------------------------------|
-| Frontend  | Angular 15 (standalone components)                                         |
+| Frontend  | Angular 22 (standalone components)                                         |
 | Backend   | NestJS 10 + TypeORM + PostgreSQL                                           |
 | Auth      | JWT (`@nestjs/jwt` + `passport-jwt`)                                      |
 | Cron      | `@nestjs/schedule` (daily 9am)                                            |

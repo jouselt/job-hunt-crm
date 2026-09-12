@@ -1,0 +1,39 @@
+<div class="list-container">
+  <h2>My Applications</h2>
+
+  @if (applications.length) {
+    <table class="app-table">
+      <thead>
+        <tr>
+          <th>Company</th>
+          <th>Role</th>
+          <th>Source</th>
+          <th>Stage</th>
+          <th>Follow-up</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (app of applications; track app.id) {
+          <tr [class.due-soon]="isDueSoon(app)">
+            <td>{{ app.company }}</td>
+            <td>{{ app.role }}</td>
+            <td>{{ app.source | titlecase }}</td>
+            <td><app-stage-badge [application]="app" /></td>
+            <td>{{ app.follow_up_date | date : 'mediumDate' }}</td>
+            <td class="actions">
+              @if (app.stage !== 'offer' && app.stage !== 'rejected') {
+                <button class="btn-promote" (click)="promote(app)">Promote</button>
+              }
+              @if (app.stage !== 'rejected') {
+                <button class="btn-reject" (click)="reject(app)">Reject</button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  } @else {
+    <div class="empty">No applications yet. Add one!</div>
+  }
+</div>

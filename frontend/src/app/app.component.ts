@@ -1,29 +1,10 @@
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 @Component({
+  imports: [RouterOutlet, RouterLink, RouterLinkActive],
   selector: 'app-root',
-  template: `
-    <nav class="navbar">
-      <div class="nav-brand">Job Hunt CRM</div>
-      <ul class="nav-links">
-        <li><a routerLink="/list" routerLinkActive="active">My Applications</a></li>
-        <li><a routerLink="/add" routerLinkActive="active">Add Application</a></li>
-        <li><a routerLink="/kanban" routerLinkActive="active">Kanban Board</a></li>
-        <li><a routerLink="/overview" routerLinkActive="active">Pipeline Overview</a></li>
-      </ul>
-    </nav>
-    <main class="main-content">
-      <router-outlet></router-outlet>
-    </main>
-  `,
-  styles: [`
-    .navbar { background: #2c3e50; color: white; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-    .nav-brand { font-weight: bold; font-size: 1.2em; }
-    .nav-links { list-style: none; display: flex; gap: 20px; margin: 0; padding: 0; }
-    .nav-links a { color: white; text-decoration: none; padding: 10px 15px; }
-    .nav-links a:hover, .nav-links a.active { background: rgba(255,255,255,0.1); border-radius: 4px; }
-    .main-content { min-height: calc(100vh - 60px); padding: 20px; background: #f5f5f5; }
-  `],
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css'],
 })
 export class AppComponent {}

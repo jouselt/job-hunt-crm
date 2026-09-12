@@ -1,54 +1,79 @@
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { Application, PipelineStats } from '../models/application.model';
+import { inject, Injectable } from '@angular/core';
+import { BehaviorSubject, Observable, switchMap, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { Application, PipelineStats } from '../models/application.model';
+
+const TOKEN_KEY = 'jobhunt_token';
 
 @Injectable({ providedIn: 'root' })
 export class JobHuntService {
-  private readonly baseUrl = environment.apiUrl || 'http://localhost:3000/api';
+  private readonly http = inject(HttpClient);
+  private readonly baseUrl = environment.apiUrl;
 
-  private applicationsSubject = new BehaviorSubject<Application[]>([]);
-  private pipelineStatsSubject = new BehaviorSubject<PipelineStats | null>(null);
+  // Single source of truth per domain: one subject each, no duplicates.
+  private readonly applicationsSubject = new BehaviorSubject<Application[]>([]);
+  private readonly pipelineStatsSubject = new BehaviorSubject<PipelineStats | null>(null);
 
-  applications$: Observable<Application[]> = this.applicationsSubject.asObservable();
-  pipelineStats$: Observable<PipelineStats | null> = this.pipelineStatsSubject.asObservable();
+  readonly applications$: Observable<Application[]> =
+    this.applicationsSubject.asObservable();
+  readonly pipelineStats$: Observable<PipelineStats | null> =
+    this.pipelineStatsSubject.asObservable();
 
-  constructor(private http: HttpClient) {}
-
-  loadApplications(token: string): void {
-    this.http.get<Application[]>(`${this.baseUrl}/applications`, {
-      headers: { Authorization: `Bearer ${token}` },
-    }).subscribe({
-      next: (apps) => this.applicationsSubject.next(apps),
-      error: () => this.applicationsSubject.next([]),
-    });
+  private token(): string {
+    return localStorage.getItem(TOKEN_KEY) ?? '';
   }
 
-  createApplication(dto: Partial<Application>, token: string): Observable<Application> {
-    return this.http.post<Application>(`${this.baseUrl}/applications`, dto, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+  private authHeaders(): { Authorization: string } {
+    return { Authorization: `Bearer ${this.token()}` };
   }
 
-  promoteStage(id: string, stage: string, token: string): Observable<Application> {
-    return this.http.patch<Application>(`${this.baseUrl}/applications/${id}/stage`, { stage }, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+  /** Persist the JWT issued by the backend (or injected for the demo flow). */
+  setToken(token: string): void {
+    localStorage.setItem(TOKEN_KEY, token);
   }
 
-  getPipelineStats(token: string): void {
-    this.http.get<PipelineStats>(`${this.baseUrl}/analytics/pipeline`, {
-      headers: { Authorization: `Bearer ${token}` },
-    }).subscribe({
-      next: (stats) => this.pipelineStatsSubject.next(stats),
-      error: () => this.pipelineStatsSubject.next(null),
-    });
+  loadApplications(): void {
+    this.http
+      .get<Application[]>(`${this.baseUrl}/applications`, {
+        headers: this.authHeaders(),
+      })
+      .subscribe({
+        next: (apps) => this.applicationsSubject.next(apps),
+        error: () => this.applicationsSubject.next([]),
+      });
   }
 
-  getDueFollowUps(token: string): Observable<Application[]> {
+  createApplication(dto: Partial<Application>): Observable<Application> {
+    return this.http
+      .post<Application>(`${this.baseUrl}/applications`, dto, {
+        headers: this.authHeaders(),
+      })
+      .pipe(tap(() => this.loadApplications()));
+  }
+
+  promoteStage(id: string, stage: string): Observable<Application> {
+    return this.http
+      .patch<Application>(`${this.baseUrl}/applications/${id}/stage`, { stage }, {
+        headers: this.authHeaders(),
+      })
+      .pipe(tap(() => this.loadApplications()));
+  }
+
+  getPipelineStats(): void {
+    this.http
+      .get<PipelineStats>(`${this.baseUrl}/analytics/pipeline`, {
+        headers: this.authHeaders(),
+      })
+      .subscribe({
+        next: (stats) => this.pipelineStatsSubject.next(stats),
+        error: () => this.pipelineStatsSubject.next(null),
+      });
+  }
+
+  getDueFollowUps(): Observable<Application[]> {
     return this.http.get<Application[]>(`${this.baseUrl}/follow-ups`, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: this.authHeaders(),
     });
   }
 }

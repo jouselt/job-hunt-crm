@@ -10,7 +10,7 @@ Build a **job application tracking web app** that lets candidates log applicatio
 A recruiter asks "Where are you in your job search?" → the candidate opens their CRM, shows stage + next follow-up date → signals organization, professionalism, and process maturity.
 
 ## Tech Stack (Angular/NestJS)
-- **Framework**: Angular 15 (standalone) + NgRx (optional, for state management) or simple Services; if preferring lighter: just NestJS Services + BehaviorSubject
+- **Framework**: Angular 22 (standalone) + NgRx (optional, for state management) or simple Services; if preferring lighter: just NestJS Services + BehaviorSubject
 - **Database**: NestJS + PostgreSQL (self-hosted on AWS/EKS or Supabase) — tables: applications: company, role, stage, applied_date, follow_up_date, notes, source [linkedin| indeed| referral]
 - **UI**: Simple forms + pipeline Kanban board (stage columns); calendar follow-up reminders
 - **Notifications**: NestJS Edge Function daily cron that checks `follow_up_date <= today` and sends email via SendGrid; optional SMS

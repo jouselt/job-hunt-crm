@@ -69,7 +69,7 @@ Chain strategy: stacked-to-main
 
 ## PR 2 — Frontend
 
-### Task 6: Angular 15 standalone init + HttpClient + `JobHuntService`
+### Task 6: Angular 22 standalone init + HttpClient + `JobHuntService`
 - `ng new frontend --standalone --routing` at `frontend/`.
 - Configure `provideHttpClient(withInterceptorsFromDi())` + base API URL via `environment.ts` (`API_URL`).
 - `frontend/src/app/services/job-hunt.service.ts`: named observables `applications$` and `pipelineStats$` (single subject per domain, no duplicates); methods `loadApplications`, `createApplication`, `promoteStage(id, stage)`, `getPipelineStats`, `getDueFollowUps`.

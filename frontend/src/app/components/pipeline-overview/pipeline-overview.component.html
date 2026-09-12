@@ -1,0 +1,28 @@
+<div class="overview">
+  @if (stats) {
+    <div class="stats-card">
+      <h3>Pipeline Overview</h3>
+
+      @for (key of keys; track key) {
+        <div class="stat-row">
+          <div class="stat-label">{{ key | titlecase }}</div>
+          <div class="stat-bar-container">
+            <div class="stat-bar" [style.width.%]="stats[key].pct"></div>
+          </div>
+          <div class="stat-value">{{ stats[key].count }} ({{ stats[key].pct }}%)</div>
+        </div>
+      }
+
+      <div class="stat-row rejected">
+        <div class="stat-label">Rejected</div>
+        <div class="stat-value">{{ stats.rejected.count }}</div>
+      </div>
+
+      <div class="avg-days">
+        <strong>Avg days in stage:</strong> {{ stats.avgDaysInStage }} days
+      </div>
+    </div>
+  } @else {
+    <div class="loading">Loading...</div>
+  }
+</div>
