@@ -1,0 +1,22 @@
+<div class="followups">
+  <h2>Next follow-ups</h2>
+
+  @if (apps.length) {
+    <ul class="list">
+      @for (app of apps; track app.id) {
+        <li class="item">
+          <div class="main">
+            <span class="company">{{ app.company }}</span>
+            <span class="role">{{ app.role }}</span>
+          </div>
+          <div class="meta">
+            <app-stage-badge [application]="app" />
+            <span class="date">{{ app.follow_up_date | date: 'MMM d, y' }}</span>
+          </div>
+        </li>
+      }
+    </ul>
+  } @else {
+    <p class="empty">No applications due for follow-up.</p>
+  }
+</div>

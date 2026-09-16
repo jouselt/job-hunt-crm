@@ -1,0 +1,62 @@
+.followups {
+  max-width: var(--page-max);
+  margin: 0 auto;
+}
+
+.followups h2 {
+  color: var(--color-paper);
+  margin-bottom: var(--space-4);
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--color-carbon);
+  border-radius: var(--radius-md);
+  box-shadow: inset 0 0 0 1px var(--color-graphite);
+  padding: var(--space-3) var(--space-4);
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.company {
+  color: var(--color-bone);
+  font-weight: 510;
+  font-size: 15px;
+}
+
+.role {
+  color: var(--color-fog);
+  font-size: 13px;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.date {
+  color: var(--color-mist);
+  font-size: 13px;
+  font-family: var(--font-mono);
+}
+
+.empty {
+  color: var(--color-fog);
+  padding: var(--space-6) 0;
+}

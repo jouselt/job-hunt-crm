@@ -36,6 +36,14 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'follow-ups',
+    loadComponent: () =>
+      import('./components/next-followups/next-followups.component').then(
+        (m) => m.NextFollowUpsComponent,
+      ),
+    canActivate: [authGuard],
+  },
+  {
     path: 'login',
     loadComponent: () =>
       import('./components/login/login.component').then(
