@@ -33,6 +33,11 @@ export class JobHuntService {
     localStorage.setItem(TOKEN_KEY, token);
   }
 
+  /** Remove the stored JWT (used on logout). */
+  clearToken(): void {
+    localStorage.removeItem(TOKEN_KEY);
+  }
+
   loadApplications(): void {
     this.http
       .get<Application[]>(`${this.baseUrl}/applications`, {

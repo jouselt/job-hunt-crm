@@ -2,11 +2,13 @@ import { Test } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { RemindersCron } from './reminders.cron';
 import { FollowUpsService } from './follow-ups.service';
+import { UsersService } from '../users/users.service';
 import { Application } from '../applications/application.entity';
 
 describe('RemindersCron', () => {
   let cron: RemindersCron;
   const followUps = { findDueForAll: jest.fn() };
+  const users = { findById: jest.fn() };
 
   beforeEach(async () => {
     jest.resetAllMocks();
@@ -14,6 +16,7 @@ describe('RemindersCron', () => {
       providers: [
         RemindersCron,
         { provide: FollowUpsService, useValue: followUps },
+        { provide: UsersService, useValue: users },
         {
           provide: ConfigService,
           useValue: { get: jest.fn(() => undefined) },

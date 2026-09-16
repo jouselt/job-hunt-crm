@@ -36,3 +36,25 @@ docker compose run --rm backend npm run seed → "Seeded 3 applications"
 - Task 14: Vercel/Render → Docker Compose + Caddy subpath.
 - `CORS_ORIGIN` env added; self-migrating entrypoint added; seed is one-shot.
 - Angular 15 → **Angular 22** (latest stable) per review feedback; frontend fully re-scaffolded to standalone components.
+
+## Domain 0 — Authentication & User Identity: DONE (post-verify closure)
+
+The verify phase flagged Domain 0 as an archive-blocking gap: `POST /auth/login`
+minted a JWT from client-supplied `userId` with no credential check. This is now
+closed with real credential-based auth:
+
+- `User` entity (`users` table: uuid id, unique email, bcrypt `password_hash`).
+- `POST /auth/register` (201): validates email/password, hashes password (bcryptjs),
+  rejects duplicate email (409), returns JWT with `sub = user.id`.
+- `POST /auth/login` (200/401): verifies email + bcrypt hash; unknown email and
+  wrong password both return 401 with no token.
+- `JwtStrategy.validate` resolves the token subject to a persisted user via
+  `UsersService.findById` and rejects (401) if the user no longer exists — tokens
+  bind to a real user.
+- `RemindersCron` resolves `user_id -> User.email` via `UsersService`, falling back
+  to `SENDGRID_TO_EMAIL` only when no user record maps (never required once users
+  exist).
+- Migration `AddUsers1700000000000` (users table + unique email index); `User`
+  wired into the TypeORM `data-source.ts` entities.
+
+Verification: 35 unit tests + 8 e2e tests PASS; `nest build` clean.

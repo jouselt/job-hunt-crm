@@ -18,7 +18,7 @@
 | Concern              | Decision                                                               |
 |----------------------|------------------------------------------------------------------------|
 | ORM                  | **TypeORM** (`@nestjs/typeorm` + `typeorm`) — single, consistent DAL.  |
-| Auth                 | JWT via `@nestjs/jwt` + `@nestjs/passport` + `passport-jwt`. **CURRENT STATE: credential-less** — `POST /auth/login` mints a token from any `userId`/`email` in the body with no password check (security hole). **Target:** real credential auth per `spec.md` Domain 0 (User entity, register, login verifies password). |
+| Auth                 | JWT via `@nestjs/jwt` + `@nestjs/passport` + `passport-jwt`. **Implemented (Domain 0):** `User` entity (email unique, bcrypt-hashed `password_hash`), `POST /auth/register`, `POST /auth/login` verifies email + password (401 on mismatch) issuing a JWT whose `sub` is the verified user id. All `/applications`, `/analytics`, `/follow-ups` routes sit behind `JwtAuthGuard` and scope by `req.user.userId`. |
 | Isolation mechanism  | Query-level `where: { user_id: userId }` in the service (application-  |
 |                      | enforced) **plus** a DB-level RLS policy as defense-in-depth (below).   |
 | Cron                 | `node-cron` daily `0 9 * * *` + SendGrid single summary per user.      |
@@ -115,19 +115,13 @@ export class Application {
 
 ## 4. Auth & Per-User Isolation
 
-> **STATUS — BROKEN, DO NOT TRUST.** The auth described below as "the design"
-> is NOT what the code does. Current `AuthController.login` accepts
-> `{ userId, email }` from the request body and calls `AuthService.generateToken`
-> (a bare `jwt.sign({ sub: userId, email })`) with **no password check**. There
-> is no `User` entity, no registration, and no password storage anywhere in
-> `backend/src`. Any caller can mint a valid token for any `userId` and read or
-> write that user's data. This is a security hole, not a design.
->
-> The **target** design is `spec.md` Domain 0: a `User` entity (email unique,
-> bcrypt-hashed password), `POST /auth/register`, and `POST /auth/login` that
-> verifies the password and issues a JWT whose `sub` is the verified user id.
-> Until that lands, the only thing protecting the instance is network isolation
-> (Tailscale).
+> **STATUS — IMPLEMENTED (Domain 0).** `POST /auth/register` creates a `User`
+> (email unique, bcrypt-hashed `password_hash`); `POST /auth/login` verifies the
+> email + password and, on success, issues a JWT whose `sub` is the verified user
+> id (returns 401 on unknown email or wrong password). The Angular frontend adds
+> `/login` + `/register` screens, an `AuthService`, and an `authGuard` that
+> redirects unauthenticated users to `/login`. No credential-less fallback
+> remains; the only protection beyond this is network isolation (Tailscale).
 
 **Isolation guarantee (must hold, cannot be bypassed):** every read/write in
 `ApplicationsService` is filtered by `user_id = <authenticated userId>`, and a
@@ -156,9 +150,9 @@ This replaces the incorrect prior sketch `FOR USER USING(id) = auth.uid()`
 Supabase-specific assumption). Either the RLS policy or the service-layer filter
 alone must hold; we ship both so a bug in one never leaks data.
 
-**Gap:** today `request.user.userId` comes from the token `sub` (client-asserted
-`userId`), not a verified identity. Once Domain 0 lands, `sub` will be the
-verified user's id and the isolation is real rather than self-asserted.
+**Verified identity:** `request.user.userId` is read from the JWT `sub`, which is
+the id of the user that passed password verification at login. Isolation is real,
+not self-asserted by the client.
 
 ---
 
@@ -423,6 +417,10 @@ one per domain state, no duplicate/shadowed fields.**
 - **Pipeline Overview** — renders `applied`, `screened`, `interview`, `offer`
   (count + %), a separate rejected count, and `avgDaysInStage`.
 - **Next follow-ups** — due list from `getDueFollowUps()` (recruiter-signal view).
+- **Auth screens** — `/login` and `/register` (Linear-themed cards). `AuthService`
+  calls `/auth/login` + `/auth/register`, stores the JWT; `authGuard` gates every
+  app route and redirects to `/login` when no token is present. Navbar shows the
+  signed-in email + a Sign-out button.
 
 ---
 

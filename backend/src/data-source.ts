@@ -2,6 +2,7 @@ import { DataSource } from 'typeorm';
 import * as path from 'path';
 import * as dotenv from 'dotenv';
 import { Application } from './applications/application.entity';
+import { User } from './users/user.entity';
 
 const result = dotenv.config({ path: path.resolve(__dirname, '../.env') });
 if (result.error) {
@@ -27,7 +28,7 @@ export default new DataSource({
   username: process.env.DB_USER,
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
-  entities: [Application],
+  entities: [Application, User],
   migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
   synchronize: false,
 });

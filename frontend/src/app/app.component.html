@@ -6,6 +6,12 @@
     <li><a routerLink="/kanban" routerLinkActive="active">Kanban Board</a></li>
     <li><a routerLink="/overview" routerLinkActive="active">Pipeline Overview</a></li>
   </ul>
+  <div class="nav-account">
+    @if (userEmail) {
+      <span class="nav-user">{{ userEmail }}</span>
+    }
+    <button class="btn-signout" (click)="logout()">Sign out</button>
+  </div>
 </nav>
 <main class="main-content">
   <router-outlet></router-outlet>

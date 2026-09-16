@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import * as sgMail from '@sendgrid/mail';
 import { Application } from '../applications/application.entity';
 import { FollowUpsService } from './follow-ups.service';
+import { UsersService } from '../users/users.service';
 
 /**
  * Daily 9:00 AM reminder job.
@@ -12,13 +13,10 @@ import { FollowUpsService } from './follow-ups.service';
  * single summary per user, e.g. "You have X applications due for follow-up
  * today". Users with zero due applications receive nothing.
  *
- * The Application record has no email field (email belongs to the auth/user
- * domain, which has no user table in the MVP). The summary is therefore:
- *   - sent via SendGrid to SENDGRID_TO_EMAIL when that fallback + API key are
- *     configured (single-owner MVP), or
- *   - logged per user otherwise.
- * A real multi-user deployment must map user_id -> email via a users table
- * (documented as a follow-up, not silently faked here).
+ * Each user's registered email (from the users table) is resolved per-user and
+ * used as the SendGrid recipient. The SENDGRID_TO_EMAIL env acts only as a
+ * fallback override for single-owner deployments when no user record maps to a
+ * due application (legacy), and is never required once users exist.
  */
 @Injectable()
 export class RemindersCron {
@@ -29,6 +27,7 @@ export class RemindersCron {
 
   constructor(
     private readonly followUps: FollowUpsService,
+    private readonly users: UsersService,
     private readonly config: ConfigService,
   ) {
     this.sendgridKey = this.config.get<string>('SENDGRID_API_KEY');
@@ -61,6 +60,14 @@ export class RemindersCron {
     return map;
   }
 
+  private async resolveRecipient(userId: string): Promise<string | undefined> {
+    const user = await this.users.findById(userId);
+    if (user) {
+      return user.email;
+    }
+    return this.fallbackToEmail;
+  }
+
   async sendSummary(userId: string, apps: Application[]): Promise<void> {
     const count = apps.length;
     const subject = `You have ${count} application${count === 1 ? '' : 's'} due for follow-up today`;
@@ -69,15 +76,17 @@ export class RemindersCron {
     );
     const body = `You have ${count} application${count === 1 ? '' : 's'} due for follow-up today.\n\n${lines.join('\n')}\n\nMove them forward or snooze for tomorrow.`;
 
-    if (!this.sendgridKey || !this.fromEmail || !this.fallbackToEmail) {
+    const to = await this.resolveRecipient(userId);
+
+    if (!this.sendgridKey || !this.fromEmail || !to) {
       this.logger.log(
-        `[reminder] user=${userId} count=${count} (no email transport configured; not sent)\n${body}`,
+        `[reminder] user=${userId} count=${count} (no email transport or recipient; not sent)\n${body}`,
       );
       return;
     }
 
     const msg: sgMail.MailDataRequired = {
-      to: this.fallbackToEmail,
+      to,
       from: this.fromEmail,
       subject,
       text: body,

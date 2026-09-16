@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './auth.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'list', pathMatch: 'full' },
@@ -8,6 +9,7 @@ export const routes: Routes = [
       import('./components/applied-list/applied-list.component').then(
         (m) => m.AppliedListComponent,
       ),
+    canActivate: [authGuard],
   },
   {
     path: 'add',
@@ -15,6 +17,7 @@ export const routes: Routes = [
       import('./components/add-application/add-application.component').then(
         (m) => m.AddApplicationComponent,
       ),
+    canActivate: [authGuard],
   },
   {
     path: 'kanban',
@@ -22,12 +25,28 @@ export const routes: Routes = [
       import('./components/kanban-board/kanban-board.component').then(
         (m) => m.KanbanBoardComponent,
       ),
+    canActivate: [authGuard],
   },
   {
     path: 'overview',
     loadComponent: () =>
       import('./components/pipeline-overview/pipeline-overview.component').then(
         (m) => m.PipelineOverviewComponent,
+      ),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'login',
+    loadComponent: () =>
+      import('./components/login/login.component').then(
+        (m) => m.LoginComponent,
+      ),
+  },
+  {
+    path: 'register',
+    loadComponent: () =>
+      import('./components/register/register.component').then(
+        (m) => m.RegisterComponent,
       ),
   },
   { path: '**', redirectTo: 'list' },
