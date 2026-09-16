@@ -1,262 +1,209 @@
 # Job Hunt CRM
 
-Aplicación web para candidatos que busca organizar su búsqueda de empleo como una pipeline profesional: registrar aplicaciones, seguir stage, programar follow-ups y ver analytics del pipeline.
+A **self-hosted** pipeline CRM for job seekers. Track every application as a
+pipeline, follow up on time, and see your search at a glance — all running on
+your own hardware behind your own reverse proxy. No cloud account, no vendor
+lock-in.
 
----
+> **This project is built for self-hosting.** It ships as a small Docker Compose
+> stack (PostgreSQL + NestJS API + static Angular frontend) that sits behind a
+> reverse proxy like Caddy, Traefik, or nginx. The example config assumes a
+> subpath (`/job-hunt-crm/`) so it coexists with your other self-hosted apps.
 
-## Stack
+## Features
 
-| Capas     | Tecnología                                                                 |
-|-----------|----------------------------------------------------------------------------|
-| Frontend  | Angular 22 (standalone components)                                         |
-| Backend   | NestJS 10 + TypeORM + PostgreSQL                                           |
-| Auth      | JWT (`@nestjs/jwt` + `passport-jwt`)                                      |
-| Cron      | `@nestjs/schedule` (daily 9am)                                            |
-| Email     | SendGrid (integración pendiente — ver `reminders.cron.ts`)                |
-| DB        | PostgreSQL con RLS (Row-Level Security) por usuario                       |
+- **Applications CRUD** — record roles you applied to, with source, stage, and notes.
+- **Stage pipeline** — `applied → screened → interview → offer`. `rejected` is terminal (not a Kanban column).
+- **Follow-up scheduling** — promoting a stage sets a follow-up +7 days out unless you set an explicit future date; `rejected` clears it.
+- **Next follow-ups** — a view of everything due today or overdue.
+- **Pipeline analytics** — per-stage counts, percentages over active applications, and average days-in-stage.
+- **Daily reminder** — a 09:00 cron builds a per-user follow-up summary (emailed via SendGrid when configured; otherwise logged).
+- **Per-user isolation** — every query is scoped by `user_id`; a PostgreSQL RLS policy backs it as defense-in-depth.
 
----
+## Tech stack
 
-## Qué hace
+| Layer | Technology |
+|-------|------------|
+| Frontend | Angular (standalone components) |
+| Backend | NestJS 10 + TypeORM + PostgreSQL |
+| Auth | JWT (`@nestjs/jwt` + `passport-jwt`), bcrypt password hashing |
+| Scheduler | `@nestjs/schedule` (daily 09:00) |
+| Email | SendGrid (optional) |
+| DB | PostgreSQL 15, Row-Level Security per user |
 
-- **Aplicaciones CRUD:** crear, listar y actualizar aplicaciones de empleo.
-- **Stage pipeline:** `applied → screened → interview → offer`. `rejected` es terminal, no columna del Kanban.
-- **Follow-up scheduling:** al promover stage, si no hay follow_up_date explícito en el futuro, se setea +7 días. Si está rechazado → `null`.
-- **Analytics:** `/analytics/pipeline` devuelve conteos por stage, porcentajes sobre total activo (excluye rejected), y `avgDaysInStage` (avg desde applied_date).
-- **Follow-ups due:** `/follow-ups` lista aplicaciones con `follow_up_date <= hoy` (null nunca due).
-- **Daily reminder:** cron `@Cron(EVERY_DAY_AT_9AM)` corre diariamente; aún no envía email (pendiente integración SendGrid).
-
----
-
-## Estructura del proyecto
-
-```
-07-job-hunt-crm/
-├── backend/
-│   ├── src/
-│   │   ├── applications/   # Entity, DTOs, service, controller, module, stage.transitions
-│   │   ├── auth/           # JWT strategy, guard, auth service + controller (login)
-│   │   ├── analytics/      # PipelineStats service + controller
-│   │   ├── follow-ups/     # Due service + controller + reminders cron
-│   │   ├── health/         # /health
-│   │   ├── migrations/     # 0001-init (table + índices + RLS)
-│   │   ├── seed/           # seed.ts — 3 apps de prueba
-│   │   ├── data-source.ts  # TypeORM DataSource para migrations
-│   │   └── app.module.ts
-│   └── package.json
-├── frontend/
-│   ├── src/app/
-│   │   ├── components/     # AppliedList, AddApplication, KanbanBoard, PipelineOverview, StageBadge
-│   │   ├── services/       # JobHuntService (applications$, pipelineStats$)
-│   │   ├── models/         # Application, StageBucket, PipelineStats types
-│   │   ├── environments/   # environment.ts (apiUrl)
-│   │   └── app.module.ts + app-routing.module.ts
-│   └── package.json
-├── spec.md                 # Specification (WHAT)
-├── design.md               # Design decisions (HOW)
-├── tasks.md                # Implementation tasks + plan de PRs encadenados
-├── proposal.md             # Proposal original
-└── README.md               # Este archivo
-```
-
----
-
-## Endpoint API
-
-Base: `http://localhost:3000/api` (backend).
-
-| Método   | Path                         | Descripción                                                                 | Auth    |
-|----------|------------------------------|-----------------------------------------------------------------------------|---------|
-| GET      | /health                      | Health check                                                                | —       |
-| POST     | /auth/login                  | Login → devuelve `access_token` (body: `{ userId, email }`)               | —       |
-| GET      | /applications                | Lista aplicaciones del usuario autenticado                                  | JWT     |
-| POST     | /applications                | Crea aplicación (company + role requeridos; source y stage opcionales)      | JWT     |
-| PATCH    | /applications/:id/stage      | Promueve stage (solo forward/reject, validado en service)                   | JWT     |
-| GET      | /analytics/pipeline          | Returns `{ applied, screened, interview, offer, rejected, avgDaysInStage }`| JWT     |
-| GET      | /follow-ups                  | Lista aplicaciones due (follow_up_date <= hoy)                              | JWT     |
-
-### Headers
+## Architecture
 
 ```
-Authorization: Bearer <JWT_TOKEN>
-Content-Type: application/json
+                ┌──────────────────────────────────────────┐
+   Browser ───► │  Reverse proxy (Caddy/Traefik/nginx)        │
+                │   /job-hunt-crm/      → frontend:80         │
+                │   /job-hunt-crm/api/  → backend:3000         │
+                └──────────────────────────────────────────┘
+                          │ compose network (jobhunt)
+        ┌─────────────────┼─────────────────┐
+     postgres          backend            frontend
+   (bind mount)      (NestJS)           (nginx static)
 ```
 
-### Ejemplo login
+All three services run on a private Docker network. Only the reverse proxy
+reaches them; no ports are published to the wild (the compose file binds to
+`127.0.0.1` and lets the proxy route from the host).
+
+## Quick start (local, no proxy)
 
 ```bash
-curl -X POST http://localhost:3000/api/auth/login \
-  -H 'Content-Type: application/json' \
-  -d '{"userId":"550e8400-e29b-41d4-a716-446655440000","email":"dev@example.com"}'
-```
-
----
-
-## Configuración local
-
-### Backend
-
-```bash
-cd backend
-cp .env.example .env
-# Editar .env con valores reales:
-#   DATABASE_URL=postgres://USER:PASS@HOST:5432/job_hunt_crm
-#   JWT_SECRET=una-frase-segura-larga
-# Opcional: SENDGRID_API_KEY, SENDGRID_FROM_EMAIL
-npm install
-npm run build
-```
-
-**Base de datos:** PostgreSQL. Si no tienes una lista, puedes usar Docker:
-
-```bash
-docker run --rm --name pg-jobhunt \
-  -e POSTGRES_USER=postgres \
-  -e POSTGRES_PASSWORD=postgres \
-  -e POSTGRES_DB=job_hunt_crm \
-  -p 5432:5432 \
-  -d postgres:15
-```
-
-**Migrations:**
-
-```bash
-# Requiere DATABASE_URL válida en .env
-npm run migration:run
-```
-
-**Levantar backend:**
-
-```bash
-npm run start:dev
-# → http://localhost:3000
-```
-
-### Frontend
-
-```bash
-cd frontend
-npm install
-# El environment.ts ya apunta a http://localhost:3000/api
-npm run start
-# → http://localhost:4200
-```
-
----
-
-## Flujo de desarrollo local completo
-
-1. Levantar PostgreSQL (Docker o local).
-2. Backend: `cd backend && cp .env.example .env && npm install && npm run migration:run && npm run start:dev`
-3. Frontend: `cd frontend && npm install && npm run start`
-4. Abrir `http://localhost:4200`
-
-### Seed de prueba
-
-```bash
-cd backend
-npm run seed
-```
-
-Inserta 3 aplicaciones para el user `00000000-0000-0000-0000-000000000001` en stages distintos (applied, screened, interview).
-
----
-
-## Env vars
-
-| Variable              | Uso                                           | Requerido |
-|-----------------------|-----------------------------------------------|-----------|
-| DATABASE_URL          | Connection string PostgreSQL                  | Sí        |
-| DB_HOST / DB_PORT ... | Alternativa a DATABASE_URL (también funciona) | No        |
-| JWT_SECRET            | Secret para firmar tokens                     | Sí        |
-| SENDGRID_API_KEY      | Para envío de emails (pendiente)              | No        |
-| SENDGRID_FROM_EMAIL   | From address para emails                      | No        |
-
-El `.env` NO se commitea (ver `.gitignore` del backend).
-
----
-
-## Recruiter signal (demo)
-
-El flujo pensado es:
-
-1. Recruiter: "¿Dónde estás parado en tu búsqueda?"
-2. Candidato abre CRM → ve pipeline organizado (etapa actual + próximo follow-up).
-3. Muestra dominio del proceso, profesionalismo, signal de que nadie más está gestionando tu búsqueda.
-
-Esto es el "recruiter signal" que el proyecto busca generar.
-
----
-
-## Estado actual del desarrollo
-
-- **Backend:** Completo (Tasks 1-5). Compila, tiene migrations, seed, endpoint analytics, follow-ups, cron placeholder.
-- **Frontend:** Completo (Tasks 6-11). Compila, tiene 5 componentes standalone + servicio + routing.
-- **Pendiente:** seed probado contra DB real, deploy config (Docker + Caddy, ver abajo), demo checklist.
-
-Ver `tasks.md` para el plan de PRs encadenados (backend → frontend → seed/deploy).
-
----
-
-## Decisiones de diseño
-
-Ver `design.md` para detalles. Resumen:
-
-- **ORM único:** TypeORM (no Prisma, no Mongoose).
-- **Isolación por usuario:** Query-level `where: { user_id }` en service + RLS policy en PostgreSQL (defense-in-depth).
-- **Stage enum:** `applied | screened | interview | offer | rejected` (rejected no es columna del Kanban).
-- **Promoción forward-only:** no se puede saltar stage ni retroceder (a menos que sea rejected).
-- **Follow-up:** +7 días si no hay uno explícito en el futuro; rejected → null.
-- **Analytics:** porcentajes sobre total activo (rejected excluido del 100%).
-
----
-
-## Tareas pendientes
-
-Ver `tasks.md` tasks 12-15:
-
-- Task 12: seed probado contra DB real
-- Task 13: README (esta tarea)
-- Task 14: deploy config — Docker Compose + NixOS Caddy (subpath `/job-hunt-crm/`)
-- Task 15: demo checklist end-to-end (`DEMO_CHECKLIST.md`)
-
----
-
-## Deploy (portable Docker Compose + Caddy, subpath-first)
-
-Self-hosted, never Vercel/Render. The stack is **portable**: it runs on any
-Docker host with `docker compose`. On nix99 it sits behind Caddy like your
-other apps; on a fresh VPS it runs the same way behind any proxy.
-
-The backend **self-runs migrations on boot** (`backend/docker-entrypoint.sh`),
-so a fresh clone needs no manual migration step.
-
-```bash
-# 1. Configure secrets (single file — backend reads it directly)
 cp .env.example .env          # set JWT_SECRET (openssl rand -hex 32)
-
-# 2. Build + run (no published ports; a proxy in front routes to the network)
 docker compose up -d --build
+# open http://127.0.0.1:8092/job-hunt-crm/
+```
 
-# 3. Optional sample data (one-shot)
+The stack self-runs migrations on boot, so no manual migration step is needed.
+Register the first account at `/register`, then sign in.
+
+> Local CORS: leave `CORS_ORIGIN` blank for a permissive local setup. For
+> anything beyond localhost, put a reverse proxy in front (below) and set
+> `CORS_ORIGIN` to your public origin.
+
+## Configuration (`.env`)
+
+| Variable | Purpose | Required |
+|----------|---------|----------|
+| `JWT_SECRET` | Secret used to sign JWTs | Yes |
+| `DATABASE_URL` | PostgreSQL connection string (use host `postgres` inside compose) | Yes |
+| `DB_USER` / `DB_PASS` / `DB_NAME` | Alternative to `DATABASE_URL` | No |
+| `SENDGRID_API_KEY` | Enables reminder emails (otherwise they are logged) | No |
+| `SENDGRID_FROM_EMAIL` | From address for reminder emails | No |
+| `CORS_ORIGIN` | Public origin of the frontend (comma-separated). Blank = permissive | No |
+
+`.env` is gitignored — never commit it.
+
+## Reverse proxy (Caddy)
+
+See `Caddyfile.example`:
+
+- **Variant A** — JWT only (the app keeps its own login).
+- **Variant B** — optional Authelia SSO in front of the subpath.
+
+The route is subpath-first:
+
+```caddy
+handle /job-hunt-crm/api/* {
+    uri strip_prefix /job-hunt-crm
+    reverse_proxy backend:3000
+}
+handle /job-hunt-crm/* {
+    reverse_proxy frontend:80
+}
+```
+
+## Deploying on a NixOS homelab (step by step)
+
+Recommended if you already run Caddy + Docker on NixOS. The app is designed to
+live alongside your other self-hosted services.
+
+1. **Clone** the repo somewhere on the host (e.g. under your services dir):
+   ```bash
+   git clone https://github.com/jouselt/job-hunt-crm.git /home/shared/data/job-hunt-crm
+   cd /home/shared/data/job-hunt-crm
+   ```
+2. **Configure secrets** — copy `.env.example` to `.env` and set at least `JWT_SECRET`:
+   ```bash
+   cp .env.example .env
+   sed -i "s/^JWT_SECRET=.*/JWT_SECRET=$(openssl rand -hex 32)/" .env
+   ```
+   Set `CORS_ORIGIN` to your public origin (e.g. `https://nixos-x99.tailf8f9a2.ts.net`).
+   Leave it blank if Caddy serves the frontend and API from the same origin.
+3. **Start the stack** (migrations run automatically on first boot):
+   ```bash
+   docker compose up -d --build
+   ```
+4. **Wire Caddy** — add the `/job-hunt-crm` routes from `Caddyfile.example`
+   (Variant A) to your Caddy config. If you manage Caddy via NixOS, add them to
+   your `caddy.nix` (a `nixos-module.example.nix` is provided as a reference) and
+   run `sudo nixos-rebuild switch`; otherwise `caddy reload`.
+5. **Open it** — visit `https://<your-domain>/job-hunt-crm/`, click **Create
+   account**, and register your first user.
+6. **Backups** — the compose file already bind-mounts PostgreSQL's data
+   directory to `/home/shared/data/job-hunt-crm/postgres`. As long as
+   `/home/shared/data` is in your host backup routine (rclone, restic, Borg,
+   …), the database is covered. No extra step needed.
+7. **Health checks** — the compose defines a backend healthcheck on `/api/health`
+   and a frontend (nginx) healthcheck. Point Uptime Kuma or similar at
+   `http://127.0.0.1:3100/api/health` and `http://127.0.0.1:8092/` if you want
+   monitoring.
+8. **(Optional) SSO** — to protect the app behind Authelia/SSO, use Variant B
+   from `Caddyfile.example`. The app still keeps its own login; SSO just gates
+   the subpath.
+
+That's it — the app is now a first-class citizen of your homelab.
+
+## Auth & registration
+
+Registration is **open by default**: anyone who can reach the login page can
+create an account. For a private homelab behind Tailscale/VPN this is fine. If
+you expose the subpath publicly, put Authelia (Variant B) or another
+authenticating proxy in front, or close registration after your first user.
+
+Accounts are isolated: each user only sees their own applications and follow-ups.
+
+## API reference
+
+Base URL (behind proxy): `https://<your-domain>/job-hunt-crm/api`
+
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| GET | `/health` | Health check | — |
+| POST | `/auth/register` | Register `{ email, password }` → `{ access_token, user }` | — |
+| POST | `/auth/login` | Login `{ email, password }` → `{ access_token, user }` | — |
+| GET | `/applications` | List own applications | JWT |
+| POST | `/applications` | Create (company + role required) | JWT |
+| PATCH | `/applications/:id/stage` | Promote stage (forward/reject only) | JWT |
+| GET | `/analytics/pipeline` | Pipeline stats | JWT |
+| GET | `/follow-ups` | Applications due (`follow_up_date` ≤ today) | JWT |
+
+Headers: `Authorization: Bearer <token>`, `Content-Type: application/json`.
+
+## Optional seed data
+
+```bash
 docker compose run --rm backend npm run seed
 ```
 
-Caddy routes (see `Caddyfile.example` — Variant A = JWT only, Variant B =
-optional Authelia SSO in front; the app keeps its own login either way):
+Inserts three sample applications for a demo user. These rows are not tied to
+any registered login, so they are invisible from the UI — handy only as a schema
+check.
+
+## Development
+
+```bash
+# backend
+cd backend && cp .env.example .env && npm install && npm run migration:run && npm run start:dev
+# frontend
+cd frontend && npm install && npm run start   # http://localhost:4200
+```
+
+The frontend dev server talks to `http://localhost:3000/api` (see
+`frontend/src/environments/environment.ts`).
+
+## Project layout
 
 ```
-handle /job-hunt-crm/api/* { uri strip_prefix /job-hunt-crm; reverse_proxy backend:3000 }
-handle /job-hunt-crm/*     { reverse_proxy frontend:80 }
+backend/src/
+  applications/   entity, DTOs, service, controller, stage transitions
+  auth/           JWT strategy, guard, service + controller (register/login)
+  analytics/      pipeline stats service + controller
+  follow-ups/     due service, controller, daily reminder cron
+  health/         /health
+  migrations/     Initxxxxxx (table + RLS policy)
+  seed/           sample data
+frontend/src/app/
+  components/     applied-list, add-application, kanban-board,
+                  pipeline-overview, next-followups, login, register, stage-badge
+  services/       job-hunt.service (applications$, pipelineStats$, due$)
+spec.md           specification (what)
+design.md         design decisions (how)
 ```
 
-- Frontend SPA served by nginx from `/usr/share/nginx/html/job-hunt-crm` with
-  `base-href /job-hunt-crm/` and prod API URL `/job-hunt-crm/api`.
-- Backend has no published port; only the proxy reaches it on the compose network.
-- For declarative NixOS wiring (optional), see `nixos-module.example.nix`.
+## License
 
----
-
-## Commits
-
-El proyecto sigue convención de commits. Ver `git log` para historial. Los PRs se planean encadenados (backend primero, luego frontend, luego seed/deploy).
+[MIT](./LICENSE) — do what you want, just keep the notice.
