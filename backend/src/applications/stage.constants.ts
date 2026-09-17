@@ -13,6 +13,7 @@ export const SOURCES = {
   INDEED: 'indeed',
   REFERRAL: 'referral',
   OTHER: 'other',
+  TRIAGE: 'triage',
 } as const;
 
 export type Source = (typeof SOURCES)[keyof typeof SOURCES];
