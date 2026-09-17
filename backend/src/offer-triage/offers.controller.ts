@@ -1,0 +1,25 @@
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { OffersService } from './offers.service';
+import { CreateOfferDto } from './dto/create-offer.dto';
+
+@Controller('offers')
+@UseGuards(JwtAuthGuard)
+export class OffersController {
+  constructor(private readonly offers: OffersService) {}
+
+  @Post('import')
+  ingest(@Body() dto: CreateOfferDto, @Req() req: any) {
+    return this.offers.ingest(req.user.userId, dto);
+  }
+
+  @Get()
+  findOwned(@Req() req: any) {
+    return this.offers.findOwned(req.user.userId);
+  }
+
+  @Get('review')
+  findReview(@Req() req: any) {
+    return this.offers.findReview(req.user.userId);
+  }
+}
