@@ -2,6 +2,7 @@ import { Body, Controller, Get, HttpCode, Post, Req, UseGuards } from '@nestjs/c
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { SettingsService } from './settings.service';
 import { SetJevKeyDto } from './dto/set-jev-key.dto';
+import { SetProfileDto } from './dto/set-profile.dto';
 
 @Controller('settings')
 @UseGuards(JwtAuthGuard)
@@ -17,5 +18,17 @@ export class SettingsController {
   @Get('jev-key')
   async getJevKey(@Req() req: any) {
     return this.settings.getJevKeyMasked(req.user.userId);
+  }
+
+  @Post('profile')
+  @HttpCode(200)
+  async setProfile(@Body() dto: SetProfileDto, @Req() req: any): Promise<void> {
+    await this.settings.setTriageProfile(req.user.userId, dto.profile);
+  }
+
+  @Get('profile')
+  async getProfile(@Req() req: any) {
+    const profile = await this.settings.getTriageProfile(req.user.userId);
+    return { configured: !!profile, profile };
   }
 }

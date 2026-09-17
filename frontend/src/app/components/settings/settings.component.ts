@@ -1,10 +1,11 @@
 import { Component, OnInit, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { JobHuntService } from '../../services/job-hunt.service';
 
 @Component({
   selector: 'app-settings',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, FormsModule],
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.css'],
 })
@@ -18,19 +19,24 @@ export class SettingsComponent implements OnInit {
   saved = false;
   error: string | null = null;
 
+  profileJson = '';
+  profileSaved = false;
+  profileError: string | null = null;
+
   ngOnInit(): void {
-    this.form = this.fb.group({
-      key: ['', Validators.required],
-    });
+    this.form = this.fb.group({ key: ['', Validators.required] });
     this.jobHunt.getJevKeyMasked().subscribe({
       next: (res) => {
         this.configured = res.configured;
         this.masked = res.masked;
       },
-      error: () => {
-        this.configured = false;
-        this.masked = null;
+      error: () => {},
+    });
+    this.jobHunt.getProfile().subscribe({
+      next: (res) => {
+        if (res.profile) this.profileJson = JSON.stringify(res.profile, null, 2);
       },
+      error: () => {},
     });
   }
 
@@ -49,6 +55,30 @@ export class SettingsComponent implements OnInit {
       },
       error: () => {
         this.error = 'Failed to save key';
+      },
+    });
+  }
+
+  onSaveProfile(): void {
+    this.profileSaved = false;
+    this.profileError = null;
+    let parsed: any;
+    try {
+      parsed = JSON.parse(this.profileJson);
+    } catch {
+      this.profileError = 'Invalid JSON';
+      return;
+    }
+    if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+      this.profileError = 'Profile must be a JSON object';
+      return;
+    }
+    this.jobHunt.saveProfile(parsed).subscribe({
+      next: () => {
+        this.profileSaved = true;
+      },
+      error: () => {
+        this.profileError = 'Failed to save profile';
       },
     });
   }

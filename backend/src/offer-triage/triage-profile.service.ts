@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
+import { SettingsService } from '../settings/settings.service';
 import { DEFAULT_TRIAGE_PROFILE } from './profile.default';
 
 @Injectable()
 export class TriageProfileService {
-  private readonly defaultProfile = DEFAULT_TRIAGE_PROFILE;
+  constructor(private readonly settings: SettingsService) {}
 
   getDefault(): any {
-    return this.defaultProfile;
+    return DEFAULT_TRIAGE_PROFILE;
   }
 
-  // Per-user profile overrides can be added later (e.g. from UserSettings).
-  getForUser(_userId: string): any {
-    return this.defaultProfile;
+  async getForUser(userId: string): Promise<any> {
+    return (await this.settings.getTriageProfile(userId)) ?? DEFAULT_TRIAGE_PROFILE;
   }
 }

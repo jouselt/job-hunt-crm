@@ -33,7 +33,7 @@ export class OfferTriageService {
   }
 
   async triageOffer(offer: Offer): Promise<Offer> {
-    const profile = this.profile.getForUser(offer.userId);
+    const profile = await this.profile.getForUser(offer.userId);
     const result = await this.jev.triage(offer, profile, offer.userId);
 
     offer.jevRaw = result.raw;

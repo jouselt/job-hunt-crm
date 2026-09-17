@@ -8,6 +8,9 @@ export class UserSettings {
   @Column({ type: 'text', nullable: true })
   jevApiKeyEnc?: string | null;
 
+  @Column({ type: 'jsonb', nullable: true })
+  triageProfile?: any;
+
   @UpdateDateColumn()
   updatedAt!: Date;
 }

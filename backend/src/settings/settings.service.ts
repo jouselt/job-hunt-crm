@@ -2,12 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import {
-  createCipheriv,
-  createDecipheriv,
-  randomBytes,
-  createHash,
-} from 'crypto';
+import { createCipheriv, createDecipheriv, randomBytes, createHash } from 'crypto';
 import { UserSettings } from './user-settings.entity';
 
 @Injectable()
@@ -33,16 +28,9 @@ export class SettingsService {
 
   private decrypt(stored: string): string {
     const [ivHex, tagHex, encHex] = stored.split(':');
-    const decipher = createDecipheriv(
-      'aes-256-gcm',
-      this.encKey,
-      Buffer.from(ivHex, 'hex'),
-    );
+    const decipher = createDecipheriv('aes-256-gcm', this.encKey, Buffer.from(ivHex, 'hex'));
     decipher.setAuthTag(Buffer.from(tagHex, 'hex'));
-    const dec = Buffer.concat([
-      decipher.update(Buffer.from(encHex, 'hex')),
-      decipher.final(),
-    ]);
+    const dec = Buffer.concat([decipher.update(Buffer.from(encHex, 'hex')), decipher.final()]);
     return dec.toString('utf8');
   }
 
@@ -51,25 +39,36 @@ export class SettingsService {
     return `****${plain.slice(-4)}`;
   }
 
-  async setJevKey(userId: string, plain: string): Promise<void> {
-    await this.repo.save({ userId, jevApiKeyEnc: this.encrypt(plain) });
+  private async upsert(userId: string, patch: Partial<UserSettings>): Promise<void> {
+    const existing = await this.repo.findOne({ where: { userId } });
+    const merged = existing
+      ? this.repo.merge(existing, patch)
+      : this.repo.create({ userId, ...patch });
+    await this.repo.save(merged);
   }
 
-  async getJevKeyMasked(
-    userId: string,
-  ): Promise<{ configured: boolean; masked: string | null }> {
+  async setJevKey(userId: string, plain: string): Promise<void> {
+    await this.upsert(userId, { jevApiKeyEnc: this.encrypt(plain) });
+  }
+
+  async getJevKeyMasked(userId: string): Promise<{ configured: boolean; masked: string | null }> {
     const row = await this.repo.findOne({ where: { userId } });
-    if (!row || !row.jevApiKeyEnc) {
-      return { configured: false, masked: null };
-    }
+    if (!row || !row.jevApiKeyEnc) return { configured: false, masked: null };
     return { configured: true, masked: this.mask(this.decrypt(row.jevApiKeyEnc)) };
   }
 
   async getJevKeyPlain(userId: string): Promise<string> {
     const row = await this.repo.findOne({ where: { userId } });
-    if (!row || !row.jevApiKeyEnc) {
-      throw new NotFoundException('JEV_API_KEY not configured');
-    }
+    if (!row || !row.jevApiKeyEnc) throw new NotFoundException('JEV_API_KEY not configured');
     return this.decrypt(row.jevApiKeyEnc);
+  }
+
+  async setTriageProfile(userId: string, profile: any): Promise<void> {
+    await this.upsert(userId, { triageProfile: profile });
+  }
+
+  async getTriageProfile(userId: string): Promise<any | null> {
+    const row = await this.repo.findOne({ where: { userId } });
+    return row?.triageProfile ?? null;
   }
 }

@@ -98,6 +98,21 @@ export class JobHuntService {
     );
   }
 
+  getProfile(): Observable<{ configured: boolean; profile: any | null }> {
+    return this.http.get<{ configured: boolean; profile: any | null }>(
+      `${this.baseUrl}/settings/profile`,
+      { headers: this.authHeaders() },
+    );
+  }
+
+  saveProfile(profile: any): Observable<void> {
+    return this.http.post<void>(
+      `${this.baseUrl}/settings/profile`,
+      { profile },
+      { headers: this.authHeaders() },
+    );
+  }
+
   // --- Offer triage review ---
   getReviewOffers(): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/offers/review`, {
