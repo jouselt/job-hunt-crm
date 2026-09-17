@@ -44,6 +44,18 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'triage',
+    loadComponent: () =>
+      import('./components/triage/triage.component').then((m) => m.TriageComponent),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'settings',
+    loadComponent: () =>
+      import('./components/settings/settings.component').then((m) => m.SettingsComponent),
+    canActivate: [authGuard],
+  },
+  {
     path: 'login',
     loadComponent: () =>
       import('./components/login/login.component').then(

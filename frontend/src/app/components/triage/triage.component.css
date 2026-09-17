@@ -1,0 +1,15 @@
+.triage { max-width: 760px; margin: 0 auto; padding: 1.5rem; }
+.lead { color: #666; }
+.err { color: #c5221f; }
+.empty { color: #137333; }
+.card { border: 1px solid #e0e0e0; border-radius: 10px; padding: 1rem 1.25rem; margin: 1rem 0; }
+.card header { display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem; }
+.card h2 { margin: 0; font-size: 1.1rem; }
+.company { color: #555; font-weight: 600; }
+.meta { color: #777; font-size: 0.9rem; margin: 0.25rem 0; }
+.fit { margin: 0.5rem 0; }
+.desc { color: #444; font-size: 0.9rem; }
+.actions { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
+.btn-send { background: #137333; color: #fff; border: 0; border-radius: 6px; padding: 0.5rem 1rem; cursor: pointer; }
+.btn-skip { background: #c5221f; color: #fff; border: 0; border-radius: 6px; padding: 0.5rem 1rem; cursor: pointer; }
+.btn-send:disabled, .btn-skip:disabled { opacity: 0.6; cursor: not-allowed; }

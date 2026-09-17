@@ -1,0 +1,35 @@
+<section class="settings">
+  <h1>Settings</h1>
+  <p class="lead">
+    Configure your TypeSafe Jev API key. It is encrypted at rest (AES-256-GCM) and is
+    never returned in plaintext.
+  </p>
+
+  @if (configured) {
+    <div class="status status--ok">
+      <span class="status-label">Jev API key configured:</span>
+      <code>{{ masked }}</code>
+    </div>
+  } @else {
+    <div class="status status--warn">No Jev API key configured yet.</div>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="onSave()">
+    <label for="key">Jev API key</label>
+    <input
+      id="key"
+      type="password"
+      formControlName="key"
+      autocomplete="off"
+      placeholder="paste your key"
+    />
+    <button type="submit" [disabled]="form.invalid">Save</button>
+  </form>
+
+  @if (saved) {
+    <p class="ok">Key saved.</p>
+  }
+  @if (error) {
+    <p class="err">{{ error }}</p>
+  }
+</section>
