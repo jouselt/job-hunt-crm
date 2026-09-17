@@ -36,8 +36,8 @@ export class AddOffer1700000000001 implements MigrationInterface {
     await queryRunner.query(`ALTER TABLE offers ENABLE ROW LEVEL SECURITY`);
     await queryRunner.query(`
       CREATE POLICY offers_user_isolation ON offers
-        USING (user_id = current_setting('app.current_user_id')::uuid)
-        WITH CHECK (user_id = current_setting('app.current_user_id')::uuid)
+        USING ("userId" = current_setting('app.current_user_id')::uuid)
+        WITH CHECK ("userId" = current_setting('app.current_user_id')::uuid)
     `);
   }
 
