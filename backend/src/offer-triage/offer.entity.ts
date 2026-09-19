@@ -40,8 +40,17 @@ export class Offer {
   @Column({ type: 'text', default: 'NEW' })
   status!: string;
 
+  /**
+   * Numeric Jev `fit` score (0..3 on the poor/fair/good/strong rubric).
+   * The gate verdict lives in `decision`; these are two different facts and are
+   * stored separately.
+   */
+  @Column({ type: 'float', nullable: true })
+  fitScore?: number | null;
+
+  /** Deterministic gate verdict from `decideTriage`: 'SEND' or 'REVIEW'. */
   @Column({ type: 'text', nullable: true })
-  fit?: string | null;
+  decision?: string | null;
 
   @Column({ type: 'jsonb', nullable: true })
   jevRaw?: any;

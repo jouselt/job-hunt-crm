@@ -25,7 +25,12 @@
         <a class="meta" [href]="o.url" target="_blank" rel="noopener">View offer</a>
       }
       <p class="fit">
-        Decision: <strong>{{ o.fit }}</strong>
+        Fit score:
+        @if (o.fitScore != null) {
+          <strong>{{ o.fitScore | number: '1.2-2' }}</strong>
+        } @else {
+          <strong>n/a</strong>
+        }
         @if (o.jevConfidence != null) {
           · confidence {{ o.jevConfidence | number: '1.2-2' }}
         }

@@ -8,7 +8,8 @@ interface ReviewOffer {
   company: string;
   url?: string | null;
   location?: string | null;
-  fit?: string | null;
+  decision?: string | null;
+  fitScore?: number | null;
   jevConfidence?: number | null;
   description?: string | null;
 }
