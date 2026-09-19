@@ -81,4 +81,54 @@ export class JobHuntService {
       headers: this.authHeaders(),
     });
   }
+
+  // --- Settings: per-user Jev API key ---
+  getJevKeyMasked(): Observable<{ configured: boolean; masked: string | null }> {
+    return this.http.get<{ configured: boolean; masked: string | null }>(
+      `${this.baseUrl}/settings/jev-key`,
+      { headers: this.authHeaders() },
+    );
+  }
+
+  saveJevKey(key: string): Observable<void> {
+    return this.http.post<void>(
+      `${this.baseUrl}/settings/jev-key`,
+      { key },
+      { headers: this.authHeaders() },
+    );
+  }
+
+  getProfile(): Observable<{ configured: boolean; profile: any | null }> {
+    return this.http.get<{ configured: boolean; profile: any | null }>(
+      `${this.baseUrl}/settings/profile`,
+      { headers: this.authHeaders() },
+    );
+  }
+
+  saveProfile(profile: any): Observable<void> {
+    return this.http.post<void>(
+      `${this.baseUrl}/settings/profile`,
+      { profile },
+      { headers: this.authHeaders() },
+    );
+  }
+
+  // --- Offer triage review ---
+  getReviewOffers(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/offers/review`, {
+      headers: this.authHeaders(),
+    });
+  }
+
+  sendOffer(id: string): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/offers/${id}/send`, {}, {
+      headers: this.authHeaders(),
+    });
+  }
+
+  skipOffer(id: string): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/offers/${id}/skip`, {}, {
+      headers: this.authHeaders(),
+    });
+  }
 }

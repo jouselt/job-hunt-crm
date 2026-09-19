@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthModule } from './auth/auth.module';
@@ -7,10 +8,13 @@ import { ApplicationsModule } from './applications/applications.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { FollowUpsModule } from './follow-ups/follow-ups.module';
 import { HealthModule } from './health/health.module';
+import { SettingsModule } from './settings/settings.module';
+import { OfferTriageModule } from './offer-triage/offer-triage.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    ScheduleModule.forRoot(),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
@@ -47,6 +51,8 @@ import { HealthModule } from './health/health.module';
     AnalyticsModule,
     FollowUpsModule,
     HealthModule,
+    SettingsModule,
+    OfferTriageModule,
   ],
 })
 export class AppModule {}

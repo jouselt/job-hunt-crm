@@ -1,0 +1,46 @@
+<section class="triage">
+  <h1>Offer Triage — Review</h1>
+  <p class="lead">
+    Offers Jev could not decide on. Review the fit score and choose to send your CV or skip.
+  </p>
+
+  @if (error) {
+    <p class="err">{{ error }}</p>
+  }
+
+  @if (offers.length === 0) {
+    <p class="empty">No offers awaiting review. 🎉</p>
+  }
+
+  @for (o of offers; track o.id) {
+    <article class="card">
+      <header>
+        <h2>{{ o.title }}</h2>
+        <span class="company">{{ o.company }}</span>
+      </header>
+      @if (o.location) {
+        <p class="meta">{{ o.location }}</p>
+      }
+      @if (o.url) {
+        <a class="meta" [href]="o.url" target="_blank" rel="noopener">View offer</a>
+      }
+      <p class="fit">
+        Decision: <strong>{{ o.fit }}</strong>
+        @if (o.jevConfidence != null) {
+          · confidence {{ o.jevConfidence | number: '1.2-2' }}
+        }
+      </p>
+      @if (o.description) {
+        <p class="desc">{{ o.description | slice: 0:300 }}</p>
+      }
+      <div class="actions">
+        <button class="btn-send" [disabled]="busyId === o.id" (click)="send(o.id)">
+          Send CV
+        </button>
+        <button class="btn-skip" [disabled]="busyId === o.id" (click)="skip(o.id)">
+          Skip
+        </button>
+      </div>
+    </article>
+  }
+</section>

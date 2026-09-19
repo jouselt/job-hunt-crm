@@ -1,0 +1,33 @@
+<section class="settings">
+  <h1>Settings</h1>
+
+  <div class="card-section">
+    <h2>Jev API key</h2>
+    <p class="lead">TypeSafe Jev API key, encrypted at rest (AES-256-GCM). Never shown in plaintext.</p>
+    @if (configured) {
+      <div class="status status--ok"><span class="status-label">Configured:</span> <code>{{ masked }}</code></div>
+    } @else {
+      <div class="status status--warn">No key configured yet.</div>
+    }
+    <form [formGroup]="form" (ngSubmit)="onSave()">
+      <label for="key">Jev API key</label>
+      <input id="key" type="password" formControlName="key" autocomplete="off" placeholder="paste your key" />
+      <button type="submit" [disabled]="form.invalid">Save</button>
+    </form>
+    @if (saved) { <p class="ok">Key saved.</p> }
+    @if (error) { <p class="err">{{ error }}</p> }
+  </div>
+
+  <div class="card-section">
+    <h2>Triage profile (your CV)</h2>
+    <p class="lead">Structured profile Jev uses to decide fit. Edit to match your real CV.</p>
+    <textarea
+      [(ngModel)]="profileJson"
+      rows="14"
+      placeholder='{ "roles": [...], "skills": [...], "seniority": "...", "location": "...", "remote_ok": true, "notes": "..." }'
+    ></textarea>
+    <button type="button" (click)="onSaveProfile()">Save profile</button>
+    @if (profileSaved) { <p class="ok">Profile saved.</p> }
+    @if (profileError) { <p class="err">{{ profileError }}</p> }
+  </div>
+</section>
