@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { Offer } from './offer.entity';
 import { JevClient } from './jev-client';
 import { TriageProfileService } from './triage-profile.service';
+import { decideTriage } from './triage-rules';
 import { ApplicationsService } from '../applications/applications.service';
 
 @Injectable()
@@ -33,24 +34,42 @@ export class OfferTriageService {
   }
 
   async triageOffer(offer: Offer): Promise<Offer> {
-    const profile = await this.profile.getForUser(offer.userId);
-    const result = await this.jev.triage(offer, profile, offer.userId);
+    try {
+      const profile = await this.profile.getForUser(offer.userId);
+      const result = await this.jev.triage(offer, profile, offer.userId);
 
-    offer.jevRaw = result.raw;
-    offer.jevConfidence = result.gateConfidence;
-    offer.fit = result.gate;
-    offer.decisionAt = new Date().toISOString().slice(0, 10);
+      offer.jevRaw = result.raw;
+      offer.jevConfidence = result.fitConfidence;
+      offer.fitScore = result.fitScore;
+      offer.decision = decideTriage(result.fitScore, result.hardGateProbability);
+      offer.decisionAt = this.today();
 
-    if (result.gate === 'SEND') {
-      offer.status = 'SENT';
-      await this.repo.save(offer);
-      await this.sendToKanban(offer, result);
-    } else if (result.gate === 'SKIP') {
-      offer.status = 'REJECTED';
-      await this.repo.save(offer);
-    } else {
+      if (offer.decision === 'SEND') {
+        // Create the card BEFORE persisting SENT: if card creation fails the
+        // offer must not be left as SENT, or it would never be retried (the
+        // cron only selects status 'NEW').
+        await this.sendToKanban(offer, result.fitScore, result.fitConfidence);
+        offer.status = 'SENT';
+        await this.repo.save(offer);
+      } else {
+        offer.status = 'REVIEW';
+        await this.repo.save(offer);
+      }
+    } catch (err: any) {
+      // REQ-3C: a Jev error/timeout (or a failed card creation) must surface the
+      // offer to the user as REVIEW. Leaving it at 'NEW' would make the cron
+      // retry it forever without ever telling anyone.
+      this.logger.error(`Triage failed for offer ${offer.id}: ${err?.message ?? err}`);
       offer.status = 'REVIEW';
-      await this.repo.save(offer);
+      offer.decision = 'REVIEW';
+      offer.decisionAt = this.today();
+      try {
+        await this.repo.save(offer);
+      } catch (saveErr: any) {
+        this.logger.error(
+          `Failed to persist REVIEW for offer ${offer.id}: ${saveErr?.message ?? saveErr}`,
+        );
+      }
     }
     return offer;
   }
@@ -59,13 +78,12 @@ export class OfferTriageService {
     const offer = await this.repo.findOne({ where: { id: offerId, userId } });
     if (!offer) throw new NotFoundException('Offer not found');
     if (offer.status === 'SENT') return offer;
+    // Same ordering rule as triageOffer: the card comes first, SENT is only
+    // persisted once the card exists.
+    await this.sendToKanban(offer, offer.fitScore ?? null, offer.jevConfidence ?? null);
     offer.status = 'SENT';
-    offer.decisionAt = new Date().toISOString().slice(0, 10);
+    offer.decisionAt = this.today();
     await this.repo.save(offer);
-    await this.sendToKanban(offer, {
-      fit: Number(offer.jevConfidence ?? 0),
-      gateConfidence: Number(offer.jevConfidence ?? 0),
-    });
     return offer;
   }
 
@@ -73,14 +91,19 @@ export class OfferTriageService {
     const offer = await this.repo.findOne({ where: { id: offerId, userId } });
     if (!offer) throw new NotFoundException('Offer not found');
     offer.status = 'REJECTED';
-    offer.decisionAt = new Date().toISOString().slice(0, 10);
+    offer.decisionAt = this.today();
     await this.repo.save(offer);
     return offer;
   }
 
+  private today(): string {
+    return new Date().toISOString().slice(0, 10);
+  }
+
   private async sendToKanban(
     offer: Offer,
-    result: { fit: number; gateConfidence: number },
+    fitScore: number | null,
+    fitConfidence: number | null,
   ): Promise<void> {
     const follow = new Date();
     follow.setDate(follow.getDate() + 7);
@@ -90,23 +113,31 @@ export class OfferTriageService {
         role: offer.title,
         source: 'triage',
         stage: 'applied',
-        applied_date: new Date().toISOString().slice(0, 10),
+        applied_date: this.today(),
         follow_up_date: follow.toISOString().slice(0, 10),
-        notes: this.buildNotes(offer, result),
+        notes: this.buildNotes(offer, fitScore, fitConfidence),
       },
       offer.userId,
     );
   }
 
-  private buildNotes(offer: Offer, result: { fit: number; gateConfidence: number }): string {
+  private buildNotes(
+    offer: Offer,
+    fitScore: number | null,
+    fitConfidence: number | null,
+  ): string {
     const lines = [
       'Triage (Jev): SEND',
-      `Fit score: ${result.fit.toFixed(2)} (conf ${result.gateConfidence.toFixed(2)})`,
+      `Fit score: ${this.formatScore(fitScore)} (conf ${this.formatScore(fitConfidence)})`,
       `Offer: ${offer.title} @ ${offer.company}`,
     ];
     if (offer.url) lines.push(`URL: ${offer.url}`);
     if (offer.location) lines.push(`Location: ${offer.location}`);
     if (offer.description) lines.push(`Description: ${offer.description.slice(0, 500)}`);
     return lines.join('\n');
+  }
+
+  private formatScore(value: number | null | undefined): string {
+    return typeof value === 'number' && Number.isFinite(value) ? value.toFixed(2) : 'n/a';
   }
 }
