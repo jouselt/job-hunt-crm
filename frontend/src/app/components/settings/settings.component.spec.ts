@@ -155,6 +155,31 @@ describe('SettingsComponent', () => {
     expect(fixture.componentInstance.profileSaving).toBe(false);
   });
 
+  it('surfaces the server message when the key is rejected', () => {
+    service.saveJevKey.and.returnValue(
+      throwError(() => ({ status: 400, error: { message: 'TypeSafe rejected this key (401).' } })),
+    );
+    const fixture = makeComponent();
+    fixture.componentInstance.form.setValue({ key: 'not_a_key' });
+
+    fixture.componentInstance.onSave();
+
+    expect(fixture.componentInstance.saved).toBe(false);
+    expect(fixture.componentInstance.error).toBe('TypeSafe rejected this key (401).');
+  });
+
+  it('joins an array of validation messages from the server', () => {
+    service.saveProfile.and.returnValue(
+      throwError(() => ({ status: 400, error: { message: ['profile must be an object'] } })),
+    );
+    const fixture = makeComponent();
+    fixture.componentInstance.onProfileChange('{"roles":["x"]}');
+
+    fixture.componentInstance.onSaveProfile();
+
+    expect(fixture.componentInstance.profileError).toBe('profile must be an object');
+  });
+
   it('clears the saved confirmation when the profile is edited again', () => {
     const fixture = makeComponent();
     fixture.componentInstance.onProfileChange('{"roles":["x"]}');

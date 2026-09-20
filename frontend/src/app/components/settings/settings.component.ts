@@ -101,6 +101,15 @@ export class SettingsComponent implements OnInit {
     input.value = '';
   }
 
+  /** Nest returns {message} (string or string[]) on a rejected request; surface it. */
+  private serverMessage(err: any, fallback: string): string {
+    const m = err?.error?.message;
+    if (Array.isArray(m)) return m.join(', ');
+    if (typeof m === 'string' && m) return m;
+    if (typeof err?.message === 'string' && err.message) return err.message;
+    return fallback;
+  }
+
   onSaveProfile(): void {
     this.profileSaved = false;
     this.profileError = null;
@@ -131,9 +140,10 @@ export class SettingsComponent implements OnInit {
       },
       error: (err) => {
         this.profileSaving = false;
-        this.profileError = err?.status
-          ? `Failed to save profile (HTTP ${err.status})`
-          : 'Failed to save profile';
+        this.profileError = this.serverMessage(
+          err,
+          err?.status ? `Failed to save profile (HTTP ${err.status})` : 'Failed to save profile',
+        );
       },
     });
   }
@@ -151,8 +161,10 @@ export class SettingsComponent implements OnInit {
           this.masked = res.masked;
         });
       },
-      error: () => {
-        this.error = 'Failed to save key';
+      error: (err) => {
+        // A rejected key comes back as a 400 with the reason, so show it: the
+        // whole point is that a bad key must not look like a successful save.
+        this.error = this.serverMessage(err, 'Failed to save key');
       },
     });
   }
