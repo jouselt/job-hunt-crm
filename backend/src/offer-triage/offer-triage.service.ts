@@ -48,7 +48,7 @@ export class OfferTriageService {
         // Create the card BEFORE persisting SENT: if card creation fails the
         // offer must not be left as SENT, or it would never be retried (the
         // cron only selects status 'NEW').
-        await this.sendToKanban(offer, result.fitScore, result.fitConfidence);
+        await this.sendToKanban(offer, result.fitScore, result.fitConfidence, 'auto');
         offer.status = 'SENT';
         await this.repo.save(offer);
       } else {
@@ -80,7 +80,7 @@ export class OfferTriageService {
     if (offer.status === 'SENT') return offer;
     // Same ordering rule as triageOffer: the card comes first, SENT is only
     // persisted once the card exists.
-    await this.sendToKanban(offer, offer.fitScore ?? null, offer.jevConfidence ?? null);
+    await this.sendToKanban(offer, offer.fitScore ?? null, offer.jevConfidence ?? null, 'human');
     offer.status = 'SENT';
     offer.decisionAt = this.today();
     await this.repo.save(offer);
@@ -104,6 +104,7 @@ export class OfferTriageService {
     offer: Offer,
     fitScore: number | null,
     fitConfidence: number | null,
+    origin: 'auto' | 'human',
   ): Promise<void> {
     const follow = new Date();
     follow.setDate(follow.getDate() + 7);
@@ -115,7 +116,7 @@ export class OfferTriageService {
         stage: 'applied',
         applied_date: this.today(),
         follow_up_date: follow.toISOString().slice(0, 10),
-        notes: this.buildNotes(offer, fitScore, fitConfidence),
+        notes: this.buildNotes(offer, fitScore, fitConfidence, origin),
       },
       offer.userId,
     );
@@ -125,10 +126,18 @@ export class OfferTriageService {
     offer: Offer,
     fitScore: number | null,
     fitConfidence: number | null,
+    origin: 'auto' | 'human',
   ): string {
+    // The verdict must be the one the triage actually reached. Reporting a
+    // hardcoded 'SEND' here made a card created from the review queue claim the
+    // triage had approved an offer it had in fact flagged for a human, which
+    // makes the record lie about why the application happened.
     const lines = [
-      'Triage (Jev): SEND',
+      `Triage (Jev): ${offer.decision ?? 'n/a'}`,
       `Fit score: ${this.formatScore(fitScore)} (conf ${this.formatScore(fitConfidence)})`,
+      origin === 'human'
+        ? 'Sent by: human (reviewed from the review queue)'
+        : 'Sent by: automatic triage',
       `Offer: ${offer.title} @ ${offer.company}`,
     ];
     if (offer.url) lines.push(`URL: ${offer.url}`);

@@ -173,6 +173,44 @@ describe('OfferTriageService', () => {
       expect(apps.create.mock.calls[0][0].notes).toContain('Fit score: 1.50');
     });
 
+    it('does not claim the triage approved an offer it actually flagged (regression)', async () => {
+      // The EY offer case: triage returned REVIEW (fit 2.35 passed, but the
+      // disqualifier probability was over the cap) and the application happened
+      // because a human decided to send it. The card must record REVIEW.
+      repo.findOne.mockResolvedValue(
+        baseOffer({
+          status: 'REVIEW',
+          decision: 'REVIEW',
+          fitScore: 2.35,
+          jevConfidence: 0.35,
+        }),
+      );
+
+      await service.humanSend('o1', 'u1');
+
+      const notes = apps.create.mock.calls[0][0].notes;
+      expect(notes).toContain('Triage (Jev): REVIEW');
+      expect(notes).not.toContain('Triage (Jev): SEND');
+      expect(notes).toContain('Sent by: human');
+    });
+
+    it('records an automatic triage send as automatic, not as a human decision', async () => {
+      await service.triageOffer(baseOffer());
+
+      const notes = apps.create.mock.calls[0][0].notes;
+      expect(notes).toContain('Triage (Jev): SEND');
+      expect(notes).toContain('Sent by: automatic triage');
+      expect(notes).not.toContain('Sent by: human');
+    });
+
+    it('falls back to n/a instead of inventing a verdict when none was stored', async () => {
+      repo.findOne.mockResolvedValue(baseOffer({ status: 'REVIEW', decision: null }));
+
+      await service.humanSend('o1', 'u1');
+
+      expect(apps.create.mock.calls[0][0].notes).toContain('Triage (Jev): n/a');
+    });
+
     it('creates the card before persisting SENT', async () => {
       repo.findOne.mockResolvedValue(baseOffer({ status: 'REVIEW' }));
 
