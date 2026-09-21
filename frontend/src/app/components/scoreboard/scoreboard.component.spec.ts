@@ -22,6 +22,7 @@ const VACANCY = {
   signals: ['remote'],
   // Puntuada solo por el titulo: la vista tiene que decirlo.
   scoredFrom: 'index' as const,
+  tracked: false,
 };
 
 const OFFER = {
@@ -58,7 +59,13 @@ const SCOREBOARD: Scoreboard = {
     },
   ],
   totals: { offers: 1, vacancies: 1, admitted: 2, rejected: 1 },
-  meta: { profileSkills: 33, weights: { Angular: 5 }, scoredAt: '2026-09-21T13:00:00.000Z' },
+  meta: {
+    profileSkills: 33,
+    weights: { Angular: 5 },
+    scoredAt: '2026-09-21T13:00:00.000Z',
+    // El mejor de la lista: la vacante. Su relativo tiene que dar 100.
+    maxScore: 25,
+  },
 };
 
 const IDLE_JOB: RefreshJob = {
@@ -77,6 +84,7 @@ function build(overrides: Partial<Record<keyof JobHuntService, unknown>> = {}) {
     getRefreshJob: () => of(IDLE_JOB),
     startVacancyRefresh: () => of(IDLE_JOB),
     rescoreVacancies: () => of({ rescored: 2, admitted: 1 }),
+    trackVacancy: () => of({ created: true, applicationId: 'app-1' }),
     ...overrides,
   };
   TestBed.configureTestingModule({
@@ -140,6 +148,64 @@ describe('ScoreboardComponent', () => {
 
     expect(text).toContain('Jev 2.50');
     expect(text).toContain('SEND');
+  });
+
+  it('shows the score relative to the best in the list, not as a bare number', () => {
+    // El puntaje crudo es una suma sin techo, asi que un 37 no es un 37%: se lee
+    // como una nota que no es. El relativo responde la pregunta que importa.
+    const fixture = build();
+    const text = fixture.nativeElement.textContent as string;
+
+    expect(fixture.componentInstance.relativeScore(VACANCY)).toBe(100);
+    expect(fixture.componentInstance.relativeScore(OFFER)).toBe(56);
+    expect(text).toContain('100');
+    // El crudo sigue a la vista: es el valor que produce el ranker Python.
+    expect(text).toMatch(/25\s*pts/);
+  });
+
+  it('numbers the rows so the ranking survives a filter', () => {
+    const fixture = build();
+
+    expect(fixture.componentInstance.rank(VACANCY)).toBe(1);
+    expect(fixture.componentInstance.rank(OFFER)).toBe(2);
+    expect(fixture.nativeElement.textContent as string).toContain('#1');
+  });
+
+  it('turns a vacancy into an application from the row', async () => {
+    const calls: string[] = [];
+    const fixture = build({
+      trackVacancy: (id: string) => {
+        calls.push(id);
+        return of({ created: true, applicationId: 'app-1' });
+      },
+    });
+
+    const button = fixture.nativeElement.querySelector(
+      '.row-actions button',
+    ) as HTMLButtonElement;
+    expect(button.textContent).toContain('Track');
+
+    button.click();
+    fixture.changeDetectorRef.detectChanges();
+    await fixture.whenStable();
+
+    expect(calls).toEqual(['v1']);
+    expect(fixture.componentInstance.scoreboard?.items[0].tracked).toBe(true);
+    expect(fixture.componentInstance.notice).toContain('entro al pipeline');
+
+    const after = fixture.nativeElement.querySelector(
+      '.row-actions button',
+    ) as HTMLButtonElement;
+    expect(after.textContent).toContain('Tracked');
+    expect(after.disabled).toBe(true);
+  });
+
+  it('does not offer Track on a CRM offer, which is already in the pipeline', () => {
+    const fixture = build();
+    const rows = fixture.nativeElement.querySelectorAll('.row');
+
+    expect((rows[0] as HTMLElement).querySelector('button')).toBeTruthy();
+    expect((rows[1] as HTMLElement).querySelector('button')).toBeFalsy();
   });
 
   it('keeps the filtered-out list behind a toggle, with the reason', async () => {

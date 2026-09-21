@@ -31,6 +31,27 @@ export class ApplicationsService {
     });
   }
 
+  /** La postulacion que salio de una vacante, si ya se trackeo. */
+  findByVacancy(userId: string, vacancyId: string): Promise<Application | null> {
+    return this.repo.findOne({ where: { user_id: userId, vacancyId } });
+  }
+
+  /**
+   * Los ids de vacante ya trackeados.
+   *
+   * El tablero marca cada fila con esto; una consulta por vacante seria una
+   * consulta por fila sobre una lista de mas de mil.
+   */
+  async trackedVacancyIds(userId: string): Promise<string[]> {
+    const rows = await this.repo.find({
+      where: { user_id: userId },
+      select: ['vacancyId'],
+    });
+    return rows
+      .map((row) => row.vacancyId)
+      .filter((id): id is string => typeof id === 'string' && id.length > 0);
+  }
+
   async findOwnedById(userId: string, id: string): Promise<Application> {
     const app = await this.repo.findOne({ where: { id, user_id: userId } });
     if (!app) throw new NotFoundException();

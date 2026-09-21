@@ -5,6 +5,8 @@
       <p class="lead">
         Every offer in your CRM and every live vacancy from the devsChile feed, ranked by one
         score computed against your profile. One ruler for both, so the numbers compare.
+        The big number is relative to the best in your list (100 is your top match); the small
+        one is the raw ranker points, the same value the Python scorer produces.
       </p>
     </div>
     <div class="head-actions">
@@ -89,8 +91,9 @@
         @for (item of items; track item.kind + item.id) {
           <li class="row">
             <div class="score {{ scoreTier(item.score) }}">
-              <span class="score-value">{{ item.score | number: '1.0-1' }}</span>
-              <span class="score-label">score</span>
+              <span class="score-value">{{ relativeScore(item) }}</span>
+              <span class="score-label">#{{ rank(item) }}</span>
+              <span class="score-label">{{ item.score | number: '1.0-1' }} pts</span>
             </div>
             <div class="body">
               <div class="row-head">
@@ -98,6 +101,9 @@
                 <span class="badge" [class.badge-crm]="item.kind === 'offer'">
                   {{ sourceLabel(item) }}
                 </span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-fill" [style.width.%]="relativeScore(item)"></div>
               </div>
               <p class="row-meta">
                 @if (item.company) {
@@ -133,6 +139,15 @@
               }
             </div>
             <div class="row-actions">
+              @if (item.kind === 'vacancy') {
+                <button
+                  class="btn-ghost"
+                  [disabled]="item.tracked || busy"
+                  (click)="track(item)"
+                >
+                  {{ item.tracked ? 'Tracked' : 'Track' }}
+                </button>
+              }
               @if (item.url) {
                 <a class="btn-link" [href]="item.url" target="_blank" rel="noopener">Open</a>
               }

@@ -33,6 +33,9 @@ export class ScoreboardComponent implements OnInit, OnDestroy {
   filter = '';
   showRejected = false;
 
+  /** Posicion en el ranking, por `kind:id`. Se arma al cargar, no en cada render. */
+  private ranks = new Map<string, number>();
+
   ngOnInit(): void {
     this.load();
     this.loadJob();
@@ -47,6 +50,11 @@ export class ScoreboardComponent implements OnInit, OnDestroy {
     this.jobHunt.getScoreboard().subscribe({
       next: (scoreboard) => {
         this.scoreboard = scoreboard;
+        // La posicion se calcula sobre la lista completa, no sobre la filtrada: si
+        // filtras, "#7" sigue diciendo el lugar real que ocupa en el ranking.
+        this.ranks = new Map(
+          scoreboard.items.map((item, index) => [this.key(item), index + 1]),
+        );
         this.loading = false;
         this.error = '';
       },
@@ -172,5 +180,50 @@ export class ScoreboardComponent implements OnInit, OnDestroy {
   sourceLabel(item: ScoreboardItem): string {
     if (item.kind === 'offer') return item.status ? `CRM · ${item.status}` : 'CRM';
     return item.scoredFrom === 'index' ? 'Feed · titulo' : 'Feed · aviso';
+  }
+
+  private key(item: ScoreboardItem): string {
+    return `${item.kind}:${item.id}`;
+  }
+
+  /** El lugar en el ranking completo. 0 solo si todavia no cargo. */
+  rank(item: ScoreboardItem): number {
+    return this.ranks.get(this.key(item)) ?? 0;
+  }
+
+  /**
+   * El puntaje como numero relativo (0..100) contra el mejor de la lista.
+   *
+   * El puntaje crudo es una suma sin techo, asi que un 37 no es un 37%: se lee como
+   * una nota que no es. El relativo responde la pregunta que importa, que es que tan
+   * cerca esta esto de lo mejor que hay en la lista.
+   *
+   * Ojo: es relativo a la lista, no a una escala fija. Si un refresco trae algo
+   * mejor, los relativos de abajo bajan aunque su puntaje crudo no cambie.
+   */
+  relativeScore(item: ScoreboardItem): number {
+    const max = this.scoreboard?.meta.maxScore ?? 0;
+    if (max <= 0) return 0;
+    return Math.min(100, Math.round((item.score / max) * 100));
+  }
+
+  /** Convierte la vacante en postulacion del CRM. Idempotente en el backend. */
+  track(item: ScoreboardItem): void {
+    this.busy = true;
+    this.notice = '';
+    this.error = '';
+    this.jobHunt.trackVacancy(item.id).subscribe({
+      next: (result) => {
+        this.busy = false;
+        this.notice = result.created
+          ? `"${item.title}" entro al pipeline.`
+          : `"${item.title}" ya estaba en el pipeline.`;
+        item.tracked = true;
+      },
+      error: () => {
+        this.busy = false;
+        this.error = 'No se pudo trackear la vacante.';
+      },
+    });
   }
 }

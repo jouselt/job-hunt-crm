@@ -1,8 +1,9 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
+import { ApplicationsService } from '../applications/applications.service';
 import { Offer } from '../offer-triage/offer.entity';
 import { TriageProfileService } from '../offer-triage/triage-profile.service';
 import { Vacancy } from './vacancy.entity';
@@ -68,6 +69,8 @@ export interface ScoreboardItem {
   primaryMatches: number;
   signals: string[];
   scoredFrom: 'offer' | 'index' | 'description';
+  /** Solo en vacantes: si ya se convirtio en postulacion del CRM. */
+  tracked?: boolean;
 }
 
 /**
@@ -86,6 +89,7 @@ export class VacanciesService {
     @InjectRepository(Vacancy) private readonly vacancies: Repository<Vacancy>,
     @InjectRepository(Offer) private readonly offers: Repository<Offer>,
     @Inject(TriageProfileService) private readonly profiles: TriageProfileService,
+    @Inject(ApplicationsService) private readonly applications: ApplicationsService,
   ) {}
 
   /**
@@ -363,16 +367,18 @@ export class VacanciesService {
     items: ScoreboardItem[];
     rejected: { kind: string; id: string; title: string; company: string | null; url: string | null; reason: string }[];
     totals: { offers: number; vacancies: number; admitted: number; rejected: number };
-    meta: { profileSkills: number; weights: Record<string, number>; scoredAt: string };
+    meta: { profileSkills: number; weights: Record<string, number>; scoredAt: string; maxScore: number };
   }> {
     const profile = await this.profiles.getForUser(userId);
     const weights = skillWeights(profile);
     const today = new Date();
 
-    const [offers, vacancies] = await Promise.all([
+    const [offers, vacancies, trackedIds] = await Promise.all([
       this.offers.find({ where: { userId }, order: { createdAt: 'DESC' } }),
       this.vacancies.find({ where: { userId }, order: { score: 'DESC' } }),
+      this.applications.trackedVacancyIds(userId),
     ]);
+    const tracked = new Set(trackedIds);
 
     const items: ScoreboardItem[] = [];
     const rejected: { kind: string; id: string; title: string; company: string | null; url: string | null; reason: string }[] = [];
@@ -445,6 +451,7 @@ export class VacanciesService {
         category: vacancy.category ?? null,
         postedAt: vacancy.postedAt ?? null,
         scoredFrom: vacancy.scoredFrom === 'description' ? 'description' : 'index',
+        tracked: tracked.has(vacancy.id),
       });
     }
 
@@ -471,8 +478,58 @@ export class VacanciesService {
         profileSkills: Object.keys(weights).length,
         weights,
         scoredAt: new Date().toISOString(),
+        // El puntaje es una suma sin techo, asi que no se explica solo. El maximo de
+        // la lista es lo que deja mostrarlo como relativo (0..100) sin inventar una
+        // escala: el mejor de tu lista es el 100 y el resto se lee contra ese.
+        maxScore: items.reduce((max, item) => Math.max(max, item.score), 0),
       },
     };
+  }
+
+  /**
+   * Convierte una vacante del feed en una postulacion del CRM.
+   *
+   * Idempotente: si ya estaba trackeada devuelve la que existe. El mapeo vive aca
+   * y no en el navegador porque `applications.source` esta restringido por un CHECK
+   * en la base: un valor fuera de la lista hace fallar el insert con un error que
+   * el usuario no puede resolver desde la pantalla.
+   */
+  async track(
+    userId: string,
+    vacancyId: string,
+  ): Promise<{ created: boolean; applicationId: string }> {
+    const vacancy = await this.vacancies.findOne({
+      where: { id: vacancyId, userId },
+    });
+    if (!vacancy) throw new NotFoundException('vacante no encontrada');
+
+    const existing = await this.applications.findByVacancy(userId, vacancyId);
+    if (existing) return { created: false, applicationId: existing.id };
+
+    const application = await this.applications.create(
+      {
+        company: vacancy.company?.trim() || 'Sin empresa',
+        role: vacancy.title,
+        source: this.sourceForPortal(vacancy.url),
+        notes: vacancy.url
+          ? `Trackeada desde el tablero: ${vacancy.url}`
+          : 'Trackeada desde el tablero',
+        vacancyId: vacancy.id,
+      },
+      userId,
+    );
+    return { created: true, applicationId: application.id };
+  }
+
+  /**
+   * El portal mapeado a los valores que acepta `applications.source`.
+   *
+   * Cualquier cosa que no sea LinkedIn cae en `other`: el feed agrega varios
+   * portales (getonbrd, workingnomads, jobicy, himalayas) y la lista de la base
+   * es cerrada, asi que inventar un valor nuevo rompe el insert.
+   */
+  private sourceForPortal(url: string | null | undefined): string {
+    return url && url.includes('linkedin.com') ? 'linkedin' : 'other';
   }
 
   private itemFromResult(

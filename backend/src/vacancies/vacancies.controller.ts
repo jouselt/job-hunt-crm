@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RefreshVacanciesDto } from './dto/refresh-vacancies.dto';
@@ -34,5 +43,16 @@ export class VacanciesController {
   @Post('rescore')
   rescore(@Req() req: any) {
     return this.vacancies.rescore(req.user.userId);
+  }
+
+  /**
+   * Convierte una vacante en postulacion del CRM.
+   *
+   * Idempotente: si la vacante ya estaba trackeada devuelve la postulacion que
+   * existe en vez de crear otra. Un click de mas no puede duplicar la fila.
+   */
+  @Post(':id/track')
+  track(@Req() req: any, @Param('id', ParseUUIDPipe) id: string) {
+    return this.vacancies.track(req.user.userId, id);
   }
 }

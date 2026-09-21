@@ -16,12 +16,23 @@ const stageCheck =
 @Entity('applications')
 @Index('idx_applications_user_stage', ['user_id', 'stage'])
 @Index('idx_applications_user_follow_up', ['user_id', 'follow_up_date'])
+@Index('idx_applications_user_vacancy', ['user_id', 'vacancyId'])
 export class Application {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
   @Column({ type: 'uuid' })
   user_id!: string;
+
+  /**
+   * La vacante de la que salio, cuando se postulo desde el tablero.
+   *
+   * Nullable a proposito: una postulacion cargada a mano no tiene vacante detras.
+   * El indice unico parcial sobre (user_id, vacancyId) es lo que impide trackear
+   * la misma vacante dos veces.
+   */
+  @Column({ type: 'uuid', nullable: true })
+  vacancyId?: string | null;
 
   @Column({ type: 'text' })
   company!: string;
