@@ -200,6 +200,19 @@ describe('ScoreboardComponent', () => {
     expect(after.disabled).toBe(true);
   });
 
+  it('renders Open as a plain link that navigates in place', () => {
+    // Sin target=_blank a proposito: Arc en iOS abre las pestañas nuevas como
+    // tarjetas, y si la tarjeta no aparece donde estas mirando el tap parece no
+    // hacer nada. Navegar en la misma pestaña no se puede bloquear ni esconder, y
+    // el href queda para quien quiera abrirlo en otra pestaña con long-press.
+    const fixture = build();
+    const link = fixture.nativeElement.querySelector('a.btn-link') as HTMLAnchorElement;
+
+    expect(link).toBeTruthy();
+    expect(link.getAttribute('href')).toBe('https://example.test/v1');
+    expect(link.getAttribute('target')).toBeNull();
+  });
+
   it('does not offer Track on a CRM offer, which is already in the pipeline', () => {
     const fixture = build();
     const rows = fixture.nativeElement.querySelectorAll('.row');
