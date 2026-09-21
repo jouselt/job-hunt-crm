@@ -20,14 +20,42 @@
 
   <div class="card-section">
     <h2>Triage profile (your CV)</h2>
-    <p class="lead">Structured profile Jev uses to decide fit. Edit to match your real CV.</p>
+    <p class="lead">
+      Structured profile Jev uses to decide fit. Upload a <code>.json</code> file or paste it below,
+      then save. Without a profile Jev falls back to a generic default and will misjudge your fit.
+    </p>
+
+    @if (profileConfigured) {
+      <div class="status status--ok"><span class="status-label">Stored profile:</span> <code>{{ profileSummary }}</code></div>
+    } @else {
+      <div class="status status--warn">No profile configured yet.</div>
+    }
+
+    <div class="file-row">
+      <label class="file-label" for="profileFile">Load from a .json file</label>
+      <input id="profileFile" type="file" accept="application/json,.json" (change)="onProfileFileSelected($event)" />
+      @if (profileFileName) { <span class="file-name">loaded {{ profileFileName }}</span> }
+    </div>
+
     <textarea
-      [(ngModel)]="profileJson"
+      [ngModel]="profileJson"
+      (ngModelChange)="onProfileChange($event)"
       rows="14"
+      spellcheck="false"
+      aria-label="Triage profile JSON"
       placeholder='{ "roles": [...], "skills": [...], "seniority": "...", "location": "...", "remote_ok": true, "notes": "..." }'
     ></textarea>
-    <button type="button" (click)="onSaveProfile()">Save profile</button>
-    @if (profileSaved) { <p class="ok">Profile saved.</p> }
+
+    <div class="actions-row">
+      <button type="button" (click)="onSaveProfile()" [disabled]="profileSaving">
+        {{ profileSaving ? 'Saving...' : 'Save profile' }}
+      </button>
+      @if (profileDirty) { <span class="muted">unsaved changes</span> }
+    </div>
+
+    @if (profileSaved) {
+      <p class="ok">Profile saved at {{ profileSavedAt }}. Stored: <code>{{ profileSummary }}</code></p>
+    }
     @if (profileError) { <p class="err">{{ profileError }}</p> }
   </div>
 </section>

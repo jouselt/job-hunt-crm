@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { OffersService } from './offers.service';
 import { OfferTriageService } from './offer-triage.service';
@@ -28,12 +37,12 @@ export class OffersController {
   }
 
   @Post(':id/send')
-  send(@Param('id') id: string, @Req() req: any) {
+  send(@Param('id', ParseUUIDPipe) id: string, @Req() req: any) {
     return this.triage.humanSend(id, req.user.userId);
   }
 
   @Post(':id/skip')
-  skip(@Param('id') id: string, @Req() req: any) {
+  skip(@Param('id', ParseUUIDPipe) id: string, @Req() req: any) {
     return this.triage.humanSkip(id, req.user.userId);
   }
 }

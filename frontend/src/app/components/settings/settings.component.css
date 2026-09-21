@@ -1,9 +1,12 @@
 .settings { max-width: 640px; margin: 0 auto; padding: 1.5rem; }
 .lead { color: #666; }
+.card-section { margin-bottom: 2.5rem; }
+.card-section h2 { margin-bottom: 0.25rem; }
 .status { margin: 1rem 0; padding: 0.75rem 1rem; border-radius: 8px; }
 .status--ok { background: #e6f4ea; }
 .status--warn { background: #fef7e0; }
 .status code { font-weight: 600; }
+.status-label { font-weight: 600; }
 form { display: flex; flex-direction: column; gap: 0.5rem; max-width: 360px; }
 label { font-weight: 600; }
 input { padding: 0.5rem; border: 1px solid #ccc; border-radius: 6px; }
@@ -11,3 +14,23 @@ button { padding: 0.5rem; border: 0; border-radius: 6px; background: #1a73e8; co
 button:disabled { opacity: 0.6; cursor: not-allowed; }
 .ok { color: #137333; }
 .err { color: #c5221f; }
+
+.file-row { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; margin: 1rem 0 0.5rem; }
+.file-label { font-weight: 600; }
+.file-row input[type='file'] { padding: 0.25rem; border: 1px solid #ccc; border-radius: 6px; background: #fff; font-size: 0.85rem; }
+.file-name { color: #137333; font-size: 0.85rem; }
+
+textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  resize: vertical;
+}
+
+.actions-row { display: flex; align-items: center; gap: 0.75rem; margin-top: 0.6rem; }
+.muted { color: #777; font-size: 0.85rem; }

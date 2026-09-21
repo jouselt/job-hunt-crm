@@ -2,7 +2,12 @@
 
 > SDD planning artifact for `07-job-hunt-crm` (Job Hunt CRM).
 > Mode: **engram** (preflight: Pace=Automático, Artifacts=Engram, PR strategy=Un solo PR, ≤400 líneas/PR).
-> NOTE: Engram MCP was unavailable at write time, so this file is the fallback persistence; sync to Engram (`sdd/07-job-hunt-crm/{proposal,spec,design,tasks}`) when it reconnects. No code was written.
+>
+> **STATUS: IMPLEMENTED. This document is a historical record, not a plan.**
+> It was written while the Engram MCP was down, as the fallback persistence for the offer-triage change.
+> The code landed in PR #1 and was corrected in PR #2 (`fix/offer-triage-jev-parsing`).
+> The authoritative artifacts for the change are the Engram observations (`sdd/07-job-hunt-crm/proposal`, plus the review and implementation notes).
+> Two defects in THIS document reached production uncaught, because nothing cross-checked it. See "Post-implementation corrections" at the end.
 
 ## Intent
 Pull job offers discovered by the companion `ai-job-search` workspace, use TypeSafe AI's **Jev** decision-only model to **deterministically** decide whether to send the user's CV, and on a positive verdict auto-create an `Application` card in the existing kanban pipeline (`stage=applied`) carrying the full sent context (offer link, Jev verdict, fit score, what was sent). Type-safe, auditable, reproducible — not a flaky LLM.
@@ -70,7 +75,11 @@ Pull job offers discovered by the companion `ai-job-search` workspace, use TypeS
 ### Jev client
 - `POST https://api.typesafe.ai/v1/systemone`, `Authorization: Bearer ${JEV_API_KEY}`.
 - Body: `{ state: {offer, candidateProfile}, model: 'jev-latest', questions: { fit: {type:'score', instructions, criteria:['poor','fair','good','strong']}, hard_gate: {type:'noul', instructions} } }`.
-- Returns `{ questions: { fit: {score, weighted, confidence}, hard_gate: {noul, confidence} } }`.
+- Returns `{ model, answers: {fit: {type:'score', score, legend, probabilities, confidence}, hard_gate: {type:'noul', noul}}, usage }`.
+  **Answers come back under `answers`, never under `questions`** — `questions` is only what you SEND.
+  This bullet originally read `questions`, and that single word is what shipped the feature dead on arrival:
+  every verdict parsed as `NONE` / `fit 0`, so every offer landed in `REVIEW` and no card was ever created.
+  Reference: https://docs.typesafe.ai/api#response-body .
 - Timeout 5s; any failure → `JevUnavailable` → `REVIEW` (no card, error logged).
 
 ### Thresholds (config)
@@ -107,4 +116,28 @@ Pull job offers discovered by the companion `ai-job-search` workspace, use TypeS
 13. *(Optional)* Frontend Offers inbox view for REVIEW items.
 14. *(Optional)* Ollama cover-letter draft on SEND (local, per user rule).
 
-All in a single PR (≤400 changed lines; split if exceeded). No code written yet — planning only.
+All in a single PR (≤400 changed lines; split if exceeded). **Implemented** — see the status banner at the top of this document.
+
+---
+
+## Post-implementation corrections
+
+Recorded after the fact (PR #2). Everything below is what the code actually does, and where it deliberately differs from the plan above.
+
+### The response shape bug (critical)
+`questions` in the response was wrong — the API returns `answers`. The `fit` answer is `{type:'score', score, legend, probabilities, confidence}` and the `hard_gate` answer is `{type:'noul', noul}`. Reading `questions` silently produced `NONE`/`0` for every offer instead of failing loudly, which is why it went unnoticed: a wrong key and an absent key are indistinguishable from the caller's side. The client now coerces every field through a finite-number guard and defaults a missing `noul` to `1`, so malformed data can only ever escalate to `REVIEW`, never auto-send.
+
+### `hard_gate` is a Noul DISQUALIFIER
+The plan says `hard_gate prob < 0.2 -> SEND` while describing the question as "clearly matches my target role/seniority/skills?". Those two statements contradict each other: a LOW probability of matching cannot mean "send". The only coherent reading is that `hard_gate` asks the inverse — *"is there a clear reason to reject this offer?"* — so a low probability means "no blocker". The code implements that reading and documents it in `triage-rules.ts` and `HARD_GATE_INSTRUCTIONS`.
+
+### Thresholds are code, not config
+`triage.thresholds` as an env/config object was never built. The values live as exported constants in `triage-rules.ts` (`FIT_MIN_GOOD = 2.0`, `HARD_GATE_MAX_DISQUALIFIER_PROBABILITY = 0.2`) applied by the pure `decideTriage()`, which keeps them auditable in one place and unit-testable without mocking the network.
+
+### Accepted drifts (implementation differs from this plan)
+- **Cron cadence:** the plan said every 15 min; the cron is `EVERY_DAY_AT_9AM`, which also collides with `reminders.cron.ts`. Not yet rescheduled.
+- **Source value:** `source: 'triage'` in code, not `'ai-job-search'` as written above. The migration already allows `triage`.
+- **No auto-SKIP:** Jev no longer supplies a three-way verdict. The cron path yields only `SEND` or `REVIEW`; `REJECTED` is reached solely through the human skip endpoint.
+- **Schema:** the single text `fit` column (which stored the *string* `'SEND'`) was split into `fitScore` (float) and `decision` (text).
+
+### Still open
+SEND files the card at `stage='applied'` with `applied_date=today` and a +7 day follow-up even though transmission is manual, so the CRM will chase follow-ups for applications that were never submitted. Documented but unresolved — it is a product decision, not a code defect.

@@ -65,7 +65,10 @@ services:
     depends_on:
       - backend
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost || exit 1"]
+      # 127.0.0.1, not localhost: inside the container `localhost` resolves to
+      # ::1 first, while nginx listens on 0.0.0.0:80 (IPv4 only). Using
+      # `localhost` makes this check a permanent false negative.
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1/ || exit 1"]
       interval: 30s
       timeout: 5s
       retries: 5
