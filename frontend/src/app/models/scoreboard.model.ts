@@ -19,8 +19,9 @@ export interface ScoreboardItem {
   postedAt: string | null;
   /** Solo en ofertas del CRM: la columna del tablero en la que esta. */
   status?: string;
-  /** Solo en ofertas del CRM: la etiqueta de fit de Jev, cuando existe. */
-  jevFit?: string | null;
+  /** Solo en ofertas del CRM: el fit numerico de Jev (0..3) y el veredicto de la compuerta. */
+  jevFitScore?: number | null;
+  jevDecision?: string | null;
   score: number;
   matchedSkills: string[];
   titleSkills: string[];

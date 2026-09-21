@@ -112,8 +112,11 @@
                 @if (item.postedAt) {
                   <span>· posted {{ item.postedAt }}</span>
                 }
-                @if (item.jevFit) {
-                  <span>· Jev: {{ item.jevFit }}</span>
+                @if (item.jevFitScore != null) {
+                  <span>· Jev {{ item.jevFitScore | number: '1.2-2' }}</span>
+                }
+                @if (item.jevDecision) {
+                  <span>· {{ item.jevDecision }}</span>
                 }
                 @if (item.signals.length > 0) {
                   <span>· {{ item.signals.join(' · ') }}</span>

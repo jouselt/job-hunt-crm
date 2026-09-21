@@ -35,7 +35,8 @@ const OFFER = {
   category: null,
   postedAt: null,
   status: 'REVIEW',
-  jevFit: 'good',
+  jevFitScore: 2.5,
+  jevDecision: 'SEND',
   score: 14,
   matchedSkills: ['NestJS'],
   titleSkills: [],
@@ -131,6 +132,14 @@ describe('ScoreboardComponent', () => {
     fixture.componentInstance.filter = '  ';
     fixture.detectChanges();
     expect(fixture.componentInstance.items.length).toBe(2);
+  });
+
+  it('renders the Jev score and verdict next to the local one', () => {
+    const fixture = build();
+    const text = (fixture.nativeElement as HTMLElement).textContent ?? '';
+
+    expect(text).toContain('Jev 2.50');
+    expect(text).toContain('SEND');
   });
 
   it('keeps the filtered-out list behind a toggle, with the reason', async () => {

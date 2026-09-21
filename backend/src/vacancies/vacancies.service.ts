@@ -59,8 +59,9 @@ export interface ScoreboardItem {
   postedAt: string | null;
   /** Solo en ofertas del CRM: en que columna del tablero esta. */
   status?: string;
-  /** Solo en ofertas del CRM: la etiqueta de fit que devolvio Jev, si la hay. */
-  jevFit?: string | null;
+  /** Solo en ofertas del CRM: el fit numerico de Jev (0..3) y el veredicto de la compuerta. */
+  jevFitScore?: number | null;
+  jevDecision?: string | null;
   score: number;
   matchedSkills: string[];
   titleSkills: string[];
@@ -412,7 +413,8 @@ export class VacanciesService {
         category: null,
         postedAt: null,
         status: offer.status,
-        jevFit: offer.fit ?? null,
+        jevFitScore: offer.fitScore ?? null,
+        jevDecision: offer.decision ?? null,
         scoredFrom: 'offer',
       });
     }
