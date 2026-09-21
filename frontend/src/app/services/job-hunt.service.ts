@@ -169,6 +169,28 @@ export class JobHuntService {
   }
 
   /**
+   * Marca que el aviso ya no esta, o deshace la marca.
+   *
+   * Va por POST y no por PATCH porque la accion no manda cuerpo: cada endpoint es un
+   * interruptor de una sola direccion, y repetirlo deja el mismo estado.
+   */
+  dismissVacancy(id: string): Observable<{ dismissed: boolean }> {
+    return this.http.post<{ dismissed: boolean }>(
+      `${this.baseUrl}/vacancies/${id}/dismiss`,
+      {},
+      { headers: this.authHeaders() },
+    );
+  }
+
+  restoreVacancy(id: string): Observable<{ dismissed: boolean }> {
+    return this.http.post<{ dismissed: boolean }>(
+      `${this.baseUrl}/vacancies/${id}/restore`,
+      {},
+      { headers: this.authHeaders() },
+    );
+  }
+
+  /**
    * Convierte una vacante del feed en una postulacion del CRM.
    *
    * El mapeo (empresa, rol, source) lo hace el backend a proposito:

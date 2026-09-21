@@ -366,7 +366,14 @@ export class VacanciesService {
   async scoreboard(userId: string): Promise<{
     items: ScoreboardItem[];
     rejected: { kind: string; id: string; title: string; company: string | null; url: string | null; reason: string }[];
-    totals: { offers: number; vacancies: number; admitted: number; rejected: number };
+    dismissed: ScoreboardItem[];
+    totals: {
+      offers: number;
+      vacancies: number;
+      admitted: number;
+      rejected: number;
+      dismissed: number;
+    };
     meta: { profileSkills: number; weights: Record<string, number>; scoredAt: string; maxScore: number };
   }> {
     const profile = await this.profiles.getForUser(userId);
@@ -381,6 +388,7 @@ export class VacanciesService {
     const tracked = new Set(trackedIds);
 
     const items: ScoreboardItem[] = [];
+    const dismissed: ScoreboardItem[] = [];
     const rejected: { kind: string; id: string; title: string; company: string | null; url: string | null; reason: string }[] = [];
 
     for (const offer of offers) {
@@ -440,7 +448,7 @@ export class VacanciesService {
         continue;
       }
       const result = (vacancy.breakdown ?? {}) as ScoreResult;
-      items.push({
+      const item: ScoreboardItem = {
         ...this.itemFromResult('vacancy', vacancy.id, result),
         score: vacancy.score,
         title: vacancy.title,
@@ -452,7 +460,15 @@ export class VacanciesService {
         postedAt: vacancy.postedAt ?? null,
         scoredFrom: vacancy.scoredFrom === 'description' ? 'description' : 'index',
         tracked: tracked.has(vacancy.id),
-      });
+      };
+      // El aviso que el usuario marco como cerrado sale de la lista, pero se puede
+      // recuperar: en un telefono un toque se pierde, y esconderlo sin vuelta seria
+      // peor que el ruido que saca.
+      if (vacancy.dismissedAt) {
+        dismissed.push(item);
+        continue;
+      }
+      items.push(item);
     }
 
     // Un solo orden para las dos fuentes, porque las dos usan el mismo puntaje.
@@ -468,11 +484,13 @@ export class VacanciesService {
     return {
       items,
       rejected,
+      dismissed,
       totals: {
         offers: offers.length,
         vacancies: vacancies.length,
         admitted: items.length,
         rejected: rejected.length,
+        dismissed: dismissed.length,
       },
       meta: {
         profileSkills: Object.keys(weights).length,
@@ -484,6 +502,40 @@ export class VacanciesService {
         maxScore: items.reduce((max, item) => Math.max(max, item.score), 0),
       },
     };
+  }
+
+  /**
+   * Marca que el aviso ya no esta, o deshace la marca.
+   *
+   * El feed no publica si un aviso sigue abierto, asi que la unica fuente confiable
+   * es el usuario. Idempotente por diseno: repetir el toque deja el mismo estado en
+   * vez de acumular, y `restore` es la vuelta atras de un toque perdido.
+   */
+  async dismiss(userId: string, vacancyId: string): Promise<{ dismissed: boolean }> {
+    return this.setDismissed(userId, vacancyId, new Date());
+  }
+
+  async restore(userId: string, vacancyId: string): Promise<{ dismissed: boolean }> {
+    return this.setDismissed(userId, vacancyId, null);
+  }
+
+  private async setDismissed(
+    userId: string,
+    vacancyId: string,
+    at: Date | null,
+  ): Promise<{ dismissed: boolean }> {
+    const vacancy = await this.vacancies.findOne({
+      where: { id: vacancyId, userId },
+    });
+    if (!vacancy) throw new NotFoundException('vacante no encontrada');
+
+    // Sin cambio no hay escritura: repetir el toque no deberia mover `updatedAt`.
+    if (at && vacancy.dismissedAt) return { dismissed: true };
+    if (!at && !vacancy.dismissedAt) return { dismissed: false };
+
+    vacancy.dismissedAt = at;
+    await this.vacancies.save(vacancy);
+    return { dismissed: at !== null };
   }
 
   /**

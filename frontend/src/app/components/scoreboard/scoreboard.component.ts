@@ -32,6 +32,7 @@ export class ScoreboardComponent implements OnInit, OnDestroy {
   notice = '';
   filter = '';
   showRejected = false;
+  showDismissed = false;
 
   /** Posicion en el ranking, por `kind:id`. Se arma al cargar, no en cada render. */
   private ranks = new Map<string, number>();
@@ -223,6 +224,47 @@ export class ScoreboardComponent implements OnInit, OnDestroy {
       error: () => {
         this.busy = false;
         this.error = 'No se pudo trackear la vacante.';
+      },
+    });
+  }
+
+  /**
+   * Marca el aviso como cerrado y lo saca de la lista.
+   *
+   * El feed no publica si un aviso sigue abierto, asi que la unica fuente confiable
+   * es el usuario. No es un descarte permanente: se puede devolver.
+   */
+  dismiss(item: ScoreboardItem): void {
+    this.busy = true;
+    this.notice = '';
+    this.error = '';
+    this.jobHunt.dismissVacancy(item.id).subscribe({
+      next: () => {
+        this.busy = false;
+        this.notice = `"${item.title}" salio de la lista. Se puede devolver.`;
+        this.load();
+      },
+      error: () => {
+        this.busy = false;
+        this.error = 'No se pudo marcar el aviso.';
+      },
+    });
+  }
+
+  /** Lo devuelve a la lista. Existe por el telefono, donde un toque se pierde. */
+  restore(item: ScoreboardItem): void {
+    this.busy = true;
+    this.notice = '';
+    this.error = '';
+    this.jobHunt.restoreVacancy(item.id).subscribe({
+      next: () => {
+        this.busy = false;
+        this.notice = `"${item.title}" volvio a la lista.`;
+        this.load();
+      },
+      error: () => {
+        this.busy = false;
+        this.error = 'No se pudo devolver el aviso.';
       },
     });
   }

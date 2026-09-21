@@ -87,6 +87,10 @@ button:hover, .btn:hover { border-color: var(--color-smoke); color: var(--color-
 .btn-primary:hover, button.btn-primary:hover { background: #eef64a; border-color: #eef64a; color: var(--color-void); }
 .btn-reject, .btn-danger { border-color: var(--color-coral-red); color: var(--color-coral-red); }
 .btn-reject:hover, .btn-danger:hover { background: rgba(235, 87, 87, 0.08); color: var(--color-coral-red); }
+/* Confirmar / deshacer. Faltaba: existian fantasma, primario y peligro, y el
+   verde semantico solo se usaba en etiquetas. */
+.btn-ok { border-color: var(--color-pulse-green); color: var(--color-pulse-green); }
+.btn-ok:hover { background: rgba(39, 166, 68, 0.12); color: var(--color-pulse-green); }
 button:disabled, .btn:disabled { opacity: .4; cursor: not-allowed; }
 
 /* ── Inputs ── */

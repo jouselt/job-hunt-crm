@@ -49,7 +49,18 @@ export interface ScoreboardRejection {
 export interface Scoreboard {
   items: ScoreboardItem[];
   rejected: ScoreboardRejection[];
-  totals: { offers: number; vacancies: number; admitted: number; rejected: number };
+  /**
+   * Los avisos que marcaste como cerrados. Salen de `items` y de `maxScore`, asi
+   * que el mejor que queda en juego es el 100, y vuelven enteros con restore.
+   */
+  dismissed: ScoreboardItem[];
+  totals: {
+    offers: number;
+    vacancies: number;
+    admitted: number;
+    rejected: number;
+    dismissed: number;
+  };
   /**
    * `maxScore` es el puntaje mas alto de la lista. El puntaje es una suma sin
    * techo, asi que un numero pelado se lee como una nota sobre 100 sin serlo: el

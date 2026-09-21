@@ -56,7 +56,8 @@
       <b>{{ scoreboard.totals.offers }}</b> CRM offers ·
       <b>{{ scoreboard.totals.vacancies }}</b> feed vacancies ·
       <b>{{ scoreboard.meta.profileSkills }}</b> profile skills ·
-      <b>{{ scoreboard.totals.rejected }}</b> filtered out
+      <b>{{ scoreboard.totals.rejected }}</b> filtered out ·
+      <b>{{ scoreboard.totals.dismissed }}</b> marked gone
     </p>
 
     <div class="controls">
@@ -69,6 +70,9 @@
       />
       <button class="btn-ghost" (click)="showRejected = !showRejected">
         {{ showRejected ? 'Hide' : 'Show' }} filtered out ({{ scoreboard.totals.rejected }})
+      </button>
+      <button class="btn-ghost" (click)="showDismissed = !showDismissed">
+        {{ showDismissed ? 'Hide' : 'Show' }} marked gone ({{ scoreboard.totals.dismissed }})
       </button>
     </div>
 
@@ -147,6 +151,9 @@
                 >
                   {{ item.tracked ? 'Tracked' : 'Track' }}
                 </button>
+                <button class="btn-danger" [disabled]="busy" (click)="dismiss(item)">
+                  Gone
+                </button>
               }
               @if (item.url) {
                 <a class="btn-link" [href]="item.url">Open</a>
@@ -159,20 +166,42 @@
     }
 
     @if (showRejected && scoreboard.rejected.length > 0) {
-      <section class="rejected">
+      <section class="flagged">
         <h2>Filtered out, with the reason</h2>
         <p class="lead">
           Every rejection names the rule that tripped it. A gate you cannot audit is a gate you
           cannot trust, and a wrong rejection here costs a real application.
         </p>
-        <ul class="rejected-list">
+        <ul class="flagged-list">
           @for (rejection of scoreboard.rejected; track rejection.kind + rejection.id) {
             <li>
-              <span class="rejected-title">{{ rejection.title }}</span>
+              <span class="flagged-title">{{ rejection.title }}</span>
               @if (rejection.company) {
                 <span class="company">{{ rejection.company }}</span>
               }
               <span class="reason">{{ rejection.reason }}</span>
+            </li>
+          }
+        </ul>
+      </section>
+    }
+
+    @if (showDismissed && scoreboard.dismissed.length > 0) {
+      <section class="flagged">
+        <h2>Marked as gone</h2>
+        <p class="lead">
+          Postings you flagged as no longer accepting applications. The feed never says when a
+          posting closes, so this is your call and not a guess. Restore puts one back.
+        </p>
+        <ul class="flagged-list">
+          @for (item of scoreboard.dismissed; track item.kind + item.id) {
+            <li>
+              <span class="flagged-title">{{ item.title }}</span>
+              @if (item.company) {
+                <span class="company">{{ item.company }}</span>
+              }
+              <span>{{ item.score | number: '1.0-1' }} pts</span>
+              <button class="btn-ok" [disabled]="busy" (click)="restore(item)">Restore</button>
             </li>
           }
         </ul>

@@ -58,7 +58,9 @@ const SCOREBOARD: Scoreboard = {
       reason: 'stack outside the profile with no TS/JS: java',
     },
   ],
-  totals: { offers: 1, vacancies: 1, admitted: 2, rejected: 1 },
+  // El fixture base no tiene nada marcado como cerrado.
+  dismissed: [],
+  totals: { offers: 1, vacancies: 1, admitted: 2, rejected: 1, dismissed: 0 },
   meta: {
     profileSkills: 33,
     weights: { Angular: 5 },
@@ -85,6 +87,8 @@ function build(overrides: Partial<Record<keyof JobHuntService, unknown>> = {}) {
     startVacancyRefresh: () => of(IDLE_JOB),
     rescoreVacancies: () => of({ rescored: 2, admitted: 1 }),
     trackVacancy: () => of({ created: true, applicationId: 'app-1' }),
+    dismissVacancy: () => of({ dismissed: true }),
+    restoreVacancy: () => of({ dismissed: false }),
     ...overrides,
   };
   TestBed.configureTestingModule({
@@ -224,7 +228,7 @@ describe('ScoreboardComponent', () => {
   it('keeps the filtered-out list behind a toggle, with the reason', async () => {
     const fixture = build();
 
-    expect(fixture.nativeElement.querySelector('.rejected')).toBeFalsy();
+    expect(fixture.nativeElement.querySelector('.flagged')).toBeFalsy();
 
     fixture.componentInstance.showRejected = true;
     // Esta app es zoneless (zone.js no esta en el proyecto), asi que mutar una
@@ -235,7 +239,7 @@ describe('ScoreboardComponent', () => {
     await fixture.whenStable();
     fixture.detectChanges();
 
-    const rejected = fixture.nativeElement.querySelector('.rejected') as HTMLElement;
+    const rejected = fixture.nativeElement.querySelector('.flagged') as HTMLElement;
     expect(rejected).toBeTruthy();
     // Un rechazo sin motivo es un rechazo que nadie puede auditar.
     expect(rejected.textContent).toContain('stack outside the profile with no TS/JS: java');
@@ -277,5 +281,89 @@ describe('ScoreboardComponent', () => {
 
     expect(component.sourceLabel(VACANCY)).toBe('Feed · titulo');
     expect(component.sourceLabel(OFFER)).toBe('CRM · REVIEW');
+  });
+
+  it('offers Gone on a vacancy, because the feed never says a posting closed', () => {
+    // El feed no publica si un aviso sigue abierto: LinkedIn lo cierra y la fila se
+    // queda con su puntaje, arriba del ranking. Sondear LinkedIn seria abuso, asi
+    // que lo decide el usuario. Una oferta del CRM no lleva Gone: su flujo es Triage.
+    const fixture = build();
+    const rows = fixture.nativeElement.querySelectorAll('.row');
+
+    const gone = (rows[0] as HTMLElement).querySelector('.btn-danger') as HTMLButtonElement;
+    expect(gone).toBeTruthy();
+    expect(gone.textContent).toContain('Gone');
+    expect((rows[1] as HTMLElement).querySelector('.btn-danger')).toBeFalsy();
+  });
+
+  it('marks a posting as gone and says it can be brought back', async () => {
+    const calls: string[] = [];
+    const fixture = build({
+      dismissVacancy: (id: string) => {
+        calls.push(id);
+        return of({ dismissed: true });
+      },
+    });
+
+    const gone = fixture.nativeElement.querySelector('.btn-danger') as HTMLButtonElement;
+    gone.click();
+    fixture.changeDetectorRef.detectChanges();
+    await fixture.whenStable();
+
+    expect(calls).toEqual(['v1']);
+    // El aviso sale de la lista, pero el mensaje dice que se puede devolver: en un
+    // telefono un toque se pierde, y esconder sin vuelta seria peor que el ruido.
+    expect(fixture.componentInstance.notice).toContain('salio de la lista');
+  });
+
+  it('keeps the gone list behind a toggle, and restores from there', async () => {
+    const goneItem = { ...VACANCY, id: 'v7', title: 'Backend Node Developer' };
+    const restored: string[] = [];
+    const fixture = build({
+      getScoreboard: () =>
+        of({
+          ...SCOREBOARD,
+          dismissed: [goneItem],
+          totals: { ...SCOREBOARD.totals, dismissed: 1 },
+        }),
+      restoreVacancy: (id: string) => {
+        restored.push(id);
+        return of({ dismissed: false });
+      },
+    });
+
+    expect(fixture.nativeElement.querySelector('.flagged-list')).toBeFalsy();
+
+    fixture.componentInstance.showDismissed = true;
+    fixture.changeDetectorRef.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const list = fixture.nativeElement.querySelector('.flagged-list') as HTMLElement;
+    expect(list).toBeTruthy();
+    expect(list.textContent).toContain('Backend Node Developer');
+
+    const button = list.querySelector('.btn-ok') as HTMLButtonElement;
+    expect(button.textContent).toContain('Restore');
+    button.click();
+    fixture.changeDetectorRef.detectChanges();
+    await fixture.whenStable();
+
+    expect(restored).toEqual(['v7']);
+    expect(fixture.componentInstance.notice).toContain('volvio a la lista');
+  });
+
+  it('reports a failed dismiss instead of pretending it worked', async () => {
+    const fixture = build({
+      dismissVacancy: () => throwError(() => new Error('boom')),
+    });
+
+    const gone = fixture.nativeElement.querySelector('.btn-danger') as HTMLButtonElement;
+    gone.click();
+    fixture.changeDetectorRef.detectChanges();
+    await fixture.whenStable();
+
+    expect(fixture.componentInstance.error).toContain('No se pudo marcar');
+    expect(fixture.componentInstance.notice).toBe('');
   });
 });

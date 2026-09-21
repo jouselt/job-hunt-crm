@@ -12,13 +12,13 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .err { color: var(--color-coral-red); }
 .notice { color: var(--color-signal-teal); }
-.company, .rejected-title { color: var(--color-bone); }
+.company, .flagged-title { color: var(--color-bone); }
 .salary { color: var(--color-pulse-green); }
 .badge-crm, .btn-link { color: var(--color-acid-lime); }
 
 /* Numbers the eye compares get mono; secondary lines share one muted size. */
 .score-value, .primary-count, .progress-mono { font-family: var(--font-mono); }
-.stats, .row-meta, .caveat, .progress-meta, .job-meta, .rejected-list li { color: var(--color-fog); font-size: 13px; }
+.stats, .row-meta, .caveat, .progress-meta, .job-meta, .flagged-list li { color: var(--color-fog); font-size: 13px; }
 
 .progress-card, .row { background: var(--color-carbon); border-radius: var(--radius-lg); box-shadow: var(--shadow-card); }
 
@@ -35,7 +35,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 .filter:focus { outline: none; box-shadow: inset 0 0 0 1px var(--color-smoke); }
 .caveat { border-left: 2px solid var(--color-smoke); padding-left: var(--space-3); margin: 0 0 var(--space-4); }
 
-.list, .rejected-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-2); }
+.list, .flagged-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-2); }
 .row { display: flex; gap: var(--space-4); padding: var(--space-4); align-items: flex-start; }
 
 .score { display: flex; flex-direction: column; align-items: center; border-radius: var(--radius-md); padding: var(--space-1) var(--space-2); min-width: 56px; background: var(--color-graphite); }
@@ -45,7 +45,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 .tier-mid { background: rgba(2, 184, 204, 0.14); }
 
 .row-head { display: flex; align-items: baseline; gap: var(--space-3); flex-wrap: wrap; }
-.row-head h2, .rejected h2 { font-size: 16px; margin: 0 0 var(--space-2); }
+.row-head h2, .flagged h2 { font-size: 16px; margin: 0 0 var(--space-2); }
 .row-meta { margin: 0; }
 .skills { display: flex; flex-wrap: wrap; gap: var(--space-1); margin: var(--space-2) 0 0; }
 
@@ -57,9 +57,9 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn-link, .primary-count { font-size: 12px; white-space: nowrap; color: var(--color-fog); }
 .btn-link { text-decoration: none; }
 
-.rejected { margin-top: var(--space-10); padding-top: var(--space-6); border-top: 1px solid var(--color-graphite); }
-.rejected-list { margin-top: var(--space-4); }
-.rejected-list li { display: flex; align-items: baseline; gap: var(--space-3); flex-wrap: wrap; }
+.flagged { margin-top: var(--space-10); padding-top: var(--space-6); border-top: 1px solid var(--color-graphite); }
+.flagged-list { margin-top: var(--space-4); }
+.flagged-list li { display: flex; align-items: baseline; gap: var(--space-3); flex-wrap: wrap; }
 .reason { font-family: var(--font-mono); font-size: 12px; color: var(--color-coral-red); }
 
 @media (max-width: 720px) { .row { flex-wrap: wrap; } }

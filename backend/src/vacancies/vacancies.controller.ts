@@ -55,4 +55,22 @@ export class VacanciesController {
   track(@Req() req: any, @Param('id', ParseUUIDPipe) id: string) {
     return this.vacancies.track(req.user.userId, id);
   }
+
+  /**
+   * Marca que el aviso ya no esta.
+   *
+   * El feed no publica si un aviso sigue abierto: LinkedIn lo cierra y la fila se
+   * queda con su puntaje, arriba del ranking. Sondear LinkedIn para averiguarlo
+   * seria abuso, asi que lo decide el usuario. Idempotente: repetir no acumula.
+   */
+  @Post(':id/dismiss')
+  dismiss(@Req() req: any, @Param('id', ParseUUIDPipe) id: string) {
+    return this.vacancies.dismiss(req.user.userId, id);
+  }
+
+  /** Deshace la marca. Existe por el telefono, donde un toque se pierde. */
+  @Post(':id/restore')
+  restore(@Req() req: any, @Param('id', ParseUUIDPipe) id: string) {
+    return this.vacancies.restore(req.user.userId, id);
+  }
 }

@@ -50,10 +50,12 @@ describe('VacanciesService', () => {
   let service: VacanciesService;
   let created: any[];
   let alreadyTracked: string[];
+  let saved: Vacancy[];
 
   const setup = async (rows: Vacancy[], tracked: string[] = []) => {
     created = [];
     alreadyTracked = tracked;
+    saved = [];
 
     const vacancyRepo = {
       find: jest.fn(async () => rows),
@@ -61,6 +63,10 @@ describe('VacanciesService', () => {
         async ({ where }: any) =>
           rows.find((r) => r.id === where.id && r.userId === where.userId) ?? null,
       ),
+      save: jest.fn(async (row: Vacancy) => {
+        saved.push(row);
+        return row;
+      }),
     };
     const offerRepo = { find: jest.fn(async () => []) };
 
@@ -181,6 +187,86 @@ describe('VacanciesService', () => {
       await service.track(USER, VACANCY_ID);
 
       expect(created[0].source).toBe('other');
+    });
+  });
+
+  describe('dismiss', () => {
+    it('marca el aviso como cerrado y lo guarda', async () => {
+      await setup([vacancy()]);
+
+      const result = await service.dismiss(USER, VACANCY_ID);
+
+      expect(result).toEqual({ dismissed: true });
+      expect(saved).toHaveLength(1);
+      expect(saved[0].dismissedAt).toBeInstanceOf(Date);
+    });
+
+    it('saca el aviso de la lista pero lo devuelve aparte, no lo borra', async () => {
+      // Esconder sin vuelta seria peor que el ruido que saca: en un telefono un
+      // toque se pierde, y el usuario tiene que poder recuperarlo.
+      await setup([
+        vacancy({ id: 'a' }),
+        vacancy({ id: 'b', dismissedAt: new Date() }),
+      ]);
+
+      const board = await service.scoreboard(USER);
+
+      expect(board.items.map((i) => i.id)).toEqual(['a']);
+      expect(board.dismissed.map((i) => i.id)).toEqual(['b']);
+      expect(board.totals.dismissed).toBe(1);
+      expect(board.totals.admitted).toBe(1);
+    });
+
+    it('no deja que un aviso cerrado ponga el techo del puntaje relativo', async () => {
+      // El relativo se mide contra el mejor EN JUEGO: si el descartado mandara, el
+      // 100 quedaria en algo que el usuario ya decidio no mirar.
+      await setup([
+        vacancy({ id: 'a', score: 9 }),
+        vacancy({ id: 'b', score: 27, dismissedAt: new Date() }),
+      ]);
+
+      const board = await service.scoreboard(USER);
+
+      expect(board.meta.maxScore).toBe(9);
+    });
+
+    it('es idempotente: repetir el toque no vuelve a escribir', async () => {
+      await setup([vacancy({ dismissedAt: new Date() })]);
+
+      const result = await service.dismiss(USER, VACANCY_ID);
+
+      expect(result).toEqual({ dismissed: true });
+      expect(saved).toHaveLength(0);
+    });
+
+    it('rechaza una vacante que no pertenece al usuario', async () => {
+      await setup([vacancy()]);
+
+      await expect(
+        service.dismiss(USER, '22222222-2222-4222-8222-222222222222'),
+      ).rejects.toBeInstanceOf(NotFoundException);
+      expect(saved).toHaveLength(0);
+    });
+  });
+
+  describe('restore', () => {
+    it('devuelve el aviso a la lista', async () => {
+      await setup([vacancy({ dismissedAt: new Date() })]);
+
+      const result = await service.restore(USER, VACANCY_ID);
+
+      expect(result).toEqual({ dismissed: false });
+      expect(saved).toHaveLength(1);
+      expect(saved[0].dismissedAt).toBeNull();
+    });
+
+    it('no escribe si el aviso no estaba marcado', async () => {
+      await setup([vacancy()]);
+
+      const result = await service.restore(USER, VACANCY_ID);
+
+      expect(result).toEqual({ dismissed: false });
+      expect(saved).toHaveLength(0);
     });
   });
 });
