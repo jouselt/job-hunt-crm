@@ -278,7 +278,7 @@
             <dd>{{ detail.signals.join(' · ') }}</dd>
           }
           <dt>Estado</dt>
-          <dd>{{ detail.tracked ? 'Guardada en el pipeline' : 'Sin guardar' }}</dd>
+          <dd>{{ estadoLabel(detail) }}</dd>
         </dl>
 
         @if (detail.matchedSkills.length > 0) {

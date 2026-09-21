@@ -234,6 +234,19 @@ export class ScoreboardComponent implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Que decir del estado.
+   *
+   * Una oferta del CRM ya esta en el pipeline: no es que este "sin guardar", es que
+   * no se guarda desde el feed porque vive en el tablero. Decir "Sin guardar" de algo
+   * que ya esta en el pipeline es la misma clase de mentira que Track creando filas
+   * en `applied`.
+   */
+  estadoLabel(item: ScoreboardItem): string {
+    if (item.kind === 'offer') return 'En el pipeline: vino del CRM';
+    return item.tracked ? 'Guardada en el pipeline' : 'Sin guardar';
+  }
+
   /** De donde salio el texto que se puntuo, en palabras. */
   scoredFromLabel(item: ScoreboardItem): string {
     if (item.scoredFrom === 'description') return 'Sobre el aviso completo';

@@ -500,4 +500,17 @@ describe('ScoreboardComponent', () => {
     expect(component.scoredFromLabel(VACANCY)).toContain('Solo el titulo');
     expect(component.scoredFromLabel(OFFER)).toBe('Sobre la oferta del CRM');
   });
+
+  it('does not call a CRM offer unsaved, because it is already in the pipeline', () => {
+    // La oferta del CRM no se "guarda desde el feed": ya vive en el tablero. Decir
+    // "Sin guardar" seria la misma clase de mentira que Track creando filas en applied.
+    const component = build().componentInstance;
+
+    expect(component.estadoLabel(OFFER)).toContain('En el pipeline');
+    expect(component.estadoLabel(OFFER)).not.toContain('Sin guardar');
+    expect(component.estadoLabel(VACANCY)).toBe('Sin guardar');
+    expect(component.estadoLabel({ ...VACANCY, tracked: true })).toBe(
+      'Guardada en el pipeline',
+    );
+  });
 });
