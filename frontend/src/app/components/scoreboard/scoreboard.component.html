@@ -93,7 +93,14 @@
     } @else {
       <ol class="list">
         @for (item of items; track item.kind + item.id) {
-          <li class="row">
+          <li
+            class="row"
+            role="button"
+            tabindex="0"
+            [attr.aria-label]="'Ver el detalle de ' + item.title"
+            (click)="openDetail(item)"
+            (keydown.enter)="openDetail(item)"
+          >
             <div class="score {{ scoreTier(item.score) }}">
               <span class="score-value">{{ relativeScore(item) }}</span>
               <span class="score-label">#{{ rank(item) }}</span>
@@ -147,16 +154,20 @@
                 <button
                   class="btn-ghost"
                   [disabled]="item.tracked || busy"
-                  (click)="track(item)"
+                  (click)="track(item); $event.stopPropagation()"
                 >
                   {{ item.tracked ? 'Tracked' : 'Track' }}
                 </button>
-                <button class="btn-danger" [disabled]="busy" (click)="dismiss(item)">
+                <button
+                  class="btn-danger"
+                  [disabled]="busy"
+                  (click)="dismiss(item); $event.stopPropagation()"
+                >
                   Gone
                 </button>
               }
               @if (item.url) {
-                <a class="btn-link" [href]="item.url">Open</a>
+                <a class="btn-link" [href]="item.url" (click)="$event.stopPropagation()">Open</a>
               }
               <span class="primary-count">{{ item.primaryMatches }} daily</span>
             </div>
@@ -207,5 +218,95 @@
         </ul>
       </section>
     }
+  }
+
+  <!-- El overlay cierra al tocar; el sheet no. Sin el stopPropagation, un toque
+       adentro del popup lo cerraria. -->
+  @if (detail) {
+    <div class="modal" (click)="closeDetail()">
+      <div
+        class="modal-sheet"
+        role="dialog"
+        aria-modal="true"
+        [attr.aria-label]="detail.title"
+        (click)="$event.stopPropagation()"
+      >
+        <div class="row-head">
+          <h2>{{ detail.title }}</h2>
+          <span class="badge" [class.badge-crm]="detail.kind === 'offer'">
+            {{ sourceLabel(detail) }}
+          </span>
+        </div>
+
+        <p class="row-meta">
+          <span class="score-value">#{{ rank(detail) }}</span> ·
+          <span class="score-value">{{ relativeScore(detail) }}/100</span> relativo ·
+          <span class="score-value">{{ detail.score | number: '1.0-1' }}</span> pts crudos
+        </p>
+
+        <dl class="detail">
+          @if (detail.company) {
+            <dt>Empresa</dt>
+            <dd>{{ detail.company }}</dd>
+          }
+          @if (detail.location) {
+            <dt>Ubicacion</dt>
+            <dd>{{ detail.location }}</dd>
+          }
+          @if (detail.salary) {
+            <dt>Sueldo</dt>
+            <dd class="salary">{{ detail.salary }}</dd>
+          }
+          @if (detail.category) {
+            <dt>Categoria</dt>
+            <dd>{{ detail.category }}</dd>
+          }
+          @if (detail.postedAt) {
+            <dt>Publicado</dt>
+            <dd>{{ detail.postedAt }}</dd>
+          }
+          @if (detail.jevFitScore != null) {
+            <dt>Jev</dt>
+            <dd>{{ detail.jevFitScore | number: '1.2-2' }} · {{ detail.jevDecision }}</dd>
+          }
+          <dt>Puntaje</dt>
+          <dd>{{ scoredFromLabel(detail) }}</dd>
+          <dt>Daily stack</dt>
+          <dd>{{ detail.primaryMatches }} skills del daily stack aparecen en el texto</dd>
+          @if (detail.signals.length > 0) {
+            <dt>Senales</dt>
+            <dd>{{ detail.signals.join(' · ') }}</dd>
+          }
+          <dt>Estado</dt>
+          <dd>{{ detail.tracked ? 'Guardada en el pipeline' : 'Sin guardar' }}</dd>
+        </dl>
+
+        @if (detail.matchedSkills.length > 0) {
+          <p class="skills">
+            @for (skill of detail.matchedSkills; track skill) {
+              <span class="chip" [class.chip-title]="detail.titleSkills.includes(skill)">
+                {{ skill }}
+              </span>
+            }
+          </p>
+          <p class="row-meta">Marcadas las que aparecen en el titulo, que pesan mas.</p>
+        }
+
+        @if (detail.scoredFrom === 'index') {
+          <p class="caveat">
+            Este puntaje se calculo solo sobre el titulo: el feed no publica la descripcion del
+            aviso, asi que el texto del aviso no esta aca. Es evidencia mas debil que la de un
+            aviso leido completo, y por eso conviene abrirlo antes de decidir.
+          </p>
+        }
+
+        <div class="modal-actions">
+          @if (detail.url) {
+            <a class="btn" [href]="detail.url">Open posting</a>
+          }
+          <button class="btn-ghost" (click)="closeDetail()">Close</button>
+        </div>
+      </div>
+    </div>
   }
 </section>

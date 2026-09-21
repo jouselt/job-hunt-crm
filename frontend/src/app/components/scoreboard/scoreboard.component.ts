@@ -19,6 +19,9 @@ import { RefreshJob, Scoreboard, ScoreboardItem } from '../../models/scoreboard.
   imports: [DecimalPipe, DatePipe, FormsModule],
   templateUrl: './scoreboard.component.html',
   styleUrls: ['./scoreboard.component.css'],
+  // Escape cierra el detalle. Va en el host y no en el overlay porque el foco
+  // puede estar en cualquier parte cuando el modal esta abierto.
+  host: { '(document:keydown.escape)': 'closeDetail()' },
 })
 export class ScoreboardComponent implements OnInit, OnDestroy {
   private readonly jobHunt = inject(JobHuntService);
@@ -33,6 +36,9 @@ export class ScoreboardComponent implements OnInit, OnDestroy {
   filter = '';
   showRejected = false;
   showDismissed = false;
+
+  /** El aviso abierto en el detalle. Null = cerrado. */
+  detail: ScoreboardItem | null = null;
 
   /** Posicion en el ranking, por `kind:id`. Se arma al cargar, no en cada render. */
   private ranks = new Map<string, number>();
@@ -226,6 +232,29 @@ export class ScoreboardComponent implements OnInit, OnDestroy {
         this.error = 'No se pudo trackear la vacante.';
       },
     });
+  }
+
+  /** De donde salio el texto que se puntuo, en palabras. */
+  scoredFromLabel(item: ScoreboardItem): string {
+    if (item.scoredFrom === 'description') return 'Sobre el aviso completo';
+    if (item.scoredFrom === 'index')
+      return 'Solo el titulo: el feed no publica la descripcion';
+    return 'Sobre la oferta del CRM';
+  }
+
+  /**
+   * Abre el detalle del aviso.
+   *
+   * El popup muestra lo que sabemos y no mas: el feed publica la descripcion en 59
+   * caracteres, asi que el texto del aviso no esta. Lo que si esta es el desglose
+   * del puntaje, que es lo que responde por que 27 y no 12.
+   */
+  openDetail(item: ScoreboardItem): void {
+    this.detail = item;
+  }
+
+  closeDetail(): void {
+    this.detail = null;
   }
 
   /**

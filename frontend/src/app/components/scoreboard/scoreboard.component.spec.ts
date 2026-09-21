@@ -81,8 +81,20 @@ const IDLE_JOB: RefreshJob = {
 };
 
 function build(overrides: Partial<Record<keyof JobHuntService, unknown>> = {}) {
+  // Copia por test. `track()` marca `item.tracked = true` sobre el objeto que
+  // recibe, y el fixture es un const compartido: sin clonar, un test que trackea
+  // deja el boton en "Tracked" y deshabilitado para el siguiente, y el resultado
+  // depende del orden en que corran los specs.
+  const scoreboard: Scoreboard = {
+    ...SCOREBOARD,
+    items: SCOREBOARD.items.map((item) => ({ ...item })),
+    rejected: [...SCOREBOARD.rejected],
+    dismissed: [...SCOREBOARD.dismissed],
+    totals: { ...SCOREBOARD.totals },
+    meta: { ...SCOREBOARD.meta },
+  };
   const service = {
-    getScoreboard: () => of(SCOREBOARD),
+    getScoreboard: () => of(scoreboard),
     getRefreshJob: () => of(IDLE_JOB),
     startVacancyRefresh: () => of(IDLE_JOB),
     rescoreVacancies: () => of({ rescored: 2, admitted: 1 }),
@@ -365,5 +377,127 @@ describe('ScoreboardComponent', () => {
 
     expect(fixture.componentInstance.error).toContain('No se pudo marcar');
     expect(fixture.componentInstance.notice).toBe('');
+  });
+
+  it('opens the full detail when the card is tapped', async () => {
+    const fixture = build();
+
+    expect(fixture.nativeElement.querySelector('.modal')).toBeFalsy();
+
+    const row = fixture.nativeElement.querySelectorAll('.row')[0] as HTMLElement;
+    row.click();
+    fixture.changeDetectorRef.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const modal = fixture.nativeElement.querySelector('.modal') as HTMLElement;
+    expect(modal).toBeTruthy();
+    // El rol de dialogo va en el sheet: el overlay es el fondo que cierra al tocar.
+    const sheet = modal.querySelector('.modal-sheet') as HTMLElement;
+    expect(sheet.getAttribute('role')).toBe('dialog');
+    // El desglose es lo que responde por que ese puntaje y no otro.
+    expect(modal.textContent).toContain('Senior Angular Developer');
+    expect(modal.textContent).toContain('Acme');
+    expect(modal.textContent).toContain('#1');
+    expect(modal.textContent).toContain('25');
+    expect(modal.textContent).toContain('Angular');
+    // Y dice de donde salio el texto puntuado, que es la advertencia que importa.
+    expect(modal.textContent).toContain('Solo el titulo');
+  });
+
+  it('does not open the detail when a button inside the card is tapped', async () => {
+    // La card es clickeable y adentro tiene Track, Gone y Open. Sin el
+    // stopPropagation el toque hace las dos cosas, y el popup tapa la accion que
+    // el usuario quiso hacer.
+    const fixture = build({
+      trackVacancy: () => of({ created: true, applicationId: 'app-1' }),
+    });
+
+    const track = fixture.nativeElement.querySelector(
+      '.row-actions .btn-ghost',
+    ) as HTMLButtonElement;
+    track.click();
+    fixture.changeDetectorRef.detectChanges();
+    await fixture.whenStable();
+
+    expect(fixture.componentInstance.detail).toBeNull();
+    expect(fixture.nativeElement.querySelector('.modal')).toBeFalsy();
+    // Y la accion si ocurrio: el stopPropagation no puede tragarse el click.
+    expect(fixture.componentInstance.scoreboard?.items[0].tracked).toBe(true);
+  });
+
+  it('does not open the detail when Open is tapped', async () => {
+    const fixture = build();
+
+    const link = fixture.nativeElement.querySelector('a.btn-link') as HTMLAnchorElement;
+    // Se le saca el href para el test: un click en un anchor con href navega de
+    // verdad, y en Karma una navegacion recarga la pagina y se lleva al runner. El
+    // handler que se prueba es el mismo.
+    link.removeAttribute('href');
+    link.click();
+    fixture.changeDetectorRef.detectChanges();
+    await fixture.whenStable();
+
+    expect(fixture.componentInstance.detail).toBeNull();
+  });
+
+  it('closes the detail with the button, the overlay and Escape', async () => {
+    const fixture = build();
+    const row = fixture.nativeElement.querySelectorAll('.row')[0] as HTMLElement;
+
+    const open = async () => {
+      row.click();
+      fixture.changeDetectorRef.detectChanges();
+      await fixture.whenStable();
+      fixture.detectChanges();
+    };
+
+    await open();
+    expect(fixture.componentInstance.detail).toBeTruthy();
+
+    // Escape, por el listener del host.
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    fixture.changeDetectorRef.detectChanges();
+    await fixture.whenStable();
+    expect(fixture.componentInstance.detail).toBeNull();
+
+    await open();
+    const close = fixture.nativeElement.querySelector(
+      '.modal-actions .btn-ghost',
+    ) as HTMLButtonElement;
+    close.click();
+    fixture.changeDetectorRef.detectChanges();
+    await fixture.whenStable();
+    expect(fixture.componentInstance.detail).toBeNull();
+
+    // El overlay tambien cierra.
+    await open();
+    (fixture.nativeElement.querySelector('.modal') as HTMLElement).click();
+    fixture.changeDetectorRef.detectChanges();
+    await fixture.whenStable();
+    expect(fixture.componentInstance.detail).toBeNull();
+  });
+
+  it('keeps the detail open when the tap lands inside the sheet', async () => {
+    const fixture = build();
+    const row = fixture.nativeElement.querySelectorAll('.row')[0] as HTMLElement;
+
+    row.click();
+    fixture.changeDetectorRef.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    (fixture.nativeElement.querySelector('.modal-sheet') as HTMLElement).click();
+    fixture.changeDetectorRef.detectChanges();
+    await fixture.whenStable();
+
+    expect(fixture.componentInstance.detail).toBeTruthy();
+  });
+
+  it('says where the scored text came from', () => {
+    const component = build().componentInstance;
+
+    expect(component.scoredFromLabel(VACANCY)).toContain('Solo el titulo');
+    expect(component.scoredFromLabel(OFFER)).toBe('Sobre la oferta del CRM');
   });
 });

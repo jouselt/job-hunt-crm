@@ -93,6 +93,19 @@ button:hover, .btn:hover { border-color: var(--color-smoke); color: var(--color-
 .btn-ok:hover { background: rgba(39, 166, 68, 0.12); color: var(--color-pulse-green); }
 button:disabled, .btn:disabled { opacity: .4; cursor: not-allowed; }
 
+/* ── Modal ── */
+/* Primitiva compartida, como los botones: el presupuesto de estilos se mide por
+   componente, y un modal no es especifico de ninguna pantalla. */
+.modal { position: fixed; inset: 0; z-index: 20; background: rgba(11, 12, 14, 0.72); display: flex; justify-content: center; padding: var(--space-4); overflow-y: auto; }
+.modal-sheet { background: var(--color-carbon); border-radius: var(--radius-lg); box-shadow: var(--shadow-card); padding: var(--space-6); width: 100%; max-width: 560px; margin: auto; }
+.modal-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-5); }
+/* El detalle de un popup: etiqueta y valor. En pantallas angostas se apila, porque
+   96px de etiqueta deja el valor en un hilo. */
+.detail { display: grid; grid-template-columns: 96px 1fr; gap: var(--space-2) var(--space-3); margin: var(--space-4) 0 0; font-size: 13px; }
+.detail dt { color: var(--color-fog); }
+.detail dd { margin: 0; color: var(--color-bone); }
+@media (max-width: 720px) { .detail { grid-template-columns: 1fr; gap: var(--space-1); } }
+
 /* ── Inputs ── */
 input, select, textarea {
   font-family: var(--font-inter);
