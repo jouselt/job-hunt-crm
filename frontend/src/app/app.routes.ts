@@ -44,6 +44,14 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'scoreboard',
+    loadComponent: () =>
+      import('./components/scoreboard/scoreboard.component').then(
+        (m) => m.ScoreboardComponent,
+      ),
+    canActivate: [authGuard],
+  },
+  {
     path: 'triage',
     loadComponent: () =>
       import('./components/triage/triage.component').then((m) => m.TriageComponent),
