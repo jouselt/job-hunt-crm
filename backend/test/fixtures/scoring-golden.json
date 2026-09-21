@@ -1,0 +1,2487 @@
+{
+ "note": "Generado por tools/generate_scoring_golden.py desde el Python real. No editar a mano.",
+ "today": "2026-09-21",
+ "profile_sha256": "9561031106394708b0043355305eae1f366020ef807af6118444f5042c87d148",
+ "case_count": 91,
+ "synthetic_count": 39,
+ "corpus_count": 52,
+ "cases": [
+  {
+   "name": "exact-match-angular-nestjs-chile",
+   "input": {
+    "title": "Full-Stack Developer Angular + NestJS - Sector Salud",
+    "company": "Apside",
+    "location": "Chile",
+    "description": "Buscamos un desarrollador full-stack con Angular y NestJS. Trabajo remoto. TypeScript y RxJS en el dia a dia.",
+    "date": "2026-09-20"
+   },
+   "expected": {
+    "score": 32.0,
+    "matchedSkills": [
+     "Angular",
+     "NestJS",
+     "RxJS",
+     "TypeScript"
+    ],
+    "titleSkills": [
+     "Angular",
+     "NestJS"
+    ],
+    "primaryMatches": 4,
+    "signals": [
+     "role in title",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "senior-angular-remote",
+   "input": {
+    "title": "Senior Frontend Engineer (Angular)",
+    "company": "Improving",
+    "location": "Remote - Chile",
+    "description": "Senior front-end engineer. Angular 18, TypeScript, RxJS y NgRx. Modalidad 100% remoto.",
+    "date": "2026-09-15"
+   },
+   "expected": {
+    "score": 31.0,
+    "matchedSkills": [
+     "Angular",
+     "RxJS",
+     "TypeScript",
+     "NgRx"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 3,
+    "signals": [
+     "role in title",
+     "senior in title",
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "angularjs-carries-its-own-lower-weight",
+   "input": {
+    "title": "Frontend Developer AngularJS",
+    "company": "Legacy Corp",
+    "location": "Remote",
+    "description": "Mantenimiento de aplicaciones AngularJS con migracion progresiva. Sin mencion de otro framework.",
+    "date": "2026-09-10"
+   },
+   "expected": {
+    "score": 14.0,
+    "matchedSkills": [
+     "AngularJS"
+    ],
+    "titleSkills": [
+     "AngularJS"
+    ],
+    "primaryMatches": 0,
+    "signals": [
+     "role in title",
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "node-token-reaches-nodejs-skill",
+   "input": {
+    "title": "Backend Engineer Node",
+    "company": "Acme",
+    "location": "Remote",
+    "description": "Servicios con Node, NestJS y PostgreSQL. API REST y BFF.",
+    "date": "2026-09-10"
+   },
+   "expected": {
+    "score": 14.0,
+    "matchedSkills": [
+     "NestJS",
+     "PostgreSQL",
+     "BFF architecture"
+    ],
+    "titleSkills": [],
+    "primaryMatches": 1,
+    "signals": [
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "plural-websockets-matches-singular-keyword",
+   "input": {
+    "title": "Senior Engineer (Web Components)",
+    "company": "Acme",
+    "location": "Remote",
+    "description": "Trabajamos con WebSockets y microfrontends. TypeScript obligatorio.",
+    "date": "2026-09-10"
+   },
+   "expected": {
+    "score": 17.0,
+    "matchedSkills": [
+     "TypeScript",
+     "Web Components",
+     "Microfrontends",
+     "WebSockets"
+    ],
+    "titleSkills": [
+     "Web Components"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "senior in title",
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "stencil-and-web-components",
+   "input": {
+    "title": "Senior Frontend Developer",
+    "company": "Acme",
+    "location": "Remote",
+    "description": "Stencil.js y Web Components para un design system compartido. TypeScript.",
+    "date": "2026-09-10"
+   },
+   "expected": {
+    "score": 24.0,
+    "matchedSkills": [
+     "TypeScript",
+     "Stencil.js",
+     "Web Components"
+    ],
+    "titleSkills": [],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "senior in title",
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "rxjs-and-ngrx-in-body",
+   "input": {
+    "title": "Frontend Developer",
+    "company": "Acme",
+    "location": "Remote",
+    "description": "Estado con NgRx, streams con RxJS sobre Angular.",
+    "date": "2026-09-10"
+   },
+   "expected": {
+    "score": 22.0,
+    "matchedSkills": [
+     "Angular",
+     "RxJS",
+     "NgRx"
+    ],
+    "titleSkills": [],
+    "primaryMatches": 2,
+    "signals": [
+     "role in title",
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "working-student-is-below-senior",
+   "input": {
+    "title": "Working Student Application Software Engineer",
+    "company": "SAP",
+    "location": "Walldorf",
+    "description": "Support the team with TypeScript and Angular while you study.",
+    "date": "2026-09-10"
+   },
+   "expected": {
+    "score": 18.0,
+    "matchedSkills": [
+     "Angular",
+     "TypeScript"
+    ],
+    "titleSkills": [],
+    "primaryMatches": 2,
+    "signals": [
+     "role in title",
+     "posted this month"
+    ],
+    "disqualifiers": [
+     "below senior in the title: working student"
+    ]
+   }
+  },
+  {
+   "name": "senior-title-with-two-years-ask-still-trips",
+   "input": {
+    "title": "Senior Angular Developer",
+    "company": "Acme",
+    "location": "Remote",
+    "description": "We are looking for a senior developer with 2 years of experience in Angular.",
+    "date": "2026-09-10"
+   },
+   "expected": {
+    "score": 20.0,
+    "matchedSkills": [
+     "Angular"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "senior in title",
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": [
+     "asks 2 years of experience"
+    ]
+   }
+  },
+  {
+   "name": "senior-title-tolerates-three-years",
+   "input": {
+    "title": "Senior Angular Developer",
+    "company": "Acme",
+    "location": "Remote",
+    "description": "We are looking for a senior developer with 3 years of experience in Angular and TypeScript.",
+    "date": "2026-09-10"
+   },
+   "expected": {
+    "score": 25.0,
+    "matchedSkills": [
+     "Angular",
+     "TypeScript"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 2,
+    "signals": [
+     "role in title",
+     "senior in title",
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "company-anniversary-is-not-an-experience-ask",
+   "input": {
+    "title": "Senior Angular Developer",
+    "company": "Acme",
+    "location": "Remote",
+    "description": "100 Jahre Firmengeschichte. Wir suchen Angular und TypeScript Erfahrung.",
+    "date": "2026-09-10"
+   },
+   "expected": {
+    "score": 25.0,
+    "matchedSkills": [
+     "Angular",
+     "TypeScript"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 2,
+    "signals": [
+     "role in title",
+     "senior in title",
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "range-floor-decides-two-to-four",
+   "input": {
+    "title": "Angular Developer",
+    "company": "Acme",
+    "location": "Remote",
+    "description": "Buscamos 2-4 anos de experiencia con Angular y TypeScript.",
+    "date": "2026-09-10"
+   },
+   "expected": {
+    "score": 23.0,
+    "matchedSkills": [
+     "Angular",
+     "TypeScript"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 2,
+    "signals": [
+     "role in title",
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": [
+     "asks 2-4 anos of experience"
+    ]
+   }
+  },
+  {
+   "name": "range-floor-decides-six-to-eight",
+   "input": {
+    "title": "Angular Developer",
+    "company": "Acme",
+    "location": "Remote",
+    "description": "Buscamos 6-8 anos de experiencia con Angular y TypeScript.",
+    "date": "2026-09-10"
+   },
+   "expected": {
+    "score": 23.0,
+    "matchedSkills": [
+     "Angular",
+     "TypeScript"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 2,
+    "signals": [
+     "role in title",
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "soft-cue-suppresses-the-years-ask",
+   "input": {
+    "title": "Angular Developer",
+    "company": "Acme",
+    "location": "Remote",
+    "description": "Mentoring for junior colleagues, but you need 2 years of experience with Angular.",
+    "date": "2026-09-10"
+   },
+   "expected": {
+    "score": 18.0,
+    "matchedSkills": [
+     "Angular"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": [
+     "asks 2 years of experience"
+    ]
+   }
+  },
+  {
+   "name": "dotnet-title-is-strictly-outside",
+   "input": {
+    "title": ".NET Full-stack Developer",
+    "company": "Acme",
+    "location": "Remote",
+    "description": "C#, .NET, TypeScript, Angular, Azure. Full-stack role.",
+    "date": "2026-09-10"
+   },
+   "expected": {
+    "score": 24.0,
+    "matchedSkills": [
+     "Angular",
+     "TypeScript",
+     ".NET backend API integration"
+    ],
+    "titleSkills": [
+     ".NET backend API integration"
+    ],
+    "primaryMatches": 2,
+    "signals": [
+     "role in title",
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": [
+     "title names a stack outside the profile: .net"
+    ]
+   }
+  },
+  {
+   "name": "dotnet-body-is-lenient-when-ts-is-present",
+   "input": {
+    "title": "Full-stack Developer",
+    "company": "Acme",
+    "location": "Remote",
+    "description": "You will work with Angular and TypeScript, and integrate with .NET services.",
+    "date": "2026-09-10"
+   },
+   "expected": {
+    "score": 22.0,
+    "matchedSkills": [
+     "Angular",
+     "TypeScript",
+     ".NET backend API integration"
+    ],
+    "titleSkills": [],
+    "primaryMatches": 2,
+    "signals": [
+     "role in title",
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "java-only-backend",
+   "input": {
+    "title": "Senior Backend Developer",
+    "company": "Acme",
+    "location": "Remote",
+    "description": "Java, Spring Boot, Kafka, microservices. No frontend work.",
+    "date": "2026-09-10"
+   },
+   "expected": {
+    "score": 7.0,
+    "matchedSkills": [],
+    "titleSkills": [],
+    "primaryMatches": 0,
+    "signals": [
+     "senior in title",
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": [
+     "stack outside the profile with no TS/JS: java"
+    ]
+   }
+  },
+  {
+   "name": "golang-backend",
+   "input": {
+    "title": "Senior Software Engineer (Golang)",
+    "company": "Acme",
+    "location": "Remote",
+    "description": "Go, Kubernetes, gRPC. Distributed systems.",
+    "date": "2026-09-10"
+   },
+   "expected": {
+    "score": 13.0,
+    "matchedSkills": [],
+    "titleSkills": [],
+    "primaryMatches": 0,
+    "signals": [
+     "role in title",
+     "senior in title",
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": [
+     "title names a stack outside the profile: golang",
+     "stack outside the profile with no TS/JS: go, golang"
+    ]
+   }
+  },
+  {
+   "name": "rails-title",
+   "input": {
+    "title": "Tech Lead Rails",
+    "company": "Acme",
+    "location": "Remote",
+    "description": "Ruby on Rails, PostgreSQL. Leadership of a small team.",
+    "date": "2026-09-10"
+   },
+   "expected": {
+    "score": 10.0,
+    "matchedSkills": [
+     "PostgreSQL"
+    ],
+    "titleSkills": [],
+    "primaryMatches": 0,
+    "signals": [
+     "senior in title",
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": [
+     "title names a stack outside the profile: rails",
+     "stack outside the profile with no TS/JS: ruby"
+    ]
+   }
+  },
+  {
+   "name": "data-scientist",
+   "input": {
+    "title": "Data Scientist",
+    "company": "Acme",
+    "location": "Remote",
+    "description": "Python, pandas, scikit-learn, SQL.",
+    "date": "2026-09-10"
+   },
+   "expected": {
+    "score": 6.0,
+    "matchedSkills": [
+     "Python"
+    ],
+    "titleSkills": [],
+    "primaryMatches": 0,
+    "signals": [
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "engineering-manager",
+   "input": {
+    "title": "Engineering Manager",
+    "company": "Acme",
+    "location": "Remote",
+    "description": "Lead a team of eight engineers. People management and roadmap.",
+    "date": "2026-09-10"
+   },
+   "expected": {
+    "score": 5.0,
+    "matchedSkills": [],
+    "titleSkills": [],
+    "primaryMatches": 0,
+    "signals": [
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": [
+     "people management as the primary function: engineering manager"
+    ]
+   }
+  },
+  {
+   "name": "ios-primary",
+   "input": {
+    "title": "Senior iOS Engineer",
+    "company": "Acme",
+    "location": "Remote",
+    "description": "Swift, SwiftUI, iOS platform work.",
+    "date": "2026-09-10"
+   },
+   "expected": {
+    "score": 7.0,
+    "matchedSkills": [],
+    "titleSkills": [],
+    "primaryMatches": 0,
+    "signals": [
+     "senior in title",
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": [
+     "stack outside the profile with no TS/JS: swift",
+     "native mobile primary in the title: ios"
+    ]
+   }
+  },
+  {
+   "name": "ios-title-cleared-by-web-stack-in-title",
+   "input": {
+    "title": "Senior iOS and Angular Developer",
+    "company": "Acme",
+    "location": "Remote",
+    "description": "Swift for the mobile app, Angular and TypeScript for the web client.",
+    "date": "2026-09-10"
+   },
+   "expected": {
+    "score": 25.0,
+    "matchedSkills": [
+     "Angular",
+     "TypeScript"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 2,
+    "signals": [
+     "role in title",
+     "senior in title",
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "no-sponsorship",
+   "input": {
+    "title": "Senior Angular Developer",
+    "company": "Acme",
+    "location": "Berlin",
+    "description": "Angular and TypeScript. We are unable to sponsor visas for this position.",
+    "date": "2026-09-10"
+   },
+   "expected": {
+    "score": 22.0,
+    "matchedSkills": [
+     "Angular",
+     "TypeScript"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 2,
+    "signals": [
+     "role in title",
+     "senior in title",
+     "posted this month"
+    ],
+    "disqualifiers": [
+     "no sponsorship offered: unable to sponsor"
+    ]
+   }
+  },
+  {
+   "name": "residency-or-clearance",
+   "input": {
+    "title": "Senior Angular Developer",
+    "company": "Acme",
+    "location": "Remote",
+    "description": "Angular and TypeScript. Security clearance required. Must be a resident.",
+    "date": "2026-09-10"
+   },
+   "expected": {
+    "score": 25.0,
+    "matchedSkills": [
+     "Angular",
+     "TypeScript"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 2,
+    "signals": [
+     "role in title",
+     "senior in title",
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": [
+     "residency or clearance restriction: security clearance, must be a resident"
+    ]
+   }
+  },
+  {
+   "name": "onsite-abroad-with-no-relocation",
+   "input": {
+    "title": "Senior Angular Developer",
+    "company": "Acme",
+    "location": "Munich",
+    "description": "Angular and TypeScript. This role requires on-site presence in our Munich office.",
+    "date": "2026-09-10"
+   },
+   "expected": {
+    "score": 22.0,
+    "matchedSkills": [
+     "Angular",
+     "TypeScript"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 2,
+    "signals": [
+     "role in title",
+     "senior in title",
+     "posted this month"
+    ],
+    "disqualifiers": [
+     "on-site presence in another country with no relocation: on-site"
+    ]
+   }
+  },
+  {
+   "name": "onsite-cleared-by-remote",
+   "input": {
+    "title": "Senior Angular Developer",
+    "company": "Acme",
+    "location": "Munich",
+    "description": "Angular and TypeScript. On-site presence possible, but the role is fully remote.",
+    "date": "2026-09-10"
+   },
+   "expected": {
+    "score": 25.0,
+    "matchedSkills": [
+     "Angular",
+     "TypeScript"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 2,
+    "signals": [
+     "role in title",
+     "senior in title",
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "relocation-offered-adds-a-signal",
+   "input": {
+    "title": "Senior Angular Developer",
+    "company": "Acme",
+    "location": "Amsterdam",
+    "description": "Angular and TypeScript. We offer relocation support and visa sponsorship.",
+    "date": "2026-09-10"
+   },
+   "expected": {
+    "score": 24.0,
+    "matchedSkills": [
+     "Angular",
+     "TypeScript"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 2,
+    "signals": [
+     "role in title",
+     "senior in title",
+     "relocation or sponsorship offered",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "body-stack-is-capped",
+   "input": {
+    "title": "Senior Software Engineer",
+    "company": "Acme",
+    "location": "Remote",
+    "description": "Angular, TypeScript, NestJS, Node.js, RxJS, NgRx, Stencil.js, Web Components, Microfrontends, single-spa, PrimeNG, Angular Material, PostgreSQL, TypeORM, Docker, AWS, Splunk, Jenkins, GitLab CI/CD, Azure DevOps, Ionic, Jest, Jasmine, Karma.",
+    "date": "2026-09-10"
+   },
+   "expected": {
+    "score": 25.0,
+    "matchedSkills": [
+     "Angular",
+     "Angular Material",
+     "NestJS",
+     "Node.js",
+     "RxJS",
+     "TypeScript",
+     "Docker",
+     "Ionic",
+     "Jasmine",
+     "Karma",
+     "PostgreSQL",
+     "PrimeNG",
+     "Splunk",
+     "Stencil.js",
+     "TypeORM",
+     "Web Components",
+     "AWS",
+     "Azure DevOps",
+     "GitLab CI/CD",
+     "Jenkins",
+     "Jest",
+     "Microfrontends",
+     "NgRx",
+     "single-spa"
+    ],
+    "titleSkills": [],
+    "primaryMatches": 6,
+    "signals": [
+     "role in title",
+     "senior in title",
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "title-decides-over-a-body-pile",
+   "input": {
+    "title": "Senior Angular Developer",
+    "company": "Acme",
+    "location": "Remote",
+    "description": "Angular and TypeScript. Nice to have: Docker, AWS, Splunk, Jenkins, PostgreSQL.",
+    "date": "2026-09-10"
+   },
+   "expected": {
+    "score": 32.0,
+    "matchedSkills": [
+     "Angular",
+     "TypeScript",
+     "Docker",
+     "PostgreSQL",
+     "Splunk",
+     "AWS",
+     "Jenkins"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 2,
+    "signals": [
+     "role in title",
+     "senior in title",
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "body-pile-without-a-title-signal",
+   "input": {
+    "title": "Senior Software Engineer",
+    "company": "Acme",
+    "location": "Remote",
+    "description": "Docker, AWS, Splunk, Jenkins, PostgreSQL, TypeORM, Ionic.",
+    "date": "2026-09-10"
+   },
+   "expected": {
+    "score": 25.0,
+    "matchedSkills": [
+     "Docker",
+     "Ionic",
+     "PostgreSQL",
+     "Splunk",
+     "TypeORM",
+     "AWS",
+     "Jenkins"
+    ],
+    "titleSkills": [],
+    "primaryMatches": 0,
+    "signals": [
+     "role in title",
+     "senior in title",
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "pipe-in-title",
+   "input": {
+    "title": "Desarrollador/a Fullstack | React.js + NestJS/Node.js",
+    "company": "Acme",
+    "location": "Chile",
+    "description": "NestJS, Node.js y TypeScript. React en el frontend, transferible.",
+    "date": "2026-09-10"
+   },
+   "expected": {
+    "score": 30.0,
+    "matchedSkills": [
+     "NestJS",
+     "Node.js",
+     "TypeScript",
+     "React"
+    ],
+    "titleSkills": [
+     "NestJS",
+     "Node.js",
+     "React"
+    ],
+    "primaryMatches": 3,
+    "signals": [
+     "role in title",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "index-row-without-description",
+   "input": {
+    "title": "Senior Angular Developer",
+    "company": "Acme",
+    "location": "Chile",
+    "description": "",
+    "date": "2026-09-10"
+   },
+   "expected": {
+    "score": 17.0,
+    "matchedSkills": [
+     "Angular"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "senior in title",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "fresh-this-month-adds-a-signal",
+   "input": {
+    "title": "Senior Angular Developer",
+    "company": "Acme",
+    "location": "Remote",
+    "description": "Angular y TypeScript.",
+    "date": "2026-09-21"
+   },
+   "expected": {
+    "score": 25.0,
+    "matchedSkills": [
+     "Angular",
+     "TypeScript"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 2,
+    "signals": [
+     "role in title",
+     "senior in title",
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "old-posting-loses-the-fresh-signal",
+   "input": {
+    "title": "Senior Angular Developer",
+    "company": "Acme",
+    "location": "Remote",
+    "description": "Angular y TypeScript.",
+    "date": "2026-05-01"
+   },
+   "expected": {
+    "score": 23.0,
+    "matchedSkills": [
+     "Angular",
+     "TypeScript"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 2,
+    "signals": [
+     "role in title",
+     "senior in title",
+     "remote"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "react-is-transferable",
+   "input": {
+    "title": "Frontend Developer",
+    "company": "Acme",
+    "location": "Remote",
+    "description": "React, TypeScript y Next.js.",
+    "date": "2026-09-10"
+   },
+   "expected": {
+    "score": 17.0,
+    "matchedSkills": [
+     "TypeScript",
+     "React"
+    ],
+    "titleSkills": [],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "nixos-counts-as-personal-project",
+   "input": {
+    "title": "Senior Angular Developer",
+    "company": "Acme",
+    "location": "Remote",
+    "description": "Angular, TypeScript y NixOS para el entorno de desarrollo.",
+    "date": "2026-09-10"
+   },
+   "expected": {
+    "score": 25.0,
+    "matchedSkills": [
+     "Angular",
+     "TypeScript"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 2,
+    "signals": [
+     "role in title",
+     "senior in title",
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "empty-title",
+   "input": {
+    "title": "",
+    "company": "Acme",
+    "location": "Remote",
+    "description": "Angular y TypeScript.",
+    "date": "2026-09-10"
+   },
+   "expected": {
+    "score": 15.0,
+    "matchedSkills": [
+     "Angular",
+     "TypeScript"
+    ],
+    "titleSkills": [],
+    "primaryMatches": 2,
+    "signals": [
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "spanish-language-is-not-a-disqualifier",
+   "input": {
+    "title": "Desarrollador Senior Angular",
+    "company": "Acme",
+    "location": "Santiago, Chile",
+    "description": "Buscamos desarrollador senior con Angular y TypeScript. Se requiere espanol nativo.",
+    "date": "2026-09-10"
+   },
+   "expected": {
+    "score": 22.0,
+    "matchedSkills": [
+     "Angular",
+     "TypeScript"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 2,
+    "signals": [
+     "role in title",
+     "senior in title",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-000",
+   "input": {
+    "title": "Lider Tecnico Golang Angular",
+    "company": "METRICA Chile",
+    "location": "Santiago",
+    "description": "Estamos buscando Líder Técnico/a para sumarse a un proyecto de alta criticidad en la industria bancaria. Buscamos un perfil senior con fuerte orientación técnica, experiencia liderando equipos de desarrollo y capacidad para definir estándares, arquitectura y buenas prácticas en soluciones digitales escalables. Principales requisitos: 5+ años de experiencia en desarrollo de aplicaciones web. Experiencia liderando técnicamente equipos de desarrollo. Dominio avanzado de Angular. Experiencia con Web Components, componentes reutilizables y arquitecturas front end escalables. Experiencia con GO y Ja",
+    "date": "2026-09-16"
+   },
+   "expected": {
+    "score": 18.0,
+    "matchedSkills": [
+     "Angular",
+     "Web Components"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-001",
+   "input": {
+    "title": "Frontend Developer (Angular)",
+    "company": "WorkCapIT",
+    "location": "Santiago",
+    "description": "🚀 ¡ESTAMOS CONTRATANDO! Developer Front End | Angular En WorkCapIT buscamos un/a Developer Front End con experiencia sólida en Angular para participar en un proyecto del sector financiero, trabajando en el desarrollo y evolución de una plataforma de onboarding. 📍 Modalidad: Híbrida – Las Condes, Santiago 💼 Tipo de contrato : Por obra inicialmente luego indefinido según desempeño 🎯 El Reto Desarrollar y mantener el Front End del flujo de onboarding en Angular, asegurando estabilidad, calidad, seguridad e integración con las APIs del proyecto. 🛠️ ¿Qué necesitas? 3+ años de experiencia como Devel",
+    "date": "2026-09-16"
+   },
+   "expected": {
+    "score": 15.0,
+    "matchedSkills": [
+     "Angular"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "posted this month"
+    ],
+    "disqualifiers": [
+     "asks 3+ años of experience"
+    ]
+   }
+  },
+  {
+   "name": "corpus-002",
+   "input": {
+    "title": "Full-Stack Senior (Java Spring Boot + Angular)",
+    "company": "3IT",
+    "location": "Chile",
+    "description": "Somos 3IT ¡Innovación y talento que marcan la diferencia! Para nosotros, la innovación es un proceso colaborativo y el crecimiento una meta compartida. Nos guiamos por valores como el trabajo en equipo, la confiabilidad, la empatía, el compromiso, la honestidad y la calidad, porque sabemos que los buenos resultados parten de buenas relaciones. Además, valoramos la diversidad y promovemos espacios de trabajo inclusivos. Por eso nos sumamos activamente al cumplimiento de la Ley 21.015, asegurando procesos accesibles y con igualdad de oportunidades. Si estás buscando un lugar donde seguir aprendi",
+    "date": "2026-09-15"
+   },
+   "expected": {
+    "score": 17.0,
+    "matchedSkills": [
+     "Angular"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "senior in title",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-003",
+   "input": {
+    "title": "Tech Lead | Angular + Go + Java",
+    "company": "WorkCapIT",
+    "location": "Santiago Metropolitan Region, Chile",
+    "description": "🚀 ¡ESTAMOS CONTRATANDO! Tech Lead | Angular + Go + Java En WorkCapIT buscamos un/a Tech Lead para sumarse a un proyecto tecnológico en la industria financiera, liderando técnicamente el desarrollo y evolución de soluciones digitales de alta criticidad. 📍 Modalidad: Híbrido – Santiago de Chile 💼 Tipo de contrato: Por obra con posibilidad de pasar a indefinido según desempeño. 📍 Ubicación: Santiago Centro 🎯 El Reto: Serás el/la referente técnico/a del equipo, liderando el diseño y desarrollo de soluciones Front End con Angular , bajo una arquitectura escalable basada en Web Components , y coordi",
+    "date": "2026-09-11"
+   },
+   "expected": {
+    "score": 20.0,
+    "matchedSkills": [
+     "Angular",
+     "Web Components"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "senior in title",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-004",
+   "input": {
+    "title": "AMS-OP-CS-DevSsr-Angular",
+    "company": "Accenture Chile",
+    "location": "Santiago",
+    "description": "THE WORK: Explore new horizons and embrace opportunities to build knowledge and support the group. You will participate in problem solving discussions that will shape innovative solutions. This role invites you to grow your expertise in Angular while contributing to a collaborative and dynamic environment. Join us and be part of an inspiring journey where your contributions truly matter. Develop reusable workflows focusing on data ingestion, quality, transformation, and optimization. Build scalable data pipelines using extract, transform, and load tools. Deploy data solutions to production env",
+    "date": "2026-09-07"
+   },
+   "expected": {
+    "score": 15.0,
+    "matchedSkills": [
+     "Angular"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-005",
+   "input": {
+    "title": "Frontend Developer Semi Senior (Angular + Ionic) - 100% Remoto",
+    "company": "SEIDOR",
+    "location": "Santiago",
+    "description": "¿Conoces SEIDOR ? Somos una consultora tecnológica con más de 40 años de experiencia, comprometida con transformar las organizaciones a través de la tecnología. Contamos con presencia en más de 40 países y un equipo de más de 9,000 personas a nivel global, apostando por el talento y el valor de las personas. Ofrecemos un portafolio integral de soluciones y servicios de innovación, colaborando con clientes de diferentes rubros. En Seidor Chile estamos en búsqueda de un Frontend Developer con experiencia en Angular e Ionic para integrarse a un proyecto de largo plazo, participando en el mantenim",
+    "date": "2026-09-06"
+   },
+   "expected": {
+    "score": 20.0,
+    "matchedSkills": [
+     "Angular",
+     "Ionic"
+    ],
+    "titleSkills": [
+     "Angular",
+     "Ionic"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "senior in title",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-006",
+   "input": {
+    "title": "Desarrollador/a Full Stack Java + Angular",
+    "company": "Kibernum",
+    "location": "Santiago",
+    "description": "En Kibernum buscamos un/a Desarrollador/a Full Stack para integrarse a un proyecto tecnológico con foco en desarrollo de aplicaciones e incorporación de soluciones de IA generativa . Requisitos: 2 a 3 años de experiencia en desarrollo Full Stack. Formación profesional en Informática o carrera afín. Experiencia con: Java 21 o superior (mínimo 2 años). Spring Boot . Angular 19 o superior (mínimo 2 años). Docker . Cloud, idealmente GCP . GitHub y JUnit . Metodologías ágiles y pruebas unitarias. Experiencia utilizando IA generativa aplicada al desarrollo de software , idealmente trabajando con mod",
+    "date": "2026-09-06"
+   },
+   "expected": {
+    "score": 18.0,
+    "matchedSkills": [
+     "Angular",
+     "Docker"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "posted this month"
+    ],
+    "disqualifiers": [
+     "asks 3 años of experience"
+    ]
+   }
+  },
+  {
+   "name": "corpus-007",
+   "input": {
+    "title": "Developer Front End Web Senior (Angular / RxJS / NgRx)",
+    "company": "Sermaluc",
+    "location": "Chile",
+    "description": "Sermaluc, con más de 30 años entregando soluciones tecnológicas y operativas de alto valor al sector financiero y corporativo, nos encontramos en búsqueda de un/a Developer Front End Web Senior para integrarse a nuestros equipos de desarrollo en proyectos de transformación digital. 📍 Postulación válida solo para profesionales residentes en Chile 🏡 Modalidad: Remota / Híbrida (Previa coordinación de ser necesario) 📌 Requisitos del Perfil: 🎓 Formación: Ingeniería en Informática, Civil Informática, Ejecución o carrera afín. 💼 Años de experiencia: Mínimo 5 años de experiencia comprobable en desarr",
+    "date": "2026-09-06"
+   },
+   "expected": {
+    "score": 27.0,
+    "matchedSkills": [
+     "Angular",
+     "RxJS",
+     "NgRx"
+    ],
+    "titleSkills": [
+     "Angular",
+     "RxJS",
+     "NgRx"
+    ],
+    "primaryMatches": 2,
+    "signals": [
+     "role in title",
+     "senior in title",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-008",
+   "input": {
+    "title": "Full-Stack Developer (Angular + Java)",
+    "company": "2BRAINS",
+    "location": "Chile",
+    "description": "2Brains es una consultora tecnológica que impulsa el crecimiento y la evolución de organizaciones líderes en Latinoamérica. Diseñamos y construimos el futuro digital de nuestros clientes a través de una integración profunda y estratégica de negocio, experiencia y tecnología , convirtiendo desafíos complejos en impacto real. Hoy, 2Brains forma parte de Acid Labs , uno de los principales grupos de consultoría tech e innovación de la región. Esta adquisición fortalece nuestra propuesta de valor, ampliando nuestra escala, capacidades tecnológicas y presencia regional, y nos permite acompañar a nue",
+    "date": "2026-09-03"
+   },
+   "expected": {
+    "score": 15.0,
+    "matchedSkills": [
+     "Angular"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-009",
+   "input": {
+    "title": "Sr. Front-end Software Engineer ( Angular)",
+    "company": "Improving",
+    "location": "Remote",
+    "description": "Improving is an IT services firm focused on AI, Data, and Applications. We modernize legacy systems, build cloud-native platforms, and deliver future-ready solutions through collaborative, long-term partnerships. In this role, we’ll help evolve the Interceptas user interface as part of our Unified Risk Platform—spanning both legacy AngularJS (TypeScript-based) applications and modern Angular (17+). You’ll contribute to platform unification, UI modernization, and the delivery of new features, including dashboards, workflows, configuration screens, and integrations with backend Universal Product",
+    "date": "2026-09-02"
+   },
+   "expected": {
+    "score": 28.0,
+    "matchedSkills": [
+     "Angular",
+     "TypeScript",
+     "AngularJS"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 2,
+    "signals": [
+     "role in title",
+     "senior in title",
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-010",
+   "input": {
+    "title": "Full-Stack Engineer (Java/angular)",
+    "company": "Dynamic Devs",
+    "location": "Chile",
+    "description": "Somos una empresa de tecnología que desarrolla proyectos de alto impacto haciendo de la innovación y transformación digital. Somos partidarios de la excelencia técnica, DevOps, Entrega Continua e Integración Continua, conformando equipos de alto desempeño en proyectos desafiantes, orientados al crecimiento e implementación de nuevas tecnologías. Más importante aún, ofrecemos un entorno colaborativo y multicultural donde puedes aprender, disfrutar y crecer como profesional. Esta posición es híbrida, con asistencia a las oficinas en Santiago (Indispensable). Apply directly on Get on Board. - Dis",
+    "date": "2026-09-01"
+   },
+   "expected": {
+    "score": 15.0,
+    "matchedSkills": [
+     "Angular"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-011",
+   "input": {
+    "title": "Desarrollador Full Stack Senior Java/Angular",
+    "company": "BC Tecnología",
+    "location": "Santiago",
+    "description": "Company Description: BC Tecnologia Job Description: Desarrollador Full Stack Senior Java/Angular – Seguridad de Datos Para importante organización en Chile, buscamos un/a profesional con experiencia sólida en desarrollo Full Stack, Java, Angular, bases de datos e integración de sistemas, que participe en iniciativas orientadas a fortalecer la seguridad y protección de datos personales dentro de aplicaciones y plataformas corporativas. Principales responsabilidades Ejecutar adecuaciones sobre componentes backend, servicios, integraciones y conexiones a datos. Apoyar controles de acceso a datos ",
+    "date": "2026-08-30"
+   },
+   "expected": {
+    "score": 17.0,
+    "matchedSkills": [
+     "Angular"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "senior in title",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-012",
+   "input": {
+    "title": "Desarrollador Full-Stack Senior Java/angular",
+    "company": "BC Tecnología",
+    "location": "Chile",
+    "description": "Para importante organización en Chile, buscamos un/a profesional con experiencia sólida en desarrollo Full Stack, Java, Angular, bases de datos e integración de sistemas, que participe en iniciativas orientadas a fortalecer la seguridad y protección de datos personales dentro de aplicaciones y plataformas corporativas. Apply to this job at getonbrd.com. Ejecutar adecuaciones sobre componentes backend, servicios, integraciones y conexiones a datos. Apoyar controles de acceso a datos personales en aplicaciones y plataformas. Ajustar consultas, servicios, procedimientos o componentes que expongan",
+    "date": "2026-08-28"
+   },
+   "expected": {
+    "score": 17.0,
+    "matchedSkills": [
+     "Angular"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "senior in title",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-013",
+   "input": {
+    "title": "Full-Stack Developer Angular/Go/IA",
+    "company": "2Brains",
+    "location": "Santiago",
+    "description": "2Brains es una consultora tecnológica que impulsa el crecimiento y la evolución de organizaciones líderes en Latinoamérica. Diseñamos y construimos el futuro digital de nuestros clientes a través de una integración profunda y estratégica de negocio, experiencia y tecnología , convirtiendo desafíos complejos en impacto real. Hoy, 2Brains forma parte de Acid Labs , uno de los principales grupos de consultoría tech e innovación de la región. Esta adquisición fortalece nuestra propuesta de valor, ampliando nuestra escala, capacidades tecnológicas y presencia regional, y nos permite acompañar a nue",
+    "date": "2026-08-28"
+   },
+   "expected": {
+    "score": 15.0,
+    "matchedSkills": [
+     "Angular"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-014",
+   "input": {
+    "title": "Desarrollador Front Angular",
+    "company": "SOAINT",
+    "location": "Santiago",
+    "description": "¿Te apasiona el desarrollo tecnológico? 🌍 💙 En SOAINT tenemos más de 19 años dedicados a transformar el mundo a través de la tecnología con soluciones de Analytics, Desarrollo, Automatización y otros y contamos con presencia en España y LATAM. Actualmente buscamos al perfil Desarrollador Frontend Semi Senior Angular para sumarse a nuestro equipo. Si eres una persona con Adaptabilidad, Comunicación asertiva y Pensamiento Crítico ¡si esta es tu oportunidad! 👀🚀 🌟 ¿Qué harás en este rol? 📌 Desarrollar nuevas funcionalidades utilizando Angular 18 y TypeScript. 📌 Implementar interfaces web modernas,",
+    "date": "2026-08-27"
+   },
+   "expected": {
+    "score": 20.0,
+    "matchedSkills": [
+     "Angular",
+     "TypeScript"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 2,
+    "signals": [
+     "role in title",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-015",
+   "input": {
+    "title": "Desarrollador/a Web",
+    "company": "Fundación Triangular Inclusiva",
+    "location": "Santiago",
+    "description": "Company Description: Fundación Triangular Inclusiva Job Description: Oportunidad Laboral inclusiva: Importante empresa con programa de INCLUSIÓN LABORAL PARA PERSONAS CON DISCAPACIDAD busca DESARROLLADOR WEB: Objetivo del Puesto: El Desarrollador será responsable de colaborar en el diseño, desarrollo, implementación y mantenimiento de soluciones web utilizando tecnologías como PHP, MySQL, HTML, CSS, jQuery y CodeIgniter. Su contribución será esencial para garantizar el rendimiento y la funcionalidad de las aplicaciones web. Responsabilidades Principales Colaborar en el diseño y desarrollo de a",
+    "date": "2026-08-27"
+   },
+   "expected": {
+    "score": 2.0,
+    "matchedSkills": [],
+    "titleSkills": [],
+    "primaryMatches": 0,
+    "signals": [
+     "posted this month"
+    ],
+    "disqualifiers": [
+     "stack outside the profile with no TS/JS: php"
+    ]
+   }
+  },
+  {
+   "name": "corpus-016",
+   "input": {
+    "title": "Desarrollador Full-Stack Java Spring Boot + Angular",
+    "company": "3IT",
+    "location": "Chile",
+    "description": "Somos 3IT ¡Innovación y talento que marcan la diferencia! Para nosotros, la innovación es un proceso colaborativo y el crecimiento una meta compartida. Nos guiamos por valores como el trabajo en equipo, la confiabilidad, la empatía, el compromiso, la honestidad y la calidad, porque sabemos que los buenos resultados parten de buenas relaciones. Además, valoramos la diversidad y promovemos espacios de trabajo inclusivos. Por eso nos sumamos activamente al cumplimiento de la Ley 21.015, asegurando procesos accesibles y con igualdad de oportunidades. Si estás buscando un lugar donde seguir aprendi",
+    "date": "2026-08-19"
+   },
+   "expected": {
+    "score": 15.0,
+    "matchedSkills": [
+     "Angular"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-017",
+   "input": {
+    "title": "Desarrollador/a PL/SQL Oracle, Angular, Net Core",
+    "company": "Apside",
+    "location": "Chile",
+    "description": "Apside es una consultora tecnológica chilena en operación desde 2015, especializada en desarrollo de software y en outsourcing de equipos de desarrollo (staff augmentation): nuestros especialistas se integran a las células ágiles del cliente para construir, evolucionar y mantener sus productos digitales. También hacemos software factory, integraciones, servicios cloud (AWS, Azure, GCP), diseño UX/UI y soluciones con IA. Esta es una vacante concreta y actualmente abierta para incorporarse a un equipo de desarrollo ya formado de Apside, que trabaja para una compañía de la industria de salud en C",
+    "date": "2026-08-17"
+   },
+   "expected": {
+    "score": 16.0,
+    "matchedSkills": [
+     "Angular",
+     "AWS"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-018",
+   "input": {
+    "title": "Principal Full-Stack Engineer (.NET/Angular) (AI-First Development) - Software",
+    "company": "Truelogic",
+    "location": "Remoto",
+    "description": "Remote Principal Full-Stack Engineer (.NET/Angular) (AI-First Development) – Software at Truelogic - Jobicy Meet Jobicy Copilot — free AI autofill for job applications + remote job alerts › Home Recruiter Remote Jobs Job Categories Content & Editorial Customer Success Creative & Design DevOps & Infrastructure Software Engineering Finance & Accounting HR & Recruiting Product & Operations Data Science & Analytics Marketing & Sales All categories › Job Locations 🇺🇸 USA 🇨🇦 Canada 🇬🇧 UK 🇪🇺 Europe 🌎 LATAM 🌏 EMEA All locations › Job Types Remote Full Time Jobs Remote Part Time Jobs Remote Contract Jo",
+    "date": "2026-08-13"
+   },
+   "expected": {
+    "score": 23.0,
+    "matchedSkills": [
+     "Angular",
+     ".NET backend API integration"
+    ],
+    "titleSkills": [
+     "Angular",
+     ".NET backend API integration"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "senior in title",
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-019",
+   "input": {
+    "title": "Desarrollador Frontend Angular",
+    "company": "Softtek",
+    "location": "Santiago Metropolitan Area",
+    "description": "Softtek es un proveedor global de servicios orientados a procesos de TI con más de 30 oficinas en Norteamérica, Latinoamérica, Europa y Asia. Maximizamos el valor del software para el mundo: Creamos, Probamos, Implementamos y damos mantenimiento a sistemas que empoderan organizaciones e individuos. En la actualidad nos encontramos en la búsqueda de un talento para el perfil: Desarrollador Frontend Angular Requisitos: De 4 a 5 años de experiencia como Frontend Developer Experiencia en: Front End Angular 17 o superior TypeScript avanzado HTML5 / CSS3 / SCSS Responsive Design Angular Material Con",
+    "date": "2026-08-15"
+   },
+   "expected": {
+    "score": 25.0,
+    "matchedSkills": [
+     "Angular",
+     "Angular Material",
+     "TypeScript"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 3,
+    "signals": [
+     "role in title",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-020",
+   "input": {
+    "title": "Full-Stack Developer: Java + Angular",
+    "company": "Improving",
+    "location": "Remote",
+    "description": "En Improving South America, brindamos servicios de TI para transformar la percepción del profesional de TI. Nos enfocamos en consultoría de TI, desarrollo de software y formación ágil. La empresa promueve una cultura de trabajo excepcional basada en el trabajo en equipo, la excelencia y la diversión, con enfoque en crecimiento personal y recompensas compartidas. Al integrarse, el/la candidato/a formará parte de una comunidad que prioriza la comunicación abierta y relaciones laborales sólidas a largo plazo, respaldada por una estructura de desarrollo profesional y aprendizaje continuo. Apply to",
+    "date": "2026-08-14"
+   },
+   "expected": {
+    "score": 18.0,
+    "matchedSkills": [
+     "Angular"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-021",
+   "input": {
+    "title": "Desarrollador/a PL/SQL Oracle, Angular, Net Core",
+    "company": "Apside",
+    "location": "Remote",
+    "description": "Apside es una consultora tecnológica chilena en operación desde 2015, especializada en desarrollo de software y en outsourcing de equipos de desarrollo (staff augmentation): nuestros especialistas se integran a las células ágiles del cliente para construir, evolucionar y mantener sus productos digitales. También hacemos software factory, integraciones, servicios cloud (AWS, Azure, GCP), diseño UX/UI y soluciones con IA. Esta es una vacante concreta y actualmente abierta para incorporarse a un equipo de desarrollo ya formado de Apside, que trabaja para una compañía de la industria de salud en C",
+    "date": "2026-08-14"
+   },
+   "expected": {
+    "score": 19.0,
+    "matchedSkills": [
+     "Angular",
+     "AWS"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-022",
+   "input": {
+    "title": "Senior Full-Stack .NET & Angular Engineer - Remote Work | REF#300776",
+    "company": "BairesDev",
+    "location": "Santiago Metropolitan Region, Chile",
+    "description": "At BairesDev®, we've been leading the way in technology projects for over 15 years. We deliver cutting-edge solutions to giants like Google and the most innovative startups in Silicon Valley. Our diverse 4,000+ team, composed of the world's Top 1% of tech talent, works remotely on roles that drive significant impact worldwide. When you apply for this position, you're taking the first step in a process that goes beyond the ordinary. We aim to align your passions and skills with our vacancies, setting you on a path to exceptional career development and success. Senior Full-Stack .NET & Angular E",
+    "date": "2026-08-13"
+   },
+   "expected": {
+    "score": 23.0,
+    "matchedSkills": [
+     "Angular",
+     ".NET backend API integration"
+    ],
+    "titleSkills": [
+     "Angular",
+     ".NET backend API integration"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "senior in title",
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-023",
+   "input": {
+    "title": "Software Engineer (Angular + SEO/Marketing) - Remote - Latin America",
+    "company": "FullStack",
+    "location": "Santiago Metropolitan Area",
+    "description": "About FullStack FullStack is your AI-native engineering partner, built to turn AI capability into certainty. Most companies can demo AI; few can get it to production and prove what it produced. We close that gap with three capabilities, AI built into your products from the start, elite vetted talent who apply it, and transparent execution that shows value every step of the way. With now over 600 customers in North America, FullStack is one integrated partner for all your AI engineering needs. With FullStack, you move forward with confidence. We’re Most Proud Of Offering life-changing career op",
+    "date": "2026-08-13"
+   },
+   "expected": {
+    "score": 18.0,
+    "matchedSkills": [
+     "Angular"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-024",
+   "input": {
+    "title": "Front-end Developer Angular",
+    "company": "42Labs",
+    "location": "Chile",
+    "description": "En 42Labs no solo desarrollamos software: construimos soluciones que transforman negocios en distintos sectores, desde el financiero hasta logística y educación. Buscamos un/a Desarrollador Frontend Angular para sumarse a un equipo que une lo técnico y lo humano, con foco en crear experiencias web de alto impacto para usuarios reales. Trabajarás en productos y plataformas donde la calidad, la mantenibilidad y la performance son clave: desde el diseño e implementación de interfaces, hasta la integración con APIs y la evolución continua de componentes reutilizables. Nuestra cultura se basa en tr",
+    "date": "2026-08-11"
+   },
+   "expected": {
+    "score": 15.0,
+    "matchedSkills": [
+     "Angular"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-025",
+   "input": {
+    "title": "INGENIERO DE SOFTWARE FULL STACK (Angular / React / Vue – APIs)",
+    "company": "Key One",
+    "location": "Santiago",
+    "description": "RESPONSABILIDADES: Será responsable de diseñar, desarrollar e implementar soluciones digitales para plataformas corporativas, utilizando tecnologías frontend y backend modernas, asegurando altos estándares de calidad, seguridad, rendimiento y mantenibilidad del software. Deberá participar activamente en el ciclo completo de desarrollo, proponiendo soluciones técnicas que aporten valor al negocio, favorezcan la escalabilidad de las aplicaciones y contribuyan a la mejora continua de los procesos de desarrollo. FUNCIONES: · Proactivo y participativo, deberá ejercer liderazgo técnico en las áreas ",
+    "date": "2026-08-11"
+   },
+   "expected": {
+    "score": 18.0,
+    "matchedSkills": [
+     "Angular",
+     "React"
+    ],
+    "titleSkills": [
+     "Angular",
+     "React"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-026",
+   "input": {
+    "title": "Desarrollador Frontend Angular Senior",
+    "company": "Stefanini Group",
+    "location": "Santiago",
+    "description": "Desarrollador Frontend Angular Senior 🚀 ¡Únete a un equipo de alto impacto y participa en el desarrollo de aplicaciones web modernas y escalables! Buscamos un Desarrollador Frontend Angular Senior con experiencia en Angular y arquitecturas de Micro Frontends, que disfrute trabajar en entornos ágiles desarrollando soluciones de alta calidad e integrándose con equipos multidisciplinarios. ¿Qué harás? Desarrollar y mantener aplicaciones web utilizando Angular. Participar en la evolución y modernización de aplicaciones desarrolladas en AngularJS. Implementar soluciones bajo arquitectura de Micro F",
+    "date": "2026-08-11"
+   },
+   "expected": {
+    "score": 20.0,
+    "matchedSkills": [
+     "Angular",
+     "AngularJS"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "senior in title",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-027",
+   "input": {
+    "title": "Sr Front End Developer (Angular)",
+    "company": "Stefanini LATAM",
+    "location": "Santiago Metropolitan Region, Chile",
+    "description": "🚀 En Stefanini LATAM buscamos un/a Desarrollador/a Frontend Web , con sólida experiencia en Angular , para sumarse a proyectos desafiantes de desarrollo y evolución de aplicaciones web de alto impacto. La persona seleccionada trabajará en entornos colaborativos y ágiles, participando activamente en el diseño, desarrollo e integración de interfaces web modernas, asegurando calidad, mantenibilidad y buenas prácticas de código.Tendrá interacción constante con equipos multidisciplinarios, colaborando con áreas de backend, QA, negocio y arquitectura para construir soluciones escalables y orientadas",
+    "date": "2026-08-11"
+   },
+   "expected": {
+    "score": 17.0,
+    "matchedSkills": [
+     "Angular"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "senior in title",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-028",
+   "input": {
+    "title": "Fullstack Senior Node.js + Angular – GCP",
+    "company": "Kibernum",
+    "location": "Santiago",
+    "description": "En Kibernum buscamos un/a Fullstack Senior Node.js + Angular – GCP para integrarse a un proyecto de modernización tecnológica, participando principalmente en el desarrollo backend de soluciones escalables sobre Google Cloud Platform. Principales responsabilidades Diseñar y desarrollar servicios backend escalables con Node.js . Crear y mantener microservicios, APIs e integraciones. Desarrollar componentes frontend con Angular . Implementar soluciones cloud nativas utilizando Cloud Run y Pub/Sub . Trabajar con bases de datos PostgreSQL . Crear scripts y automatizaciones simples con Python . Util",
+    "date": "2026-08-11"
+   },
+   "expected": {
+    "score": 28.0,
+    "matchedSkills": [
+     "Angular",
+     "Node.js",
+     "PostgreSQL",
+     "Python"
+    ],
+    "titleSkills": [
+     "Angular",
+     "Node.js"
+    ],
+    "primaryMatches": 2,
+    "signals": [
+     "role in title",
+     "senior in title",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-029",
+   "input": {
+    "title": "Full-Stack Developer Angular/Go/IA",
+    "company": "2BRAINS",
+    "location": "Chile",
+    "description": "2Brains es una consultora tecnológica que impulsa el crecimiento y la evolución de organizaciones líderes en Latinoamérica. Diseñamos y construimos el futuro digital de nuestros clientes a través de una integración profunda y estratégica de negocio, experiencia y tecnología , convirtiendo desafíos complejos en impacto real. Hoy, 2Brains forma parte de Acid Labs , uno de los principales grupos de consultoría tech e innovación de la región. Esta adquisición fortalece nuestra propuesta de valor, ampliando nuestra escala, capacidades tecnológicas y presencia regional, y nos permite acompañar a nue",
+    "date": "2026-08-10"
+   },
+   "expected": {
+    "score": 15.0,
+    "matchedSkills": [
+     "Angular"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-030",
+   "input": {
+    "title": "Front-end Developer Angular / IA",
+    "company": "2BRAINS",
+    "location": "Chile",
+    "description": "2Brains es una consultora tecnológica que impulsa el crecimiento y la evolución de organizaciones líderes en Latinoamérica. Diseñamos y construimos el futuro digital de nuestros clientes a través de una integración profunda y estratégica de negocio, experiencia y tecnología , convirtiendo desafíos complejos en impacto real. Hoy, 2Brains forma parte de Acid Labs , uno de los principales grupos de consultoría tech e innovación de la región. Esta adquisición fortalece nuestra propuesta de valor, ampliando nuestra escala, capacidades tecnológicas y presencia regional, y nos permite acompañar a nue",
+    "date": "2026-08-10"
+   },
+   "expected": {
+    "score": 15.0,
+    "matchedSkills": [
+     "Angular"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-031",
+   "input": {
+    "title": "Front-end Engineer (Angular)",
+    "company": "Improving",
+    "location": "Remote",
+    "description": "En Improving South America, brindamos servicios de TI para transformar la percepción del profesional de TI. Nos enfocamos en consultoría de TI, desarrollo de software y formación ágil. La empresa promueve una cultura de trabajo excepcional basada en el trabajo en equipo, la excelencia y la diversión, con enfoque en crecimiento personal y recompensas compartidas. Al integrarse, el/la candidato/a formará parte de una comunidad que prioriza la comunicación abierta y relaciones laborales sólidas a largo plazo, respaldada por una estructura de desarrollo profesional y aprendizaje continuo. Apply at",
+    "date": "2026-08-06"
+   },
+   "expected": {
+    "score": 18.0,
+    "matchedSkills": [
+     "Angular"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-032",
+   "input": {
+    "title": "Sr Front-end Engineer (Angular & Mobile)",
+    "company": "Interfell",
+    "location": "Remote",
+    "description": "La empresa se especializa en encontrar soluciones creativas e innovadoras, incluso para los retos más complejos. Su motivación es superar constantemente las expectativas, superando los objetivos gracias a ideas originales. Está formada por profesionales apasionados por transformar la realidad de sus clientes y ayudarles a alcanzar sus objetivos a través del cambio. Para lograrlo, la empresa se centra en establecer relaciones sólidas, descubrir nuevos talentos y colaborar con líderes del sector utilizando herramientas avanzadas de marketing digital. Sus servicios combinan estrategia, diseño y t",
+    "date": "2026-08-06"
+   },
+   "expected": {
+    "score": 20.0,
+    "matchedSkills": [
+     "Angular"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "senior in title",
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-033",
+   "input": {
+    "title": "Senior Frontend Developer (Angular.js/React.js)",
+    "company": "Proxify",
+    "location": "Remoto",
+    "description": "Remote Development Jobs | Working Nomads MENU Remote Jobs Companies ✦ Go Premium Job Alerts Post a Job Log in Sign up Toggle navigation Working Nomads Remote Jobs Companies Post Jobs ✦ Go Premium Get Free Job Alerts Log in Remote Development Jobs Explore the fully remote Development jobs worldwide. Apply to positions like Software Developer, Full Stack Developer, Backend Developer, and more. Whether you're seeking full-time, part-time, freelance, or work-from-anywhere opportunities in development that allow you to work from home or from anywhere in the world, we have online development jobs hi",
+    "date": "2026-07-03"
+   },
+   "expected": {
+    "score": 24.0,
+    "matchedSkills": [
+     "Angular",
+     "AngularJS",
+     "React"
+    ],
+    "titleSkills": [
+     "Angular",
+     "AngularJS",
+     "React"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "senior in title",
+     "remote"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-034",
+   "input": {
+    "title": "Dev. Frontend Angular/React Native - Semi Senior",
+    "company": "Imagemaker",
+    "location": "Chile",
+    "description": "Department: Operations Location: Colombia Description En Imagemaker buscamos a nuestro próximo Desarrollador Front Angular/React Native para diseñar y desarrollar experiencias web y/o móviles inclusivas, personalizadas y de alto rendimiento. Formará parte de un squad multifuncional integrando visiones de producto, ingeniería, datos, seguridad y diseño. Más que escribir código, crearás tecnología con propósito. Esta oportunidad es 100% remota, por lo que está abierta para residentes en Chile y Colombia. Key Responsibilities Responsibilities Entregar soluciones frontend de alta calidad y valor, ",
+    "date": "2026-07-31"
+   },
+   "expected": {
+    "score": 20.0,
+    "matchedSkills": [
+     "Angular",
+     "React"
+    ],
+    "titleSkills": [
+     "Angular",
+     "React"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "senior in title",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-035",
+   "input": {
+    "title": "Desarrollador/a Web (Angular, React y TypeScript)",
+    "company": "MatchFY Agência Digital",
+    "location": "Santiago",
+    "description": "Company Description: Agencia Match Job Description: Buscamos Desarrollador/a Web (Angular, React y TypeScript) Modalidad: 100% remoto Jornada: Full-time ¿Te apasiona desarrollar soluciones web modernas, escalables y de alto rendimiento? ¿Te motiva participar en proyectos desafiantes donde puedas aportar tu experiencia técnica y colaborar con equipos multidisciplinarios? Estamos en búsqueda de un/a Desarrollador/a Web para incorporarse a un proyecto de largo plazo, participando activamente en el desarrollo y evolución de plataformas digitales. Buscamos una persona con sólidos conocimientos en t",
+    "date": "2026-07-29"
+   },
+   "expected": {
+    "score": 25.0,
+    "matchedSkills": [
+     "Angular",
+     "TypeScript",
+     "React"
+    ],
+    "titleSkills": [
+     "Angular",
+     "TypeScript",
+     "React"
+    ],
+    "primaryMatches": 2,
+    "signals": [
+     "role in title",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-036",
+   "input": {
+    "title": "Desarrollador Front Angular",
+    "company": "SOAINT",
+    "location": "Santiago",
+    "description": "¿Te apasiona el desarrollo tecnológico? 🌍 💙 En SOAINT tenemos más de 19 años dedicados a transformar el mundo a través de la tecnología con soluciones de Analytics, Desarrollo, Automatización y otros y contamos con presencia en España y LATAM. Actualmente buscamos al perfil Desarrollador Frontend Semi Senior Angular para sumarse a nuestro equipo. Si eres una persona con Adaptabilidad, Comunicación asertiva y Pensamiento Crítico ¡si esta es tu oportunidad! 👀🚀 🌟 ¿Qué harás en este rol? 📌 Desarrollar nuevas funcionalidades utilizando Angular 18 y TypeScript. 📌 Implementar interfaces web modernas,",
+    "date": "2026-07-29"
+   },
+   "expected": {
+    "score": 20.0,
+    "matchedSkills": [
+     "Angular",
+     "TypeScript"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 2,
+    "signals": [
+     "role in title",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-037",
+   "input": {
+    "title": "Líder Técnico Full Stack Go / Angular",
+    "company": "Acid Labs",
+    "location": "Santiago",
+    "description": "Sobre nosotros Hay empresas que están cambiando el mundo, y detrás de ellas, hay equipos que necesitan ir más lejos, pensar distinto, moverse más rápido. Ahí entramos nosotros. En Acid Labs nos sumamos a los equipos tech de las empresas que están liderando el futuro digital en las industrias más desafiantes en Latinoamérica, con talento especializado que entiende la complejidad, respira colaboración y encuentra claridad donde otros ven ruido. Y lo hacemos #RadicalmenteMejor No trabajamos para nuestros clientes. Trabajamos con ellos. Desde adentro. Como parte de su ritmo. Como una extensión nat",
+    "date": "2026-07-28"
+   },
+   "expected": {
+    "score": 15.0,
+    "matchedSkills": [
+     "Angular"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-038",
+   "input": {
+    "title": "Fullstack Developer (Node/Angular)",
+    "company": "Amaris Consulting",
+    "location": "Santiago",
+    "description": "Lleva tu carrera al siguiente nivel como Fullstack Developer en Santiago, Chile , desarrollando soluciones escalables de principio a fin con tecnologías modernas de frontend y backend. Tendrás un rol clave en el diseño, desarrollo e integración de aplicaciones, colaborando con equipos multidisciplinarios para entregar productos de alta calidad en entornos cloud. Tus funciones Desarrollar y mantener aplicaciones fullstack utilizando Node.js , NestJS , Angular y/o React . Diseñar e implementar APIs y servicios backend escalables con Node.js y NestJS . Integrar aplicaciones con servicios en Googl",
+    "date": "2026-07-28"
+   },
+   "expected": {
+    "score": 26.0,
+    "matchedSkills": [
+     "Angular",
+     "NestJS",
+     "Node.js",
+     "React"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 3,
+    "signals": [
+     "role in title",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-039",
+   "input": {
+    "title": "Desarrollador Frontend Semi Senior Angular",
+    "company": "SOAINT",
+    "location": "Chile",
+    "description": "¿Te apasiona el desarrollo tecnológico? 🌍💙 En SOAINT tenemos más de 19 años dedicados a transformar el mundo a través de la tecnología con soluciones de Analytics, Desarrollo, Automatización y otros y contamos con presencia en España y LATAM. Actualmente buscamos al perfil Desarrollador Frontend Semi Senior Angular para sumarse a nuestro equipo. Si eres una persona con Adaptabilidad, Comunicación asertiva y Pensamiento Crítico ¡si esta es tu oportunidad! 👀🚀 🌟 ¿Qué harás en este rol? 📌 Desarrollar nuevas funcionalidades utilizando Angular 18 y TypeScript. 📌 Implementar interfaces web modernas, ",
+    "date": "2026-07-28"
+   },
+   "expected": {
+    "score": 22.0,
+    "matchedSkills": [
+     "Angular",
+     "TypeScript"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 2,
+    "signals": [
+     "role in title",
+     "senior in title",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-040",
+   "input": {
+    "title": "Front-end Web Angular Senior",
+    "company": "BC Tecnología",
+    "location": "Chile",
+    "description": "En BC Tecnología somos una consultora de TI que diseña soluciones y conforma equipos ágiles para distintos frentes tecnológicos. Creemos equipos en áreas de Infraestructura, Desarrollo de Software y Unidades de Negocio, para clientes de servicios financieros, seguros, retail y gobierno. Con más de 6 años de experiencia, trabajamos en proyectos con foco en metodologías ágiles, cambio organizacional y desarrollo de productos. Para un proyecto en Santiago Centro, buscamos un/a Frontend Web Angular Senior para construir y evolucionar aplicaciones web modernas, asegurando calidad, rendimiento y una",
+    "date": "2026-07-28"
+   },
+   "expected": {
+    "score": 17.0,
+    "matchedSkills": [
+     "Angular"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "senior in title",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-041",
+   "input": {
+    "title": "Senior Front-End Developer (Angular)",
+    "company": "Worldly",
+    "location": "Chile",
+    "description": "Location: Remote - South America, Balkan Region, Mexico (location restrictions apply) About Worldly Worldly is the world’s most comprehensive impact intelligence platform — delivering real data to businesses on impacts within their supply chain. Worldly is trusted by 40,000 global brands, retailers, and manufacturers to provide the single source of ESG intelligence they need to accelerate business and industry transformation. Through strategic and meaningful customer relationships, Worldly provides key insights into supplier performance, product impact, trends analysis, and compliance. When a ",
+    "date": "2026-07-28"
+   },
+   "expected": {
+    "score": 20.0,
+    "matchedSkills": [
+     "Angular"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "senior in title",
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-042",
+   "input": {
+    "title": "Full-Stack Developer Angular + NestJS – Sector Salud",
+    "company": "Apside",
+    "location": "Chile",
+    "description": "Esta es una vacante concreta y actualmente abierta para incorporarse a un equipo de desarrollo ya formado de Apside, que trabaja para una compañía de la industria de salud en Chile. El equipo mantiene y evoluciona las aplicaciones —back-end y front-end— con las que opera el negocio de salud del cliente. La persona que se incorpore va a implementar mejoras sobre esas aplicaciones en producción: no es un proyecto desde cero, sino la evolución continua de sistemas que ya están en uso. Trabajamos con metodologías ágiles (Scrum/Kanban) y prácticas de ingeniería como CI/CD, versionamiento y code rev",
+    "date": "2026-07-14"
+   },
+   "expected": {
+    "score": 20.0,
+    "matchedSkills": [
+     "Angular",
+     "NestJS"
+    ],
+    "titleSkills": [
+     "Angular",
+     "NestJS"
+    ],
+    "primaryMatches": 2,
+    "signals": [
+     "role in title"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-043",
+   "input": {
+    "title": "Front-end Angular",
+    "company": "42labs",
+    "location": "Chile",
+    "description": "En 42Labs no solo desarrollamos tecnología: construimos soluciones donde lo técnico y lo humano van de la mano. Participamos en productos y proyectos que transforman negocios en distintos dominios, como finanzas , logística y educación . Tu rol como Front End Angular será clave para diseñar interfaces modernas, rápidas y accesibles, que mejoren la experiencia de usuario y aporten valor real a las personas. Trabajamos con cultura de transparencia y colaboración, con onboarding sólido, feedback constante y acompañamiento para que puedas aprender, crecer y dejar tu huella en equipo. Apply at the ",
+    "date": "2026-07-15"
+   },
+   "expected": {
+    "score": 13.0,
+    "matchedSkills": [
+     "Angular"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-044",
+   "input": {
+    "title": "Desarrollador/a con experiencia en Java, Angular y Quarkus",
+    "company": "Solheiro Advogados Associados",
+    "location": "Santiago",
+    "description": "Estamos sumando talento clave para un nuevo desafío profesional bajo modalidad híbrida en Santiago. Requisitos Principales ▪️ 5 años o más de experiencia en desarrollo de software. ▪️ Sólido dominio técnico en Java y el framework Quarkus. ▪️ Experiencia en desarrollo frontend con Angular. ▪️ Disponibilidad para trabajar en modalidad híbrida en Santiago. Show more Show less",
+    "date": "2026-07-26"
+   },
+   "expected": {
+    "score": 15.0,
+    "matchedSkills": [
+     "Angular"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-045",
+   "input": {
+    "title": "Desarrolladores Java Angular Quarkus",
+    "company": "CMG3",
+    "location": "Providencia",
+    "description": "¡Buscamos Desarrollador/a con experiencia en Java, Angular y Quarkus! Estamos sumando talento clave para un nuevo desafío profesional bajo modalidad híbrida en Santiago. Requisitos principales: ▪️ 5 años o más de experiencia en desarrollo de software. ▪️ Sólido dominio técnico en Java y el framework Quarkus. ▪️ Experiencia en desarrollo frontend con Angular. ▪️ Disponibilidad para trabajar en modalidad híbrida en Santiago. Show more Show less",
+    "date": "2026-07-26"
+   },
+   "expected": {
+    "score": 15.0,
+    "matchedSkills": [
+     "Angular"
+    ],
+    "titleSkills": [
+     "Angular"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-046",
+   "input": {
+    "title": "Full-Stack Developer – Back-end Focus (NestJS/Next.JS/aWS)",
+    "company": "WiTi",
+    "location": "Remote",
+    "description": "En WiTI conectamos talento tecnológico con proyectos de alto impacto en Latinoamérica. Trabajamos como partner estratégico de grandes organizaciones, construyendo soluciones digitales con foco en calidad, agilidad y resultados. Buscamos Full Stack Developers con una orientación marcada hacia Backend para integrarse a la construcción de una solución B2B dentro de un importante ecosistema regional de retail. El stack principal del proyecto está compuesto por NestJS para el desarrollo Backend, Next.js para las funcionalidades Frontend y AWS como plataforma Cloud . Aunque participarás en ambos ext",
+    "date": "2026-09-02"
+   },
+   "expected": {
+    "score": 21.0,
+    "matchedSkills": [
+     "NestJS",
+     "AWS"
+    ],
+    "titleSkills": [
+     "NestJS",
+     "AWS"
+    ],
+    "primaryMatches": 1,
+    "signals": [
+     "role in title",
+     "remote",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-047",
+   "input": {
+    "title": "Back-end Developer – TypeScript / NestJS + IA Generati",
+    "company": "BC Tecnología",
+    "location": "Chile",
+    "description": "Buscamos un/a Senior Backend Developer con sólida experiencia en TypeScript y NestJS, diseño de APIs, microservicios y arquitecturas modulares, que además cuente con experiencia práctica integrando LLMs o modelos generativos en productos reales. El rol tendrá foco en el desarrollo y evolución de servicios backend escalables, mantenibles y orientados a dominio, participando en integraciones con servicios externos y en la incorporación de capacidades de Inteligencia Artificial Generativa dentro de productos digitales. Apply directly from Get on Board. Diseñar y desarrollar APIs y microservicios ",
+    "date": "2026-08-28"
+   },
+   "expected": {
+    "score": 16.0,
+    "matchedSkills": [
+     "NestJS",
+     "TypeScript"
+    ],
+    "titleSkills": [
+     "NestJS",
+     "TypeScript"
+    ],
+    "primaryMatches": 2,
+    "signals": [
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-048",
+   "input": {
+    "title": "Senior Backend Developer – TypeScript / NestJS / IA Generativa",
+    "company": "BC Tecnología",
+    "location": "Santiago",
+    "description": "Company Description: BC Tecnologia Job Description: Senior Backend Developer – TypeScript / NestJS / IA Generativa En BC Tecnología buscamos un/a Senior Backend Developer con sólida experiencia en TypeScript, NestJS, arquitectura modular e integración de Inteligencia Artificial Generativa. La posición está orientada principalmente a backend, diseño de arquitectura y construcción de soluciones escalables, mantenibles y preparadas para ambientes productivos. Qué harás Diseñar y desarrollar soluciones backend con TypeScript y NestJS. Trabajar con Nx Monorepo y arquitecturas modulares. Diseñar e i",
+    "date": "2026-08-28"
+   },
+   "expected": {
+    "score": 18.0,
+    "matchedSkills": [
+     "NestJS",
+     "TypeScript"
+    ],
+    "titleSkills": [
+     "NestJS",
+     "TypeScript"
+    ],
+    "primaryMatches": 2,
+    "signals": [
+     "senior in title",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-049",
+   "input": {
+    "title": "Desarrollador/a Fullstack | React.js + NestJS/Node.js",
+    "company": "Genesys Global",
+    "location": "Santiago",
+    "description": "Somos una empresa con 35 años en el mercado, contamos con servicios de fábrica de desarrollo de software y prestación de servicios de profesionales a través de Outsourcing, nuestra matriz está en Concepción y contamos con una operación en Santiago. Estamos en búsqueda de un/a Desarrollador/a Fullstack para incorporarse a un proyecto tecnológico en Santiago. 🔎 Requisitos excluyentes Más de 2 años de experiencia en desarrollo Fullstack. Experiencia comprobable con React.js. Experiencia con NestJS / Node.js. Experiencia en Go, habiendo participado en proyectos con esta tecnología. Experiencia des",
+    "date": "2026-08-27"
+   },
+   "expected": {
+    "score": 25.0,
+    "matchedSkills": [
+     "NestJS",
+     "Node.js",
+     "React"
+    ],
+    "titleSkills": [
+     "NestJS",
+     "Node.js",
+     "React"
+    ],
+    "primaryMatches": 2,
+    "signals": [
+     "role in title",
+     "posted this month"
+    ],
+    "disqualifiers": [
+     "asks 2 años of experience"
+    ]
+   }
+  },
+  {
+   "name": "corpus-050",
+   "input": {
+    "title": "Senior Back-end Developer – TypeScript / NestJS",
+    "company": "BC Tecnología",
+    "location": "Chile",
+    "description": "En BC Tecnología buscamos un/a Senior Backend Developer con sólida experiencia en TypeScript, NestJS, arquitectura modular e integración de Inteligencia Artificial Generativa. La posición está orientada principalmente a backend, diseño de arquitectura y construcción de soluciones escalables, mantenibles y preparadas para ambientes productivos. Buscamos experiencia práctica integrando LLMs o modelos generativos en productos reales, idealmente con: OpenAI. Azure OpenAI. Gemini. Vertex AI. Apply directly on Get on Board. Diseñar y desarrollar soluciones backend con TypeScript y NestJS. Trabajar c",
+    "date": "2026-08-26"
+   },
+   "expected": {
+    "score": 18.0,
+    "matchedSkills": [
+     "NestJS",
+     "TypeScript"
+    ],
+    "titleSkills": [
+     "NestJS",
+     "TypeScript"
+    ],
+    "primaryMatches": 2,
+    "signals": [
+     "senior in title",
+     "posted this month"
+    ],
+    "disqualifiers": []
+   }
+  },
+  {
+   "name": "corpus-051",
+   "input": {
+    "title": "AI Engineer (Node.js TypeScript NestJS)",
+    "company": "2brains",
+    "location": "Remote",
+    "description": "2Brains es una consultora tecnológica que impulsa el crecimiento y la evolución de organizaciones líderes en Latinoamérica. Diseñamos y construimos el futuro digital de nuestros clientes a través de una integración profunda y estratégica de negocio, experiencia y tecnología , convirtiendo desafíos complejos en impacto real. Hoy, 2Brains forma parte de Acid Labs , uno de los principales grupos de consultoría tech e innovación de la región. Esta adquisición fortalece nuestra propuesta de valor, ampliando nuestra escala, capacidades tecnológicas y presencia regional, y nos permite acompañar a nue",
+    "date": "2026-07-15"
+   },
+   "expected": {
+    "score": 24.0,
+    "matchedSkills": [
+     "NestJS",
+     "Node.js",
+     "TypeScript"
+    ],
+    "titleSkills": [
+     "NestJS",
+     "Node.js",
+     "TypeScript"
+    ],
+    "primaryMatches": 3,
+    "signals": [
+     "remote"
+    ],
+    "disqualifiers": []
+   }
+  }
+ ]
+}

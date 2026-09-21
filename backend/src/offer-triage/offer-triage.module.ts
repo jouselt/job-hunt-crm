@@ -13,6 +13,6 @@ import { SettingsModule } from '../settings/settings.module';
   imports: [TypeOrmModule.forFeature([Offer]), ApplicationsModule, SettingsModule],
   controllers: [OffersController],
   providers: [OffersService, OfferTriageService, JevClient, TriageProfileService],
-  exports: [OfferTriageService, OffersService],
+  exports: [OfferTriageService, OffersService, TriageProfileService],
 })
 export class OfferTriageModule {}

@@ -1,0 +1,167 @@
+<section class="scoreboard">
+  <header class="head">
+    <div class="head-text">
+      <h1>Scoreboard</h1>
+      <p class="lead">
+        Every offer in your CRM and every live vacancy from the devsChile feed, ranked by one
+        score computed against your profile. One ruler for both, so the numbers compare.
+      </p>
+    </div>
+    <div class="head-actions">
+      <button class="btn-primary" [disabled]="busy || running" (click)="refresh()">
+        {{ running ? 'Refreshing…' : 'Refresh feed' }}
+      </button>
+      <button class="btn-ghost" [disabled]="busy || running" (click)="rescore()">
+        Rescore
+      </button>
+    </div>
+  </header>
+
+  @if (error) {
+    <p class="err">{{ error }}</p>
+  }
+  @if (notice) {
+    <p class="notice">{{ notice }}</p>
+  }
+
+  @if (running && job) {
+    <div class="progress-card">
+      <div class="progress-line">
+        <span>Fetching the feed</span>
+        <span class="progress-mono">{{ job.fetched }} / {{ job.total || '?' }}</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" [style.width.%]="progressPercent"></div>
+      </div>
+      <p class="progress-meta">
+        Page {{ job.pages }} · {{ job.message }}
+      </p>
+    </div>
+  }
+
+  @if (job && !running && job.status !== 'idle') {
+    <p class="job-meta">
+      Last refresh: <span>{{ job.message }}</span>
+      @if (job.finishedAt) {
+        · {{ job.finishedAt | date: 'short' }}
+      }
+    </p>
+  }
+
+  @if (scoreboard) {
+    <p class="stats">
+      <b>{{ scoreboard.totals.admitted }}</b> worth applying ·
+      <b>{{ scoreboard.totals.offers }}</b> CRM offers ·
+      <b>{{ scoreboard.totals.vacancies }}</b> feed vacancies ·
+      <b>{{ scoreboard.meta.profileSkills }}</b> profile skills ·
+      <b>{{ scoreboard.totals.rejected }}</b> filtered out
+    </p>
+
+    <div class="controls">
+      <input
+        class="filter"
+        type="search"
+        placeholder="Filter by title, company, skill…"
+        [(ngModel)]="filter"
+        name="filter"
+      />
+      <button class="btn-ghost" (click)="showRejected = !showRejected">
+        {{ showRejected ? 'Hide' : 'Show' }} filtered out ({{ scoreboard.totals.rejected }})
+      </button>
+    </div>
+
+    @if (titleOnlyCount > 0) {
+      <p class="caveat">
+        {{ titleOnlyCount }} of {{ scoreboard.items.length }} were scored from the title alone:
+        the feed does not publish the job description. A title-only score is weaker evidence than
+        one read from the full posting.
+      </p>
+    }
+
+    @if (loading) {
+      <p>Loading…</p>
+    } @else if (items.length === 0) {
+      <p>
+        Nothing matches yet. Hit <strong>Refresh feed</strong> to pull the live vacancies.
+      </p>
+    } @else {
+      <ol class="list">
+        @for (item of items; track item.kind + item.id) {
+          <li class="row">
+            <div class="score {{ scoreTier(item.score) }}">
+              <span class="score-value">{{ item.score | number: '1.0-1' }}</span>
+              <span class="score-label">score</span>
+            </div>
+            <div class="body">
+              <div class="row-head">
+                <h2>{{ item.title }}</h2>
+                <span class="badge" [class.badge-crm]="item.kind === 'offer'">
+                  {{ sourceLabel(item) }}
+                </span>
+              </div>
+              <p class="row-meta">
+                @if (item.company) {
+                  <span class="company">{{ item.company }}</span>
+                }
+                @if (item.location) {
+                  <span>· {{ item.location }}</span>
+                }
+                @if (item.salary) {
+                  <span class="salary">· {{ item.salary }}</span>
+                }
+                @if (item.postedAt) {
+                  <span>· posted {{ item.postedAt }}</span>
+                }
+                @if (item.jevFitScore != null) {
+                  <span>· Jev {{ item.jevFitScore | number: '1.2-2' }}</span>
+                }
+                @if (item.jevDecision) {
+                  <span>· {{ item.jevDecision }}</span>
+                }
+                @if (item.signals.length > 0) {
+                  <span>· {{ item.signals.join(' · ') }}</span>
+                }
+              </p>
+              @if (item.matchedSkills.length > 0) {
+                <p class="skills">
+                  @for (skill of item.matchedSkills; track skill) {
+                    <span class="chip" [class.chip-title]="item.titleSkills.includes(skill)">
+                      {{ skill }}
+                    </span>
+                  }
+                </p>
+              }
+            </div>
+            <div class="row-actions">
+              @if (item.url) {
+                <a class="btn-link" [href]="item.url" target="_blank" rel="noopener">Open</a>
+              }
+              <span class="primary-count">{{ item.primaryMatches }} daily</span>
+            </div>
+          </li>
+        }
+      </ol>
+    }
+
+    @if (showRejected && scoreboard.rejected.length > 0) {
+      <section class="rejected">
+        <h2>Filtered out, with the reason</h2>
+        <p class="lead">
+          Every rejection names the rule that tripped it. A gate you cannot audit is a gate you
+          cannot trust, and a wrong rejection here costs a real application.
+        </p>
+        <ul class="rejected-list">
+          @for (rejection of scoreboard.rejected; track rejection.kind + rejection.id) {
+            <li>
+              <span class="rejected-title">{{ rejection.title }}</span>
+              @if (rejection.company) {
+                <span class="company">{{ rejection.company }}</span>
+              }
+              <span class="reason">{{ rejection.reason }}</span>
+            </li>
+          }
+        </ul>
+      </section>
+    }
+  }
+</section>

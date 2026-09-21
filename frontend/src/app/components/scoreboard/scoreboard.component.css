@@ -1,0 +1,65 @@
+.scoreboard { max-width: var(--page-max); margin: 0 auto; padding: var(--space-10) var(--space-6) var(--space-24); }
+
+.head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-6); flex-wrap: wrap; margin-bottom: var(--space-8); }
+.head-text h1 { margin: 0 0 var(--space-2); }
+.head-actions { display: flex; gap: var(--space-2); flex-shrink: 0; }
+.lead { color: var(--color-fog); margin: 0; max-width: 62ch; }
+
+button { font-family: var(--font-inter); font-size: 14px; border: none; border-radius: var(--radius-md); padding: var(--space-2) var(--space-4); cursor: pointer; }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-primary { background: var(--color-acid-lime); color: var(--color-void); font-weight: 510; }
+.btn-ghost { background: transparent; color: var(--color-mist); box-shadow: inset 0 0 0 1px var(--color-graphite); }
+
+.err { color: var(--color-coral-red); }
+.notice { color: var(--color-signal-teal); }
+.company, .rejected-title { color: var(--color-bone); }
+.salary { color: var(--color-pulse-green); }
+.badge-crm, .btn-link { color: var(--color-acid-lime); }
+
+/* Numbers the eye compares get mono; secondary lines share one muted size. */
+.score-value, .primary-count, .progress-mono { font-family: var(--font-mono); }
+.stats, .row-meta, .caveat, .progress-meta, .job-meta, .rejected-list li { color: var(--color-fog); font-size: 13px; }
+
+.progress-card, .row { background: var(--color-carbon); border-radius: var(--radius-lg); box-shadow: var(--shadow-card); }
+
+.progress-card { padding: var(--space-4); margin-bottom: var(--space-6); }
+.progress-line { display: flex; justify-content: space-between; align-items: baseline; color: var(--color-bone); }
+.progress-track { height: 4px; margin: var(--space-2) 0; background: var(--color-graphite); border-radius: var(--radius-full); overflow: hidden; }
+.progress-fill { height: 100%; background: var(--color-acid-lime); transition: width 0.4s ease; }
+.progress-meta, .job-meta { margin: var(--space-2) 0 var(--space-4); }
+
+.stats { margin: 0 0 var(--space-6); color: var(--color-paper); }
+
+.controls { display: flex; gap: var(--space-3); margin-bottom: var(--space-4); flex-wrap: wrap; }
+.filter { flex: 1 1 240px; background: var(--color-carbon); color: var(--color-mist); border: none; border-radius: var(--radius-md); box-shadow: inset 0 0 0 1px var(--color-graphite); padding: var(--space-2) var(--space-3); }
+.filter:focus { outline: none; box-shadow: inset 0 0 0 1px var(--color-smoke); }
+.caveat { border-left: 2px solid var(--color-smoke); padding-left: var(--space-3); margin: 0 0 var(--space-4); }
+
+.list, .rejected-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-2); }
+.row { display: flex; gap: var(--space-4); padding: var(--space-4); align-items: flex-start; }
+
+.score { display: flex; flex-direction: column; align-items: center; border-radius: var(--radius-md); padding: var(--space-1) var(--space-2); min-width: 56px; background: var(--color-graphite); }
+.score-value { font-size: 20px; color: var(--color-paper); }
+.score-label { font-size: 10px; }
+.tier-high { background: rgba(228, 242, 34, 0.14); }
+.tier-mid { background: rgba(2, 184, 204, 0.14); }
+
+.row-head { display: flex; align-items: baseline; gap: var(--space-3); flex-wrap: wrap; }
+.row-head h2, .rejected h2 { font-size: 16px; margin: 0 0 var(--space-2); }
+.row-meta { margin: 0; }
+.skills { display: flex; flex-wrap: wrap; gap: var(--space-1); margin: var(--space-2) 0 0; }
+
+.badge { font-size: 11px; color: var(--color-fog); border-radius: var(--radius-full); padding: 2px var(--space-2); box-shadow: inset 0 0 0 1px var(--color-graphite); white-space: nowrap; }
+.chip { font-size: 12px; color: var(--color-fog); background: var(--color-obsidian); border-radius: var(--radius-full); padding: 2px var(--space-2); }
+.chip-title { color: var(--color-void); background: var(--color-acid-lime); }
+
+.row-actions { display: flex; flex-direction: column; align-items: flex-end; gap: var(--space-2); margin-left: auto; }
+.btn-link, .primary-count { font-size: 12px; white-space: nowrap; color: var(--color-fog); }
+.btn-link { text-decoration: none; }
+
+.rejected { margin-top: var(--space-10); padding-top: var(--space-6); border-top: 1px solid var(--color-graphite); }
+.rejected-list { margin-top: var(--space-4); }
+.rejected-list li { display: flex; align-items: baseline; gap: var(--space-3); flex-wrap: wrap; }
+.reason { font-family: var(--font-mono); font-size: 12px; color: var(--color-coral-red); }
+
+@media (max-width: 720px) { .row { flex-wrap: wrap; } }

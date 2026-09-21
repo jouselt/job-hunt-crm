@@ -18,6 +18,7 @@ lock-in.
 - **Next follow-ups** — a view of everything due today or overdue.
 - **Pipeline analytics** — per-stage counts, percentages over active applications, and average days-in-stage.
 - **Daily reminder** — a 09:00 cron builds a per-user follow-up summary (emailed via SendGrid when configured; otherwise logged).
+- **Offer triage** — a 09:00 cron scores new imported offers with the TypeSafe Jev API and applies fixed thresholds to decide SEND (card created) vs REVIEW (you decide).
 - **Per-user isolation** — every query is scoped by `user_id`; a PostgreSQL RLS policy backs it as defense-in-depth.
 
 ## Tech stack
@@ -73,9 +74,56 @@ Register the first account at `/register`, then sign in.
 | `DB_USER` / `DB_PASS` / `DB_NAME` | Alternative to `DATABASE_URL` | No |
 | `SENDGRID_API_KEY` | Enables reminder emails (otherwise they are logged) | No |
 | `SENDGRID_FROM_EMAIL` | From address for reminder emails | No |
+| `JEV_API_KEY` | TypeSafe Jev API key for offer triage (`POST /offers/import` → daily scoring). Optional fallback; users can save their own key in Settings | No |
 | `CORS_ORIGIN` | Public origin of the frontend (comma-separated). Blank = permissive | No |
 
 `.env` is gitignored — never commit it.
+
+## Offer Triage
+
+`POST /offers/import` stores an offer with status `NEW`. The daily 09:00 cron
+(`OfferTriageService.runDailyTriage`) then sends each `NEW` offer to the
+TypeSafe Jev API, stores the raw answers, and applies a fixed threshold to turn
+those answers into a decision. The decision is deterministic and auditable: the
+numbers live in one file, `backend/src/offer-triage/triage-rules.ts`.
+
+Jev is asked two questions:
+
+| Question | Type | Value used |
+|----------|------|------------|
+| `fit` | `score` on `["poor", "fair", "good", "strong"]` | `score`, 0 to 3 |
+| `hard_gate` | `noul`, asked as a disqualifier | `noul`, probability of a blocker, 0 to 1 |
+
+The threshold rule:
+
+```
+SEND   iff  fitScore >= 2.0   (at least "good")
+       AND  hardGateProbability < 0.2
+REVIEW otherwise
+```
+
+`hard_gate` is deliberately phrased as a disqualifier ("is there a clear reason
+to reject this offer?"), so a low `noul` means "no blocker" and is the
+safe-to-send signal.
+
+What each outcome does:
+
+- `SEND` creates a Kanban card for the offer.
+- `REVIEW` leaves the offer in the triage view for you to send or skip.
+- `REJECTED` only ever comes from the manual skip endpoint. Jev no longer
+  produces an automatic skip.
+- A Jev error, a request timeout (5s), or a missing API key marks the offer
+  `REVIEW`, so you see it instead of it being retried silently forever.
+
+**Creating the card is not submitting the application.** A triage `SEND`
+records the application at stage `applied` with `applied_date = today` and a
+follow-up 7 days out; sending the CV itself is still manual. Move the card's
+stage once you have actually applied.
+
+The API key comes from one of two places:
+
+- Per user: save it in **Settings** (stored encrypted, used for that user only).
+- Global fallback: `JEV_API_KEY` in `.env`, used when the user has no saved key.
 
 ## Reverse proxy (Caddy)
 
@@ -194,6 +242,7 @@ backend/src/
   analytics/      pipeline stats service + controller
   follow-ups/     due service, controller, daily reminder cron
   health/         /health
+  offer-triage/   offers entity/service, Jev client, deterministic triage rules + cron
   migrations/     Initxxxxxx (table + RLS policy)
   seed/           sample data
 frontend/src/app/

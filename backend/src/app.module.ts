@@ -10,6 +10,7 @@ import { FollowUpsModule } from './follow-ups/follow-ups.module';
 import { HealthModule } from './health/health.module';
 import { SettingsModule } from './settings/settings.module';
 import { OfferTriageModule } from './offer-triage/offer-triage.module';
+import { VacanciesModule } from './vacancies/vacancies.module';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { OfferTriageModule } from './offer-triage/offer-triage.module';
     HealthModule,
     SettingsModule,
     OfferTriageModule,
+    VacanciesModule,
   ],
 })
 export class AppModule {}

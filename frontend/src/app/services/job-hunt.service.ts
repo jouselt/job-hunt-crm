@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, switchMap, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Application, PipelineStats } from '../models/application.model';
+import { RefreshJob, Scoreboard } from '../models/scoreboard.model';
 
 const TOKEN_KEY = 'jobhunt_token';
 
@@ -130,5 +131,40 @@ export class JobHuntService {
     return this.http.post<any>(`${this.baseUrl}/offers/${id}/skip`, {}, {
       headers: this.authHeaders(),
     });
+  }
+
+  // --- Scoreboard: ofertas y vacantes puntuadas contra el perfil ---
+  getScoreboard(): Observable<Scoreboard> {
+    return this.http.get<Scoreboard>(`${this.baseUrl}/vacancies/scoreboard`, {
+      headers: this.authHeaders(),
+    });
+  }
+
+  /**
+   * Dispara la ingesta del feed. El backend responde enseguida y sigue en segundo
+   * plano, porque recorrer el feed entero tarda medio minuto largo.
+   */
+  startVacancyRefresh(dto: {
+    query?: string;
+    category?: string;
+    maxPages?: number;
+  }): Observable<RefreshJob> {
+    return this.http.post<RefreshJob>(`${this.baseUrl}/vacancies/refresh`, dto, {
+      headers: this.authHeaders(),
+    });
+  }
+
+  getRefreshJob(): Observable<RefreshJob> {
+    return this.http.get<RefreshJob>(`${this.baseUrl}/vacancies/refresh`, {
+      headers: this.authHeaders(),
+    });
+  }
+
+  rescoreVacancies(): Observable<{ rescored: number; admitted: number }> {
+    return this.http.post<{ rescored: number; admitted: number }>(
+      `${this.baseUrl}/vacancies/rescore`,
+      {},
+      { headers: this.authHeaders() },
+    );
   }
 }
