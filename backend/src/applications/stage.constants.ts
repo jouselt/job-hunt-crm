@@ -1,4 +1,6 @@
 export const STAGES = {
+  /** Guardada: te interesa, todavia no postulaste. La entrada del pipeline. */
+  SAVED: 'saved',
   APPLIED: 'applied',
   SCREENED: 'screened',
   INTERVIEW: 'interview',
@@ -20,6 +22,7 @@ export type Source = (typeof SOURCES)[keyof typeof SOURCES];
 
 /** Active forward-order pipeline (rejected is terminal and NOT a stage in this list). */
 export const ACTIVE_STAGE_ORDER: readonly Stage[] = [
+  STAGES.SAVED,
   STAGES.APPLIED,
   STAGES.SCREENED,
   STAGES.INTERVIEW,

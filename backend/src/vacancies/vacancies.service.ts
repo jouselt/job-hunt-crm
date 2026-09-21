@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { ApplicationsService } from '../applications/applications.service';
+import { STAGES } from '../applications/stage.constants';
 import { Offer } from '../offer-triage/offer.entity';
 import { TriageProfileService } from '../offer-triage/triage-profile.service';
 import { Vacancy } from './vacancy.entity';
@@ -567,6 +568,11 @@ export class VacanciesService {
           ? `Trackeada desde el tablero: ${vacancy.url}`
           : 'Trackeada desde el tablero',
         vacancyId: vacancy.id,
+        // Guardar no es postular. La fila entra como `saved` y la fecha de
+        // postulacion queda nula hasta que la muevas a `applied`; antes entraba
+        // como `applied` con la fecha de hoy, o sea registraba una postulacion que
+        // no existio.
+        stage: STAGES.SAVED,
       },
       userId,
     );

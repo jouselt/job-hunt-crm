@@ -188,6 +188,20 @@ describe('VacanciesService', () => {
 
       expect(created[0].source).toBe('other');
     });
+
+    it('crea la postulacion como guardada, no como postulada', async () => {
+      // Guardar un aviso no es postular. Antes entraba como `applied` con la fecha de
+      // hoy, o sea el pipeline registraba una postulacion que no existio y el usuario
+      // no tenia como distinguirla de una real.
+      await setup([vacancy()]);
+
+      await service.track(USER, VACANCY_ID);
+
+      expect(created[0].stage).toBe('saved');
+      // La fecha la decide el servicio de postulaciones: una fila guardada no la
+      // tiene, y Track no debe mandarla.
+      expect(created[0].applied_date).toBeUndefined();
+    });
   });
 
   describe('dismiss', () => {

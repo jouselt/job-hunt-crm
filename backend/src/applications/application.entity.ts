@@ -46,8 +46,12 @@ export class Application {
   @Column({ type: 'text', default: 'applied' })
   stage!: string;
 
-  @Column({ type: 'date' })
-  applied_date!: string;
+  /**
+   * El dia en que postulaste. Nula mientras la fila esta guardada: guardar un aviso
+   * no es postular, y sellarle una fecha ahi seria inventar el dato.
+   */
+  @Column({ type: 'date', nullable: true })
+  applied_date?: string | null;
 
   @Column({ type: 'date', nullable: true })
   follow_up_date!: string | null;

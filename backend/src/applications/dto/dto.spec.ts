@@ -60,7 +60,7 @@ describe('CreateApplicationDto', () => {
 
 describe('UpdateStageDto', () => {
   it('accepts canonical stages', async () => {
-    for (const stage of ['applied', 'screened', 'interview', 'offer', 'rejected']) {
+    for (const stage of ['saved', 'applied', 'screened', 'interview', 'offer', 'rejected']) {
       const dto = plainToInstance(UpdateStageDto, { stage });
       const errors = await validate(dto);
       expect(errors).toHaveLength(0);

@@ -40,7 +40,9 @@ describe('KanbanBoardComponent', () => {
     }).compileComponents();
   });
 
-  it('renders exactly 4 columns in forward order', () => {
+  it('renders 5 columns in forward order, starting at Saved', () => {
+    // Guardar es la entrada del pipeline: la columna existe para que un aviso
+    // trackeado no caiga en "Applied" y diga que postulaste sin ser cierto.
     const fixture = TestBed.createComponent(KanbanBoardComponent);
     fixture.detectChanges();
 
@@ -48,7 +50,7 @@ describe('KanbanBoardComponent', () => {
       fixture.nativeElement.querySelectorAll('.column-header h3') as NodeListOf<HTMLElement>,
     ).map((el) => (el.textContent as string).trim());
 
-    expect(headers).toEqual(['Applied', 'Screened', 'Interview', 'Offer']);
+    expect(headers).toEqual(['Saved', 'Applied', 'Screened', 'Interview', 'Offer']);
   });
 
   it('excludes rejected applications from every column', () => {
@@ -68,5 +70,14 @@ describe('KanbanBoardComponent', () => {
 
     fixture.componentInstance.promote(applied);
     expect(service.promoteStage).toHaveBeenCalledWith('1', 'screened');
+  });
+
+  it('promote() mueve saved -> applied, que es el paso real de postular', () => {
+    const fixture = TestBed.createComponent(KanbanBoardComponent);
+    const guardada = app({ stage: 'saved', applied_date: null });
+
+    fixture.componentInstance.promote(guardada);
+
+    expect(service.promoteStage).toHaveBeenCalledWith('1', 'applied');
   });
 });
