@@ -30,7 +30,7 @@
     "primaryMatches": 4,
     "signals": [
      "role in title",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -60,7 +60,7 @@
      "role in title",
      "senior in title",
      "remote",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -86,7 +86,7 @@
     "signals": [
      "role in title",
      "remote",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -111,7 +111,7 @@
     "primaryMatches": 1,
     "signals": [
      "remote",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -140,7 +140,7 @@
     "signals": [
      "senior in title",
      "remote",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -167,7 +167,7 @@
      "role in title",
      "senior in title",
      "remote",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -193,7 +193,7 @@
     "signals": [
      "role in title",
      "remote",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -217,7 +217,7 @@
     "primaryMatches": 2,
     "signals": [
      "role in title",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": [
      "below senior in the title: working student"
@@ -246,7 +246,7 @@
      "role in title",
      "senior in title",
      "remote",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": [
      "asks 2 years of experience"
@@ -276,7 +276,7 @@
      "role in title",
      "senior in title",
      "remote",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -304,7 +304,7 @@
      "role in title",
      "senior in title",
      "remote",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -331,7 +331,7 @@
     "signals": [
      "role in title",
      "remote",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": [
      "asks 2-4 anos of experience"
@@ -360,7 +360,7 @@
     "signals": [
      "role in title",
      "remote",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -386,7 +386,7 @@
     "signals": [
      "role in title",
      "remote",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": [
      "asks 2 years of experience"
@@ -416,7 +416,7 @@
     "signals": [
      "role in title",
      "remote",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": [
      "title names a stack outside the profile: .net"
@@ -444,7 +444,7 @@
     "signals": [
      "role in title",
      "remote",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -466,7 +466,7 @@
     "signals": [
      "senior in title",
      "remote",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": [
      "stack outside the profile with no TS/JS: java"
@@ -491,7 +491,7 @@
      "role in title",
      "senior in title",
      "remote",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": [
      "title names a stack outside the profile: golang",
@@ -518,7 +518,7 @@
     "signals": [
      "senior in title",
      "remote",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": [
      "title names a stack outside the profile: rails",
@@ -544,7 +544,7 @@
     "primaryMatches": 0,
     "signals": [
      "remote",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -565,7 +565,7 @@
     "primaryMatches": 0,
     "signals": [
      "remote",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": [
      "people management as the primary function: engineering manager"
@@ -589,7 +589,7 @@
     "signals": [
      "senior in title",
      "remote",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": [
      "stack outside the profile with no TS/JS: swift",
@@ -620,7 +620,7 @@
      "role in title",
      "senior in title",
      "remote",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -647,7 +647,7 @@
     "signals": [
      "role in title",
      "senior in title",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": [
      "no sponsorship offered: unable to sponsor"
@@ -677,7 +677,7 @@
      "role in title",
      "senior in title",
      "remote",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": [
      "residency or clearance restriction: security clearance, must be a resident"
@@ -706,7 +706,7 @@
     "signals": [
      "role in title",
      "senior in title",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": [
      "on-site presence in another country with no relocation: on-site"
@@ -736,7 +736,7 @@
      "role in title",
      "senior in title",
      "remote",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -764,7 +764,7 @@
      "role in title",
      "senior in title",
      "relocation or sponsorship offered",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -812,7 +812,7 @@
      "role in title",
      "senior in title",
      "remote",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -845,7 +845,7 @@
      "role in title",
      "senior in title",
      "remote",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -876,7 +876,7 @@
      "role in title",
      "senior in title",
      "remote",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -906,7 +906,7 @@
     "primaryMatches": 3,
     "signals": [
      "role in title",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -932,7 +932,7 @@
     "signals": [
      "role in title",
      "senior in title",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -960,7 +960,7 @@
      "role in title",
      "senior in title",
      "remote",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -1012,7 +1012,7 @@
     "signals": [
      "role in title",
      "remote",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -1040,7 +1040,7 @@
      "role in title",
      "senior in title",
      "remote",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -1064,7 +1064,7 @@
     "primaryMatches": 2,
     "signals": [
      "remote",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -1091,7 +1091,7 @@
     "signals": [
      "role in title",
      "senior in title",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -1117,7 +1117,7 @@
     "primaryMatches": 1,
     "signals": [
      "role in title",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -1142,7 +1142,7 @@
     "primaryMatches": 1,
     "signals": [
      "role in title",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": [
      "asks 3+ años of experience"
@@ -1170,7 +1170,7 @@
     "signals": [
      "role in title",
      "senior in title",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -1197,7 +1197,7 @@
     "signals": [
      "role in title",
      "senior in title",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -1222,7 +1222,7 @@
     "primaryMatches": 1,
     "signals": [
      "role in title",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -1250,7 +1250,7 @@
     "signals": [
      "role in title",
      "senior in title",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -1276,7 +1276,7 @@
     "primaryMatches": 1,
     "signals": [
      "role in title",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": [
      "asks 3 años of experience"
@@ -1308,7 +1308,7 @@
     "signals": [
      "role in title",
      "senior in title",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -1333,7 +1333,7 @@
     "primaryMatches": 1,
     "signals": [
      "role in title",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -1362,7 +1362,7 @@
      "role in title",
      "senior in title",
      "remote",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -1387,7 +1387,7 @@
     "primaryMatches": 1,
     "signals": [
      "role in title",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -1413,7 +1413,7 @@
     "signals": [
      "role in title",
      "senior in title",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -1439,7 +1439,7 @@
     "signals": [
      "role in title",
      "senior in title",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -1464,7 +1464,7 @@
     "primaryMatches": 1,
     "signals": [
      "role in title",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -1490,7 +1490,7 @@
     "primaryMatches": 2,
     "signals": [
      "role in title",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -1510,7 +1510,7 @@
     "titleSkills": [],
     "primaryMatches": 0,
     "signals": [
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": [
      "stack outside the profile with no TS/JS: php"
@@ -1527,7 +1527,7 @@
     "date": "2026-08-19"
    },
    "expected": {
-    "score": 15.0,
+    "score": 13.0,
     "matchedSkills": [
      "Angular"
     ],
@@ -1536,8 +1536,7 @@
     ],
     "primaryMatches": 1,
     "signals": [
-     "role in title",
-     "posted this month"
+     "role in title"
     ],
     "disqualifiers": []
    }
@@ -1552,7 +1551,7 @@
     "date": "2026-08-17"
    },
    "expected": {
-    "score": 16.0,
+    "score": 14.0,
     "matchedSkills": [
      "Angular",
      "AWS"
@@ -1562,8 +1561,7 @@
     ],
     "primaryMatches": 1,
     "signals": [
-     "role in title",
-     "posted this month"
+     "role in title"
     ],
     "disqualifiers": []
    }
@@ -1578,7 +1576,7 @@
     "date": "2026-08-13"
    },
    "expected": {
-    "score": 23.0,
+    "score": 21.0,
     "matchedSkills": [
      "Angular",
      ".NET backend API integration"
@@ -1591,8 +1589,7 @@
     "signals": [
      "role in title",
      "senior in title",
-     "remote",
-     "posted this month"
+     "remote"
     ],
     "disqualifiers": []
    }
@@ -1607,7 +1604,7 @@
     "date": "2026-08-15"
    },
    "expected": {
-    "score": 25.0,
+    "score": 23.0,
     "matchedSkills": [
      "Angular",
      "Angular Material",
@@ -1618,8 +1615,7 @@
     ],
     "primaryMatches": 3,
     "signals": [
-     "role in title",
-     "posted this month"
+     "role in title"
     ],
     "disqualifiers": []
    }
@@ -1634,7 +1630,7 @@
     "date": "2026-08-14"
    },
    "expected": {
-    "score": 18.0,
+    "score": 16.0,
     "matchedSkills": [
      "Angular"
     ],
@@ -1644,8 +1640,7 @@
     "primaryMatches": 1,
     "signals": [
      "role in title",
-     "remote",
-     "posted this month"
+     "remote"
     ],
     "disqualifiers": []
    }
@@ -1660,7 +1655,7 @@
     "date": "2026-08-14"
    },
    "expected": {
-    "score": 19.0,
+    "score": 17.0,
     "matchedSkills": [
      "Angular",
      "AWS"
@@ -1671,8 +1666,7 @@
     "primaryMatches": 1,
     "signals": [
      "role in title",
-     "remote",
-     "posted this month"
+     "remote"
     ],
     "disqualifiers": []
    }
@@ -1687,7 +1681,7 @@
     "date": "2026-08-13"
    },
    "expected": {
-    "score": 23.0,
+    "score": 21.0,
     "matchedSkills": [
      "Angular",
      ".NET backend API integration"
@@ -1700,8 +1694,7 @@
     "signals": [
      "role in title",
      "senior in title",
-     "remote",
-     "posted this month"
+     "remote"
     ],
     "disqualifiers": []
    }
@@ -1716,7 +1709,7 @@
     "date": "2026-08-13"
    },
    "expected": {
-    "score": 18.0,
+    "score": 16.0,
     "matchedSkills": [
      "Angular"
     ],
@@ -1726,8 +1719,7 @@
     "primaryMatches": 1,
     "signals": [
      "role in title",
-     "remote",
-     "posted this month"
+     "remote"
     ],
     "disqualifiers": []
    }
@@ -1742,7 +1734,7 @@
     "date": "2026-08-11"
    },
    "expected": {
-    "score": 15.0,
+    "score": 13.0,
     "matchedSkills": [
      "Angular"
     ],
@@ -1751,8 +1743,7 @@
     ],
     "primaryMatches": 1,
     "signals": [
-     "role in title",
-     "posted this month"
+     "role in title"
     ],
     "disqualifiers": []
    }
@@ -1767,7 +1758,7 @@
     "date": "2026-08-11"
    },
    "expected": {
-    "score": 18.0,
+    "score": 16.0,
     "matchedSkills": [
      "Angular",
      "React"
@@ -1778,8 +1769,7 @@
     ],
     "primaryMatches": 1,
     "signals": [
-     "role in title",
-     "posted this month"
+     "role in title"
     ],
     "disqualifiers": []
    }
@@ -1794,7 +1784,7 @@
     "date": "2026-08-11"
    },
    "expected": {
-    "score": 20.0,
+    "score": 18.0,
     "matchedSkills": [
      "Angular",
      "AngularJS"
@@ -1805,8 +1795,7 @@
     "primaryMatches": 1,
     "signals": [
      "role in title",
-     "senior in title",
-     "posted this month"
+     "senior in title"
     ],
     "disqualifiers": []
    }
@@ -1821,7 +1810,7 @@
     "date": "2026-08-11"
    },
    "expected": {
-    "score": 17.0,
+    "score": 15.0,
     "matchedSkills": [
      "Angular"
     ],
@@ -1831,8 +1820,7 @@
     "primaryMatches": 1,
     "signals": [
      "role in title",
-     "senior in title",
-     "posted this month"
+     "senior in title"
     ],
     "disqualifiers": []
    }
@@ -1847,7 +1835,7 @@
     "date": "2026-08-11"
    },
    "expected": {
-    "score": 28.0,
+    "score": 26.0,
     "matchedSkills": [
      "Angular",
      "Node.js",
@@ -1861,8 +1849,7 @@
     "primaryMatches": 2,
     "signals": [
      "role in title",
-     "senior in title",
-     "posted this month"
+     "senior in title"
     ],
     "disqualifiers": []
    }
@@ -1877,7 +1864,7 @@
     "date": "2026-08-10"
    },
    "expected": {
-    "score": 15.0,
+    "score": 13.0,
     "matchedSkills": [
      "Angular"
     ],
@@ -1886,8 +1873,7 @@
     ],
     "primaryMatches": 1,
     "signals": [
-     "role in title",
-     "posted this month"
+     "role in title"
     ],
     "disqualifiers": []
    }
@@ -1902,7 +1888,7 @@
     "date": "2026-08-10"
    },
    "expected": {
-    "score": 15.0,
+    "score": 13.0,
     "matchedSkills": [
      "Angular"
     ],
@@ -1911,8 +1897,7 @@
     ],
     "primaryMatches": 1,
     "signals": [
-     "role in title",
-     "posted this month"
+     "role in title"
     ],
     "disqualifiers": []
    }
@@ -1927,7 +1912,7 @@
     "date": "2026-08-06"
    },
    "expected": {
-    "score": 18.0,
+    "score": 16.0,
     "matchedSkills": [
      "Angular"
     ],
@@ -1937,8 +1922,7 @@
     "primaryMatches": 1,
     "signals": [
      "role in title",
-     "remote",
-     "posted this month"
+     "remote"
     ],
     "disqualifiers": []
    }
@@ -1953,7 +1937,7 @@
     "date": "2026-08-06"
    },
    "expected": {
-    "score": 20.0,
+    "score": 18.0,
     "matchedSkills": [
      "Angular"
     ],
@@ -1964,8 +1948,7 @@
     "signals": [
      "role in title",
      "senior in title",
-     "remote",
-     "posted this month"
+     "remote"
     ],
     "disqualifiers": []
    }
@@ -2010,7 +1993,7 @@
     "date": "2026-07-31"
    },
    "expected": {
-    "score": 20.0,
+    "score": 18.0,
     "matchedSkills": [
      "Angular",
      "React"
@@ -2022,8 +2005,7 @@
     "primaryMatches": 1,
     "signals": [
      "role in title",
-     "senior in title",
-     "posted this month"
+     "senior in title"
     ],
     "disqualifiers": []
    }
@@ -2038,7 +2020,7 @@
     "date": "2026-07-29"
    },
    "expected": {
-    "score": 25.0,
+    "score": 23.0,
     "matchedSkills": [
      "Angular",
      "TypeScript",
@@ -2051,8 +2033,7 @@
     ],
     "primaryMatches": 2,
     "signals": [
-     "role in title",
-     "posted this month"
+     "role in title"
     ],
     "disqualifiers": []
    }
@@ -2067,7 +2048,7 @@
     "date": "2026-07-29"
    },
    "expected": {
-    "score": 20.0,
+    "score": 18.0,
     "matchedSkills": [
      "Angular",
      "TypeScript"
@@ -2077,8 +2058,7 @@
     ],
     "primaryMatches": 2,
     "signals": [
-     "role in title",
-     "posted this month"
+     "role in title"
     ],
     "disqualifiers": []
    }
@@ -2093,7 +2073,7 @@
     "date": "2026-07-28"
    },
    "expected": {
-    "score": 15.0,
+    "score": 13.0,
     "matchedSkills": [
      "Angular"
     ],
@@ -2102,8 +2082,7 @@
     ],
     "primaryMatches": 1,
     "signals": [
-     "role in title",
-     "posted this month"
+     "role in title"
     ],
     "disqualifiers": []
    }
@@ -2118,7 +2097,7 @@
     "date": "2026-07-28"
    },
    "expected": {
-    "score": 26.0,
+    "score": 24.0,
     "matchedSkills": [
      "Angular",
      "NestJS",
@@ -2130,8 +2109,7 @@
     ],
     "primaryMatches": 3,
     "signals": [
-     "role in title",
-     "posted this month"
+     "role in title"
     ],
     "disqualifiers": []
    }
@@ -2146,7 +2124,7 @@
     "date": "2026-07-28"
    },
    "expected": {
-    "score": 22.0,
+    "score": 20.0,
     "matchedSkills": [
      "Angular",
      "TypeScript"
@@ -2157,8 +2135,7 @@
     "primaryMatches": 2,
     "signals": [
      "role in title",
-     "senior in title",
-     "posted this month"
+     "senior in title"
     ],
     "disqualifiers": []
    }
@@ -2173,7 +2150,7 @@
     "date": "2026-07-28"
    },
    "expected": {
-    "score": 17.0,
+    "score": 15.0,
     "matchedSkills": [
      "Angular"
     ],
@@ -2183,8 +2160,7 @@
     "primaryMatches": 1,
     "signals": [
      "role in title",
-     "senior in title",
-     "posted this month"
+     "senior in title"
     ],
     "disqualifiers": []
    }
@@ -2199,7 +2175,7 @@
     "date": "2026-07-28"
    },
    "expected": {
-    "score": 20.0,
+    "score": 18.0,
     "matchedSkills": [
      "Angular"
     ],
@@ -2210,8 +2186,7 @@
     "signals": [
      "role in title",
      "senior in title",
-     "remote",
-     "posted this month"
+     "remote"
     ],
     "disqualifiers": []
    }
@@ -2276,7 +2251,7 @@
     "date": "2026-07-26"
    },
    "expected": {
-    "score": 15.0,
+    "score": 13.0,
     "matchedSkills": [
      "Angular"
     ],
@@ -2285,8 +2260,7 @@
     ],
     "primaryMatches": 1,
     "signals": [
-     "role in title",
-     "posted this month"
+     "role in title"
     ],
     "disqualifiers": []
    }
@@ -2301,7 +2275,7 @@
     "date": "2026-07-26"
    },
    "expected": {
-    "score": 15.0,
+    "score": 13.0,
     "matchedSkills": [
      "Angular"
     ],
@@ -2310,8 +2284,7 @@
     ],
     "primaryMatches": 1,
     "signals": [
-     "role in title",
-     "posted this month"
+     "role in title"
     ],
     "disqualifiers": []
    }
@@ -2339,7 +2312,7 @@
     "signals": [
      "role in title",
      "remote",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -2365,7 +2338,7 @@
     ],
     "primaryMatches": 2,
     "signals": [
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -2392,7 +2365,7 @@
     "primaryMatches": 2,
     "signals": [
      "senior in title",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }
@@ -2421,7 +2394,7 @@
     "primaryMatches": 2,
     "signals": [
      "role in title",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": [
      "asks 2 años of experience"
@@ -2450,7 +2423,7 @@
     "primaryMatches": 2,
     "signals": [
      "senior in title",
-     "posted this month"
+     "posted recently"
     ],
     "disqualifiers": []
    }

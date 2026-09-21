@@ -28,12 +28,12 @@ import {
   hasTitleSignal,
   keywordRegex,
   matchSkills,
-  monthsOld,
   scoreVacancy,
   skillMatchesToken,
   skillWeights,
   type ScoreInput,
 } from './vacancy-scoring';
+import { FRESH_DAYS } from './vacancy-rules.generated';
 
 interface GoldenCase {
   name: string;
@@ -122,15 +122,21 @@ describe('las piezas del port que se rompen en silencio', () => {
     expect(matched.indexOf('React')).toBeGreaterThan(matched.indexOf('TypeScript'));
   });
 
-  it('lee los meses y los dias sin correrse un dia por zona horaria', () => {
-    expect(monthsOld('2026-09-21', today)).toBe(0);
-    expect(monthsOld('2026-05-01', today)).toBe(4);
-    expect(monthsOld('2025-09-21', today)).toBe(12);
-    expect(monthsOld('', today)).toBeNull();
-    expect(monthsOld(null, today)).toBeNull();
+  it('lee los dias sin correrse un dia por zona horaria', () => {
     expect(daysOld('2026-09-21', today)).toBe(0);
     expect(daysOld('2026-09-20', today)).toBe(1);
     expect(daysOld('no-es-fecha', today)).toBeNull();
+  });
+
+  it('la frescura se mide en dias contra FRESH_DAYS, no en meses de calendario', () => {
+    // La aritmetica de meses daba 1 ("un mes") para un aviso de 49 dias y le pagaba
+    // el bonus: en produccion lo cobraban 15 de 20 avisos de julio y 47 de 47 de
+    // agosto. El fixture dorado cubre los 27 casos que quedaron mal; esto fija la
+    // frontera en el port.
+    expect(daysOld('2026-08-22', today)).toBe(FRESH_DAYS);
+    expect(daysOld('2026-08-02', today)).toBe(50);
+    expect(daysOld('2026-08-22', today)! <= FRESH_DAYS).toBe(true);
+    expect(daysOld('2026-08-02', today)! <= FRESH_DAYS).toBe(false);
   });
 
   it('la compuerta de stack diario es la que rechaza, no la del titulo', () => {
