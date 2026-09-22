@@ -2,6 +2,7 @@
 
 # Compiled output
 /dist
+*.tsbuildinfo
 /tmp
 /out-tsc
 /bazel-out
@@ -42,6 +43,9 @@ testem.log
 Thumbs.db
 # Local Pi runtime state
 .atl/
+
+# Local planning notes (odd/tasks), never published
+odd/
 
 # Secrets / local env (keep *.example tracked)
 .env

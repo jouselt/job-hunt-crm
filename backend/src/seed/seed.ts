@@ -1,27 +1,48 @@
 import AppDataSource from '../data-source';
+import * as bcrypt from 'bcryptjs';
 import { Application } from '../applications/application.entity';
-import { ALL_SOURCES, ALL_STAGES } from '../applications/stage.constants';
+import { SOURCES, STAGES } from '../applications/stage.constants';
+import { User } from '../users/user.entity';
 
-async function seed() {
+// The demo user is what makes this seed useful. Without a row in `users` that
+// carries this id, the sample applications belong to nobody and stay invisible
+// from the UI, which made the seed a schema check instead of sample data. The
+// credentials are published in the README so anyone evaluating a self-hosted
+// instance can log in and look around.
+export const DEMO_USER_ID = '00000000-0000-0000-0000-000000000001';
+export const DEMO_EMAIL = 'demo@example.com';
+export const DEMO_PASSWORD = 'demo1234';
+
+export async function seed(): Promise<number> {
   if (!AppDataSource.isInitialized) {
     await AppDataSource.initialize();
   }
-  const repo = AppDataSource.getRepository(Application);
+  const apps = AppDataSource.getRepository(Application);
+  const users = AppDataSource.getRepository(User);
 
-  // Clear existing data
-  await repo.clear();
+  // Scoped to the demo user on purpose. A blanket clear() of the applications
+  // table destroys real data on a self-hosted instance whose owner runs this
+  // command expecting sample rows.
+  await apps.delete({ user_id: DEMO_USER_ID });
+  await users.delete({ id: DEMO_USER_ID });
+
+  await users.insert({
+    id: DEMO_USER_ID,
+    email: DEMO_EMAIL,
+    password_hash: await bcrypt.hash(DEMO_PASSWORD, 10),
+  });
 
   const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
   const nextWeek = new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10);
 
-  const apps: Application[] = [
+  const rows: Application[] = [
     {
       id: crypto.randomUUID(),
-      user_id: '00000000-0000-0000-0000-000000000001',
+      user_id: DEMO_USER_ID,
       company: 'Acme Corp',
       role: 'Senior Developer',
-      source: ALL_SOURCES[0], // linkedin
-      stage: ALL_STAGES[0], // applied
+      source: SOURCES.LINKEDIN,
+      stage: STAGES.SAVED,
       applied_date: yesterday,
       follow_up_date: nextWeek,
       notes: 'Applied via LinkedIn',
@@ -30,11 +51,11 @@ async function seed() {
     },
     {
       id: crypto.randomUUID(),
-      user_id: '00000000-0000-0000-0000-000000000001',
+      user_id: DEMO_USER_ID,
       company: 'Globex Inc',
       role: 'Frontend Engineer',
-      source: ALL_SOURCES[1], // indeed
-      stage: ALL_STAGES[1], // screened
+      source: SOURCES.INDEED,
+      stage: STAGES.APPLIED,
       applied_date: yesterday,
       follow_up_date: nextWeek,
       notes: 'Recruiter contacted',
@@ -43,11 +64,11 @@ async function seed() {
     },
     {
       id: crypto.randomUUID(),
-      user_id: '00000000-0000-0000-0000-000000000001',
+      user_id: DEMO_USER_ID,
       company: 'Initech',
       role: 'Full Stack Developer',
-      source: ALL_SOURCES[2], // referral
-      stage: ALL_STAGES[2], // interview
+      source: SOURCES.REFERRAL,
+      stage: STAGES.SCREENED,
       applied_date: yesterday,
       follow_up_date: nextWeek,
       notes: 'Interview scheduled for next week',
@@ -56,14 +77,23 @@ async function seed() {
     },
   ];
 
-  for (const app of apps) {
-    await repo.save(app);
+  for (const row of rows) {
+    await apps.save(row);
   }
 
-  console.log('Seeded 3 applications for test user');
+  return rows.length;
 }
 
-seed().catch((err) => {
-  console.error('Seed failed:', err);
-  process.exit(1);
-});
+// ts-node runs this file directly. Importing it, which the spec does, must not
+// touch a database.
+if (require.main === module) {
+  seed()
+    .then((count) => {
+      console.log(`Seeded the demo user ${DEMO_EMAIL} with ${count} applications`);
+      process.exit(0);
+    })
+    .catch((err) => {
+      console.error('Seed failed:', err);
+      process.exit(1);
+    });
+}

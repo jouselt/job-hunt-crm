@@ -294,9 +294,16 @@ Headers: `Authorization: Bearer <token>` and `Content-Type: application/json`.
 docker compose run --rm backend npm run seed
 ```
 
-Inserts three sample applications for a demo user. These rows are not tied to
-any registered login, so they are invisible from the UI — handy only as a schema
-check.
+Creates a demo user and inserts three sample applications that belong to it, so
+they show up in the UI as soon as you log in:
+
+- email: `demo@example.com`
+- password: `demo1234`
+
+This command is for evaluating an instance, not for running one. It deletes and
+recreates only the demo user's rows, so your own applications are left alone, but
+you still end up with a login anyone can use. Delete the demo user, or skip this
+command entirely, on an instance you care about.
 
 ## Development
 
