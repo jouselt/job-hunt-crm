@@ -7,6 +7,7 @@ import * as request from 'supertest';
 import { AuthModule } from '../src/auth/auth.module';
 import { User } from '../src/users/user.entity';
 import { JwtService } from '@nestjs/jwt';
+import { randomUUID } from 'node:crypto';
 
 /**
  * HTTP-layer auth test: real registration + credential-verified login using an
@@ -24,7 +25,7 @@ describe('Auth e2e (HTTP)', () => {
     }),
     create: jest.fn((partial: any) => partial),
     save: jest.fn(async (u: User) => {
-      const rec = { ...u, id: u.id ?? require('crypto').randomUUID() };
+      const rec = { ...u, id: u.id ?? randomUUID() };
       store.set(rec.email, rec);
       store.set(rec.id, rec);
       return rec;

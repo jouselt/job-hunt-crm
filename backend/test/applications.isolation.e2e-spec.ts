@@ -7,6 +7,7 @@ import * as request from 'supertest';
 import { Application } from '../src/applications/application.entity';
 import { ApplicationsModule } from '../src/applications/applications.module';
 import { JwtAuthGuard } from '../src/auth/jwt-auth.guard';
+import { randomUUID } from 'node:crypto';
 
 const SECRET = 'e2e-secret';
 
@@ -50,7 +51,7 @@ describe('Applications e2e isolation (HTTP)', () => {
 
   const makeApp = (overrides: Partial<Application> = {}): Application =>
     ({
-      id: require('crypto').randomUUID(),
+      id: randomUUID(),
       user_id: '',
       company: 'Acme',
       role: 'Engineer',

@@ -6,13 +6,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { ALL_SOURCES, ALL_STAGES } from './stage.constants';
-
-const sourceCheck =
-  `source IN (${ALL_SOURCES.map((s) => `'${s}'`).join(', ')})`;
-const stageCheck =
-  `stage IN (${ALL_STAGES.map((s) => `'${s}'`).join(', ')})`;
-
 @Entity('applications')
 @Index('idx_applications_user_stage', ['user_id', 'stage'])
 @Index('idx_applications_user_follow_up', ['user_id', 'follow_up_date'])
