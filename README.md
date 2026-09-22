@@ -1,5 +1,8 @@
 # Job Hunt CRM
 
+[![CI](https://github.com/jouselt/job-hunt-crm/actions/workflows/ci.yml/badge.svg)](https://github.com/jouselt/job-hunt-crm/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 A **self-hosted** pipeline CRM for job seekers. Track every application as a
 pipeline, follow up on time, and see your search at a glance — all running on
 your own hardware behind your own reverse proxy. No cloud account, no vendor
@@ -13,20 +16,22 @@ lock-in.
 ## Features
 
 - **Applications CRUD** — record roles you applied to, with source, stage, and notes.
-- **Stage pipeline** — `applied → screened → interview → offer`. `rejected` is terminal (not a Kanban column).
+- **Stage pipeline** — `saved → applied → screened → interview → offer`. `saved` is the entry point: tracking a posting records that you saved it, not that you applied. `applied_date` is sealed when a row *reaches* `applied`. `rejected` is terminal (not a Kanban column).
 - **Follow-up scheduling** — promoting a stage sets a follow-up +7 days out unless you set an explicit future date; `rejected` clears it.
 - **Next follow-ups** — a view of everything due today or overdue.
 - **Pipeline analytics** — per-stage counts, percentages over active applications, and average days-in-stage.
 - **Daily reminder** — a 09:00 cron builds a per-user follow-up summary (emailed via SendGrid when configured; otherwise logged).
 - **Offer triage** — a 09:00 cron scores new imported offers with the TypeSafe Jev API and applies fixed thresholds to decide SEND (card created) vs REVIEW (you decide).
+- **Vacancy scoreboard** — a live feed of job postings scored against *your own* profile, ranked, with the breakdown behind every score. Track a posting into the pipeline or mark it gone; both are idempotent.
+- **Per-user profile** — the skills and roles used for scoring live in Settings, per user. A second account scores against its own profile, not someone else's.
 - **Per-user isolation** — every query is scoped by `user_id`; a PostgreSQL RLS policy backs it as defense-in-depth.
 
 ## Tech stack
 
 | Layer | Technology |
 |-------|------------|
-| Frontend | Angular (standalone components) |
-| Backend | NestJS 10 + TypeORM + PostgreSQL |
+| Frontend | Angular 22.1 (standalone components) |
+| Backend | NestJS 10.4 + TypeORM 0.3 + PostgreSQL 15 |
 | Auth | JWT (`@nestjs/jwt` + `passport-jwt`), bcrypt password hashing |
 | Scheduler | `@nestjs/schedule` (daily 09:00) |
 | Email | SendGrid (optional) |
@@ -60,6 +65,12 @@ docker compose up -d --build
 
 The stack self-runs migrations on boot, so no manual migration step is needed.
 Register the first account at `/register`, then sign in.
+
+> **Prebuilt images.** Once a release is tagged, `amd64` and `arm64` images are
+> published to GHCR, so an ARM homelab pulls instead of compiling:
+> `ghcr.io/jouselt/job-hunt-crm-backend:<tag>` and
+> `ghcr.io/jouselt/job-hunt-crm-frontend:<tag>`. Until the first tag exists, the
+> build path above is the way in. See `CHANGELOG.md` for the current state.
 
 > Local CORS: leave `CORS_ORIGIN` blank for a permissive local setup. For
 > anything beyond localhost, put a reverse proxy in front (below) and set
@@ -124,6 +135,56 @@ The API key comes from one of two places:
 
 - Per user: save it in **Settings** (stored encrypted, used for that user only).
 - Global fallback: `JEV_API_KEY` in `.env`, used when the user has no saved key.
+
+## Vacancy scoreboard
+
+A second surface, for the part of a search that happens before you apply: postings
+you have not read yet. The app ingests a feed, scores every posting against
+**your** profile, and ranks them.
+
+```
+POST /vacancies/refresh    # ingest (background job, progress via GET)
+GET  /vacancies/scoreboard # ranked list + rejected list + totals
+```
+
+**Scoring is deterministic and lives in one place.**
+`backend/src/vacancies/vacancy-rules.generated.ts` holds the weights; it is
+generated from the Python ranker in `tools/`, which is the source of truth. The
+TypeScript port exists so the app and the ranker cannot disagree, and
+`backend/test/fixtures/scoring-golden.json` is a fixture of scored cases that
+fails the build if they drift. Change a rule in the Python, regenerate, and the
+fixture tells you what moved.
+
+**Scores are shown with their denominator.** A raw number with no ceiling reads as
+a grade, so the UI shows the rank, the percentage over the top score, and the raw
+points. Ordering is always by raw points.
+
+**Every score can be opened.** Tapping a card shows the breakdown: which skills
+matched, which of them were in the title, the signals that fired, and where the
+scored text came from.
+
+**Honest limits, stated in the UI.** The feed publishes roughly 59 characters of
+description, so a posting is scored from its title alone. The app says so on the
+posting instead of implying it read the ad, and the detail view repeats it.
+
+**Track records that you saved, not that you applied.** It creates the row at
+stage `saved` with no `applied_date`; the date is sealed when you move the card to
+`applied`. Nothing in this project applies to a job for you.
+
+**Gone is your call.** The feed never says when a posting closes, so the app does
+not guess and does not probe LinkedIn. Marking a posting gone removes it from the
+ranked list and from the ceiling the percentages are drawn against, and it can be
+restored. Both operations are idempotent.
+
+### About the feed
+
+The bundled adapter reads [pegas.devschile.cl](https://pegas.devschile.cl), a
+Chilean community job board. It is one adapter, not the product; the scoreboard is
+useful against any list of postings with a title, a company and a date.
+
+The adapter is deliberately polite, because it talks to somebody else's server:
+browser User-Agent, a one-second pause between pages, and retries. If you point it
+at a different source, keep that behaviour.
 
 ## Reverse proxy (Caddy)
 
@@ -204,12 +265,28 @@ Base URL (behind proxy): `https://<your-domain>/job-hunt-crm/api`
 | POST | `/auth/register` | Register `{ email, password }` → `{ access_token, user }` | — |
 | POST | `/auth/login` | Login `{ email, password }` → `{ access_token, user }` | — |
 | GET | `/applications` | List own applications | JWT |
-| POST | `/applications` | Create (company + role required) | JWT |
-| PATCH | `/applications/:id/stage` | Promote stage (forward/reject only) | JWT |
+| POST | `/applications` | Create (company + role required; optional `stage`, defaults to `applied`) | JWT |
+| PATCH | `/applications/:id/stage` | Promote stage (forward or reject only) | JWT |
 | GET | `/analytics/pipeline` | Pipeline stats | JWT |
 | GET | `/follow-ups` | Applications due (`follow_up_date` ≤ today) | JWT |
+| POST | `/offers/import` | Store an offer as `NEW`, to be scored by the next triage run | JWT |
+| GET | `/offers` | List own offers with their decision | JWT |
+| GET | `/offers/review` | The queue that needs your decision | JWT |
+| POST | `/offers/:id/send` | Accept the offer and create its application card | JWT |
+| POST | `/offers/:id/skip` | Reject the offer. The only path to `REJECTED` | JWT |
+| GET | `/settings/jev-key` | The saved Jev key, masked | JWT |
+| POST | `/settings/jev-key` | Save the key (204). Verified against the vendor first | JWT |
+| GET | `/settings/profile` | `{ configured, profile }` — the scoring profile | JWT |
+| POST | `/settings/profile` | Set skills, roles and depth used for scoring | JWT |
+| GET | `/vacancies/scoreboard` | Ranked postings, the rejected list, and totals | JWT |
+| GET | `/vacancies/refresh` | Progress of the running ingest, or the last result | JWT |
+| POST | `/vacancies/refresh` | Start an ingest from the feed | JWT |
+| POST | `/vacancies/rescore` | Re-score stored postings against the current profile | JWT |
+| POST | `/vacancies/:id/track` | Create an application from a posting, at stage `saved` | JWT |
+| POST | `/vacancies/:id/dismiss` | Mark a posting as gone. Idempotent | JWT |
+| POST | `/vacancies/:id/restore` | Undo a dismiss. Idempotent | JWT |
 
-Headers: `Authorization: Bearer <token>`, `Content-Type: application/json`.
+Headers: `Authorization: Bearer <token>` and `Content-Type: application/json`.
 
 ## Optional seed data
 
@@ -243,7 +320,9 @@ backend/src/
   follow-ups/     due service, controller, daily reminder cron
   health/         /health
   offer-triage/   offers entity/service, Jev client, deterministic triage rules + cron
-  migrations/     Initxxxxxx (table + RLS policy)
+  vacancies/      feed ingest, scoring, scoreboard, track/dismiss/restore
+  settings/       per-user Jev key and scoring profile
+  migrations/     Initxxxxxx (tables + RLS policies) and later feature migrations
   seed/           sample data
 frontend/src/app/
   components/     applied-list, add-application, kanban-board,

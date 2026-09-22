@@ -1,0 +1,34 @@
+name: Feature request
+description: Propose a change or a new capability.
+labels: ['enhancement']
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve
+      description: Describe the situation where the current behaviour gets in the way.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you have in mind
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you considered
+      description: Including doing nothing. It is a valid answer.
+    validations:
+      required: false
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Scope
+      options:
+        - Small (one file, mechanical)
+        - Medium (a few files, some new logic)
+        - Large (architectural, or it changes the data model)
+    validations:
+      required: false
