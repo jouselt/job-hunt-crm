@@ -47,6 +47,14 @@ Thumbs.db
 .env
 .env.*
 !.env.example
+
+# Python tools: the personal profile and generated outputs stay out of the repo.
+# Tests use tools/fixtures/triage-profile.example.json instead.
+tools/triage-profile.json
+tools/out/
+tools/companies/
+__pycache__/
+*.pyc
 # Caddyfile may contain site-specific secrets
 Caddyfile
 Caddyfile.*
