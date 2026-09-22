@@ -1,8 +1,10 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
+import { ApplicationsService } from '../applications/applications.service';
+import { STAGES } from '../applications/stage.constants';
 import { Offer } from '../offer-triage/offer.entity';
 import { TriageProfileService } from '../offer-triage/triage-profile.service';
 import { Vacancy } from './vacancy.entity';
@@ -68,6 +70,8 @@ export interface ScoreboardItem {
   primaryMatches: number;
   signals: string[];
   scoredFrom: 'offer' | 'index' | 'description';
+  /** Solo en vacantes: si ya se convirtio en postulacion del CRM. */
+  tracked?: boolean;
 }
 
 /**
@@ -86,6 +90,7 @@ export class VacanciesService {
     @InjectRepository(Vacancy) private readonly vacancies: Repository<Vacancy>,
     @InjectRepository(Offer) private readonly offers: Repository<Offer>,
     @Inject(TriageProfileService) private readonly profiles: TriageProfileService,
+    @Inject(ApplicationsService) private readonly applications: ApplicationsService,
   ) {}
 
   /**
@@ -362,19 +367,29 @@ export class VacanciesService {
   async scoreboard(userId: string): Promise<{
     items: ScoreboardItem[];
     rejected: { kind: string; id: string; title: string; company: string | null; url: string | null; reason: string }[];
-    totals: { offers: number; vacancies: number; admitted: number; rejected: number };
-    meta: { profileSkills: number; weights: Record<string, number>; scoredAt: string };
+    dismissed: ScoreboardItem[];
+    totals: {
+      offers: number;
+      vacancies: number;
+      admitted: number;
+      rejected: number;
+      dismissed: number;
+    };
+    meta: { profileSkills: number; weights: Record<string, number>; scoredAt: string; maxScore: number };
   }> {
     const profile = await this.profiles.getForUser(userId);
     const weights = skillWeights(profile);
     const today = new Date();
 
-    const [offers, vacancies] = await Promise.all([
+    const [offers, vacancies, trackedIds] = await Promise.all([
       this.offers.find({ where: { userId }, order: { createdAt: 'DESC' } }),
       this.vacancies.find({ where: { userId }, order: { score: 'DESC' } }),
+      this.applications.trackedVacancyIds(userId),
     ]);
+    const tracked = new Set(trackedIds);
 
     const items: ScoreboardItem[] = [];
+    const dismissed: ScoreboardItem[] = [];
     const rejected: { kind: string; id: string; title: string; company: string | null; url: string | null; reason: string }[] = [];
 
     for (const offer of offers) {
@@ -434,7 +449,7 @@ export class VacanciesService {
         continue;
       }
       const result = (vacancy.breakdown ?? {}) as ScoreResult;
-      items.push({
+      const item: ScoreboardItem = {
         ...this.itemFromResult('vacancy', vacancy.id, result),
         score: vacancy.score,
         title: vacancy.title,
@@ -445,7 +460,16 @@ export class VacanciesService {
         category: vacancy.category ?? null,
         postedAt: vacancy.postedAt ?? null,
         scoredFrom: vacancy.scoredFrom === 'description' ? 'description' : 'index',
-      });
+        tracked: tracked.has(vacancy.id),
+      };
+      // El aviso que el usuario marco como cerrado sale de la lista, pero se puede
+      // recuperar: en un telefono un toque se pierde, y esconderlo sin vuelta seria
+      // peor que el ruido que saca.
+      if (vacancy.dismissedAt) {
+        dismissed.push(item);
+        continue;
+      }
+      items.push(item);
     }
 
     // Un solo orden para las dos fuentes, porque las dos usan el mismo puntaje.
@@ -461,18 +485,109 @@ export class VacanciesService {
     return {
       items,
       rejected,
+      dismissed,
       totals: {
         offers: offers.length,
         vacancies: vacancies.length,
         admitted: items.length,
         rejected: rejected.length,
+        dismissed: dismissed.length,
       },
       meta: {
         profileSkills: Object.keys(weights).length,
         weights,
         scoredAt: new Date().toISOString(),
+        // El puntaje es una suma sin techo, asi que no se explica solo. El maximo de
+        // la lista es lo que deja mostrarlo como relativo (0..100) sin inventar una
+        // escala: el mejor de tu lista es el 100 y el resto se lee contra ese.
+        maxScore: items.reduce((max, item) => Math.max(max, item.score), 0),
       },
     };
+  }
+
+  /**
+   * Marca que el aviso ya no esta, o deshace la marca.
+   *
+   * El feed no publica si un aviso sigue abierto, asi que la unica fuente confiable
+   * es el usuario. Idempotente por diseno: repetir el toque deja el mismo estado en
+   * vez de acumular, y `restore` es la vuelta atras de un toque perdido.
+   */
+  async dismiss(userId: string, vacancyId: string): Promise<{ dismissed: boolean }> {
+    return this.setDismissed(userId, vacancyId, new Date());
+  }
+
+  async restore(userId: string, vacancyId: string): Promise<{ dismissed: boolean }> {
+    return this.setDismissed(userId, vacancyId, null);
+  }
+
+  private async setDismissed(
+    userId: string,
+    vacancyId: string,
+    at: Date | null,
+  ): Promise<{ dismissed: boolean }> {
+    const vacancy = await this.vacancies.findOne({
+      where: { id: vacancyId, userId },
+    });
+    if (!vacancy) throw new NotFoundException('vacante no encontrada');
+
+    // Sin cambio no hay escritura: repetir el toque no deberia mover `updatedAt`.
+    if (at && vacancy.dismissedAt) return { dismissed: true };
+    if (!at && !vacancy.dismissedAt) return { dismissed: false };
+
+    vacancy.dismissedAt = at;
+    await this.vacancies.save(vacancy);
+    return { dismissed: at !== null };
+  }
+
+  /**
+   * Convierte una vacante del feed en una postulacion del CRM.
+   *
+   * Idempotente: si ya estaba trackeada devuelve la que existe. El mapeo vive aca
+   * y no en el navegador porque `applications.source` esta restringido por un CHECK
+   * en la base: un valor fuera de la lista hace fallar el insert con un error que
+   * el usuario no puede resolver desde la pantalla.
+   */
+  async track(
+    userId: string,
+    vacancyId: string,
+  ): Promise<{ created: boolean; applicationId: string }> {
+    const vacancy = await this.vacancies.findOne({
+      where: { id: vacancyId, userId },
+    });
+    if (!vacancy) throw new NotFoundException('vacante no encontrada');
+
+    const existing = await this.applications.findByVacancy(userId, vacancyId);
+    if (existing) return { created: false, applicationId: existing.id };
+
+    const application = await this.applications.create(
+      {
+        company: vacancy.company?.trim() || 'Sin empresa',
+        role: vacancy.title,
+        source: this.sourceForPortal(vacancy.url),
+        notes: vacancy.url
+          ? `Trackeada desde el tablero: ${vacancy.url}`
+          : 'Trackeada desde el tablero',
+        vacancyId: vacancy.id,
+        // Guardar no es postular. La fila entra como `saved` y la fecha de
+        // postulacion queda nula hasta que la muevas a `applied`; antes entraba
+        // como `applied` con la fecha de hoy, o sea registraba una postulacion que
+        // no existio.
+        stage: STAGES.SAVED,
+      },
+      userId,
+    );
+    return { created: true, applicationId: application.id };
+  }
+
+  /**
+   * El portal mapeado a los valores que acepta `applications.source`.
+   *
+   * Cualquier cosa que no sea LinkedIn cae en `other`: el feed agrega varios
+   * portales (getonbrd, workingnomads, jobicy, himalayas) y la lista de la base
+   * es cerrada, asi que inventar un valor nuevo rompe el insert.
+   */
+  private sourceForPortal(url: string | null | undefined): string {
+    return url && url.includes('linkedin.com') ? 'linkedin' : 'other';
   }
 
   private itemFromResult(

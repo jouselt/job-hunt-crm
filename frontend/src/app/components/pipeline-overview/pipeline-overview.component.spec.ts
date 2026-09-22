@@ -6,10 +6,13 @@ import { PipelineStats } from '../../models/application.model';
 
 describe('PipelineOverviewComponent', () => {
   const stats: PipelineStats = {
-    applied: { count: 4, pct: 40 },
-    screened: { count: 3, pct: 30 },
-    interview: { count: 2, pct: 20 },
-    offer: { count: 1, pct: 10 },
+    // Guardar un aviso es una etapa del pipeline, no un cajon aparte: tiene su
+    // columna y entra en el total activo.
+    saved: { count: 2, pct: 16.7 },
+    applied: { count: 4, pct: 33.3 },
+    screened: { count: 3, pct: 25 },
+    interview: { count: 2, pct: 16.7 },
+    offer: { count: 1, pct: 8.3 },
     rejected: { count: 2 },
     avgDaysInStage: 7.4,
   };
@@ -46,6 +49,8 @@ describe('PipelineOverviewComponent', () => {
     expect(labels).toContain('Interview');
     expect(labels).toContain('Offer');
     expect(labels).toContain('Rejected');
+    // Saved es la entrada del pipeline, y va primero: es lo que todavia no postulaste.
+    expect(labels[0]).toBe('Saved');
     expect(labels.join(' ')).not.toMatch(/interviewing|offers/i);
   });
 

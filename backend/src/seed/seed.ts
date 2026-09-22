@@ -11,7 +11,6 @@ async function seed() {
   // Clear existing data
   await repo.clear();
 
-  const today = new Date().toISOString().slice(0, 10);
   const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
   const nextWeek = new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10);
 

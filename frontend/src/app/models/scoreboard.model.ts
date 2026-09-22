@@ -33,6 +33,8 @@ export interface ScoreboardItem {
    * un puntaje sobre el aviso completo y la vista lo dice.
    */
   scoredFrom: 'offer' | 'index' | 'description';
+  /** Solo en vacantes: si ya se convirtio en postulacion del CRM. */
+  tracked?: boolean;
 }
 
 export interface ScoreboardRejection {
@@ -47,8 +49,29 @@ export interface ScoreboardRejection {
 export interface Scoreboard {
   items: ScoreboardItem[];
   rejected: ScoreboardRejection[];
-  totals: { offers: number; vacancies: number; admitted: number; rejected: number };
-  meta: { profileSkills: number; weights: Record<string, number>; scoredAt: string };
+  /**
+   * Los avisos que marcaste como cerrados. Salen de `items` y de `maxScore`, asi
+   * que el mejor que queda en juego es el 100, y vuelven enteros con restore.
+   */
+  dismissed: ScoreboardItem[];
+  totals: {
+    offers: number;
+    vacancies: number;
+    admitted: number;
+    rejected: number;
+    dismissed: number;
+  };
+  /**
+   * `maxScore` es el puntaje mas alto de la lista. El puntaje es una suma sin
+   * techo, asi que un numero pelado se lee como una nota sobre 100 sin serlo: el
+   * maximo es lo que deja mostrarlo como relativo (0..100) sin inventar una escala.
+   */
+  meta: {
+    profileSkills: number;
+    weights: Record<string, number>;
+    scoredAt: string;
+    maxScore: number;
+  };
 }
 
 export interface RefreshJob {

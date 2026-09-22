@@ -1,4 +1,4 @@
-export type Stage = 'applied' | 'screened' | 'interview' | 'offer' | 'rejected';
+export type Stage = 'saved' | 'applied' | 'screened' | 'interview' | 'offer' | 'rejected';
 export type Source = 'linkedin' | 'indeed' | 'referral' | 'other';
 
 export interface Application {
@@ -8,7 +8,8 @@ export interface Application {
   role: string;
   source: Source;
   stage: Stage;
-  applied_date: string;
+  /** Nula mientras la fila esta guardada: todavia no postulaste, no hay fecha. */
+  applied_date: string | null;
   follow_up_date: string | null;
   notes: string | null;
   created_at: string;
@@ -21,6 +22,7 @@ export interface StageBucket {
 }
 
 export interface PipelineStats {
+  saved: StageBucket;
   applied: StageBucket;
   screened: StageBucket;
   interview: StageBucket;

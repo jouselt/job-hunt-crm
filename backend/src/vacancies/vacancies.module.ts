@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { Offer } from '../offer-triage/offer.entity';
 import { OfferTriageModule } from '../offer-triage/offer-triage.module';
+import { ApplicationsModule } from '../applications/applications.module';
 import { VacanciesController } from './vacancies.controller';
 import { VacanciesService } from './vacancies.service';
 import { Vacancy } from './vacancy.entity';
@@ -12,7 +13,7 @@ import { Vacancy } from './vacancy.entity';
   // las sirve en una sola lista. `OfferTriageModule` entra por `TriageProfileService`:
   // el perfil tiene que ser el mismo que recibe Jev, o el puntaje local y el de Jev
   // describirian dos candidatos distintos.
-  imports: [TypeOrmModule.forFeature([Vacancy, Offer]), OfferTriageModule],
+  imports: [TypeOrmModule.forFeature([Vacancy, Offer]), OfferTriageModule, ApplicationsModule],
   controllers: [VacanciesController],
   providers: [VacanciesService],
   exports: [VacanciesService],

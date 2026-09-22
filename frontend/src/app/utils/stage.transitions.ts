@@ -1,6 +1,6 @@
 import { Stage } from '../models/application.model';
 
-const FORWARD_ORDER: Stage[] = ['applied', 'screened', 'interview', 'offer'];
+const FORWARD_ORDER: Stage[] = ['saved', 'applied', 'screened', 'interview', 'offer'];
 
 /** Returns the next forward stage, or null if already at terminal "offer". */
 export function nextStage(current: Stage): Stage | null {

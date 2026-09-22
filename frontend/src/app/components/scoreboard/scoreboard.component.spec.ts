@@ -22,6 +22,7 @@ const VACANCY = {
   signals: ['remote'],
   // Puntuada solo por el titulo: la vista tiene que decirlo.
   scoredFrom: 'index' as const,
+  tracked: false,
 };
 
 const OFFER = {
@@ -57,8 +58,16 @@ const SCOREBOARD: Scoreboard = {
       reason: 'stack outside the profile with no TS/JS: java',
     },
   ],
-  totals: { offers: 1, vacancies: 1, admitted: 2, rejected: 1 },
-  meta: { profileSkills: 33, weights: { Angular: 5 }, scoredAt: '2026-09-21T13:00:00.000Z' },
+  // El fixture base no tiene nada marcado como cerrado.
+  dismissed: [],
+  totals: { offers: 1, vacancies: 1, admitted: 2, rejected: 1, dismissed: 0 },
+  meta: {
+    profileSkills: 33,
+    weights: { Angular: 5 },
+    scoredAt: '2026-09-21T13:00:00.000Z',
+    // El mejor de la lista: la vacante. Su relativo tiene que dar 100.
+    maxScore: 25,
+  },
 };
 
 const IDLE_JOB: RefreshJob = {
@@ -72,11 +81,26 @@ const IDLE_JOB: RefreshJob = {
 };
 
 function build(overrides: Partial<Record<keyof JobHuntService, unknown>> = {}) {
+  // Copia por test. `track()` marca `item.tracked = true` sobre el objeto que
+  // recibe, y el fixture es un const compartido: sin clonar, un test que trackea
+  // deja el boton en "Tracked" y deshabilitado para el siguiente, y el resultado
+  // depende del orden en que corran los specs.
+  const scoreboard: Scoreboard = {
+    ...SCOREBOARD,
+    items: SCOREBOARD.items.map((item) => ({ ...item })),
+    rejected: [...SCOREBOARD.rejected],
+    dismissed: [...SCOREBOARD.dismissed],
+    totals: { ...SCOREBOARD.totals },
+    meta: { ...SCOREBOARD.meta },
+  };
   const service = {
-    getScoreboard: () => of(SCOREBOARD),
+    getScoreboard: () => of(scoreboard),
     getRefreshJob: () => of(IDLE_JOB),
     startVacancyRefresh: () => of(IDLE_JOB),
     rescoreVacancies: () => of({ rescored: 2, admitted: 1 }),
+    trackVacancy: () => of({ created: true, applicationId: 'app-1' }),
+    dismissVacancy: () => of({ dismissed: true }),
+    restoreVacancy: () => of({ dismissed: false }),
     ...overrides,
   };
   TestBed.configureTestingModule({
@@ -142,10 +166,81 @@ describe('ScoreboardComponent', () => {
     expect(text).toContain('SEND');
   });
 
+  it('shows the score relative to the best in the list, not as a bare number', () => {
+    // El puntaje crudo es una suma sin techo, asi que un 37 no es un 37%: se lee
+    // como una nota que no es. El relativo responde la pregunta que importa.
+    const fixture = build();
+    const text = fixture.nativeElement.textContent as string;
+
+    expect(fixture.componentInstance.relativeScore(VACANCY)).toBe(100);
+    expect(fixture.componentInstance.relativeScore(OFFER)).toBe(56);
+    expect(text).toContain('100');
+    // El crudo sigue a la vista: es el valor que produce el ranker Python.
+    expect(text).toMatch(/25\s*pts/);
+  });
+
+  it('numbers the rows so the ranking survives a filter', () => {
+    const fixture = build();
+
+    expect(fixture.componentInstance.rank(VACANCY)).toBe(1);
+    expect(fixture.componentInstance.rank(OFFER)).toBe(2);
+    expect(fixture.nativeElement.textContent as string).toContain('#1');
+  });
+
+  it('turns a vacancy into an application from the row', async () => {
+    const calls: string[] = [];
+    const fixture = build({
+      trackVacancy: (id: string) => {
+        calls.push(id);
+        return of({ created: true, applicationId: 'app-1' });
+      },
+    });
+
+    const button = fixture.nativeElement.querySelector(
+      '.row-actions button',
+    ) as HTMLButtonElement;
+    expect(button.textContent).toContain('Track');
+
+    button.click();
+    fixture.changeDetectorRef.detectChanges();
+    await fixture.whenStable();
+
+    expect(calls).toEqual(['v1']);
+    expect(fixture.componentInstance.scoreboard?.items[0].tracked).toBe(true);
+    expect(fixture.componentInstance.notice).toContain('entro al pipeline');
+
+    const after = fixture.nativeElement.querySelector(
+      '.row-actions button',
+    ) as HTMLButtonElement;
+    expect(after.textContent).toContain('Tracked');
+    expect(after.disabled).toBe(true);
+  });
+
+  it('renders Open as a plain link that navigates in place', () => {
+    // Sin target=_blank a proposito: Arc en iOS abre las pestañas nuevas como
+    // tarjetas, y si la tarjeta no aparece donde estas mirando el tap parece no
+    // hacer nada. Navegar en la misma pestaña no se puede bloquear ni esconder, y
+    // el href queda para quien quiera abrirlo en otra pestaña con long-press.
+    const fixture = build();
+    const link = fixture.nativeElement.querySelector('a.btn-link') as HTMLAnchorElement;
+
+    expect(link).toBeTruthy();
+    expect(link.getAttribute('href')).toBe('https://example.test/v1');
+    expect(link.getAttribute('target')).toBeNull();
+  });
+
+  it('does not offer Track on a CRM offer, which is already in the pipeline', () => {
+    const fixture = build();
+    const rows = fixture.nativeElement.querySelectorAll('.row');
+
+    expect((rows[0] as HTMLElement).querySelector('button')).toBeTruthy();
+    expect((rows[1] as HTMLElement).querySelector('button')).toBeFalsy();
+  });
+
   it('keeps the filtered-out list behind a toggle, with the reason', async () => {
     const fixture = build();
 
-    expect(fixture.nativeElement.querySelector('.rejected')).toBeFalsy();
+    expect(fixture.nativeElement.querySelector('.flagged')).toBeFalsy();
 
     fixture.componentInstance.showRejected = true;
     // Esta app es zoneless (zone.js no esta en el proyecto), asi que mutar una
@@ -156,7 +251,7 @@ describe('ScoreboardComponent', () => {
     await fixture.whenStable();
     fixture.detectChanges();
 
-    const rejected = fixture.nativeElement.querySelector('.rejected') as HTMLElement;
+    const rejected = fixture.nativeElement.querySelector('.flagged') as HTMLElement;
     expect(rejected).toBeTruthy();
     // Un rechazo sin motivo es un rechazo que nadie puede auditar.
     expect(rejected.textContent).toContain('stack outside the profile with no TS/JS: java');
@@ -198,5 +293,224 @@ describe('ScoreboardComponent', () => {
 
     expect(component.sourceLabel(VACANCY)).toBe('Feed · titulo');
     expect(component.sourceLabel(OFFER)).toBe('CRM · REVIEW');
+  });
+
+  it('offers Gone on a vacancy, because the feed never says a posting closed', () => {
+    // El feed no publica si un aviso sigue abierto: LinkedIn lo cierra y la fila se
+    // queda con su puntaje, arriba del ranking. Sondear LinkedIn seria abuso, asi
+    // que lo decide el usuario. Una oferta del CRM no lleva Gone: su flujo es Triage.
+    const fixture = build();
+    const rows = fixture.nativeElement.querySelectorAll('.row');
+
+    const gone = (rows[0] as HTMLElement).querySelector('.btn-danger') as HTMLButtonElement;
+    expect(gone).toBeTruthy();
+    expect(gone.textContent).toContain('Gone');
+    expect((rows[1] as HTMLElement).querySelector('.btn-danger')).toBeFalsy();
+  });
+
+  it('marks a posting as gone and says it can be brought back', async () => {
+    const calls: string[] = [];
+    const fixture = build({
+      dismissVacancy: (id: string) => {
+        calls.push(id);
+        return of({ dismissed: true });
+      },
+    });
+
+    const gone = fixture.nativeElement.querySelector('.btn-danger') as HTMLButtonElement;
+    gone.click();
+    fixture.changeDetectorRef.detectChanges();
+    await fixture.whenStable();
+
+    expect(calls).toEqual(['v1']);
+    // El aviso sale de la lista, pero el mensaje dice que se puede devolver: en un
+    // telefono un toque se pierde, y esconder sin vuelta seria peor que el ruido.
+    expect(fixture.componentInstance.notice).toContain('salio de la lista');
+  });
+
+  it('keeps the gone list behind a toggle, and restores from there', async () => {
+    const goneItem = { ...VACANCY, id: 'v7', title: 'Backend Node Developer' };
+    const restored: string[] = [];
+    const fixture = build({
+      getScoreboard: () =>
+        of({
+          ...SCOREBOARD,
+          dismissed: [goneItem],
+          totals: { ...SCOREBOARD.totals, dismissed: 1 },
+        }),
+      restoreVacancy: (id: string) => {
+        restored.push(id);
+        return of({ dismissed: false });
+      },
+    });
+
+    expect(fixture.nativeElement.querySelector('.flagged-list')).toBeFalsy();
+
+    fixture.componentInstance.showDismissed = true;
+    fixture.changeDetectorRef.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const list = fixture.nativeElement.querySelector('.flagged-list') as HTMLElement;
+    expect(list).toBeTruthy();
+    expect(list.textContent).toContain('Backend Node Developer');
+
+    const button = list.querySelector('.btn-ok') as HTMLButtonElement;
+    expect(button.textContent).toContain('Restore');
+    button.click();
+    fixture.changeDetectorRef.detectChanges();
+    await fixture.whenStable();
+
+    expect(restored).toEqual(['v7']);
+    expect(fixture.componentInstance.notice).toContain('volvio a la lista');
+  });
+
+  it('reports a failed dismiss instead of pretending it worked', async () => {
+    const fixture = build({
+      dismissVacancy: () => throwError(() => new Error('boom')),
+    });
+
+    const gone = fixture.nativeElement.querySelector('.btn-danger') as HTMLButtonElement;
+    gone.click();
+    fixture.changeDetectorRef.detectChanges();
+    await fixture.whenStable();
+
+    expect(fixture.componentInstance.error).toContain('No se pudo marcar');
+    expect(fixture.componentInstance.notice).toBe('');
+  });
+
+  it('opens the full detail when the card is tapped', async () => {
+    const fixture = build();
+
+    expect(fixture.nativeElement.querySelector('.modal')).toBeFalsy();
+
+    const row = fixture.nativeElement.querySelectorAll('.row')[0] as HTMLElement;
+    row.click();
+    fixture.changeDetectorRef.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const modal = fixture.nativeElement.querySelector('.modal') as HTMLElement;
+    expect(modal).toBeTruthy();
+    // El rol de dialogo va en el sheet: el overlay es el fondo que cierra al tocar.
+    const sheet = modal.querySelector('.modal-sheet') as HTMLElement;
+    expect(sheet.getAttribute('role')).toBe('dialog');
+    // El desglose es lo que responde por que ese puntaje y no otro.
+    expect(modal.textContent).toContain('Senior Angular Developer');
+    expect(modal.textContent).toContain('Acme');
+    expect(modal.textContent).toContain('#1');
+    expect(modal.textContent).toContain('25');
+    expect(modal.textContent).toContain('Angular');
+    // Y dice de donde salio el texto puntuado, que es la advertencia que importa.
+    expect(modal.textContent).toContain('Solo el titulo');
+  });
+
+  it('does not open the detail when a button inside the card is tapped', async () => {
+    // La card es clickeable y adentro tiene Track, Gone y Open. Sin el
+    // stopPropagation el toque hace las dos cosas, y el popup tapa la accion que
+    // el usuario quiso hacer.
+    const fixture = build({
+      trackVacancy: () => of({ created: true, applicationId: 'app-1' }),
+    });
+
+    const track = fixture.nativeElement.querySelector(
+      '.row-actions .btn-ghost',
+    ) as HTMLButtonElement;
+    track.click();
+    fixture.changeDetectorRef.detectChanges();
+    await fixture.whenStable();
+
+    expect(fixture.componentInstance.detail).toBeNull();
+    expect(fixture.nativeElement.querySelector('.modal')).toBeFalsy();
+    // Y la accion si ocurrio: el stopPropagation no puede tragarse el click.
+    expect(fixture.componentInstance.scoreboard?.items[0].tracked).toBe(true);
+  });
+
+  it('does not open the detail when Open is tapped', async () => {
+    const fixture = build();
+
+    const link = fixture.nativeElement.querySelector('a.btn-link') as HTMLAnchorElement;
+    // Se le saca el href para el test: un click en un anchor con href navega de
+    // verdad, y en Karma una navegacion recarga la pagina y se lleva al runner. El
+    // handler que se prueba es el mismo.
+    link.removeAttribute('href');
+    link.click();
+    fixture.changeDetectorRef.detectChanges();
+    await fixture.whenStable();
+
+    expect(fixture.componentInstance.detail).toBeNull();
+  });
+
+  it('closes the detail with the button, the overlay and Escape', async () => {
+    const fixture = build();
+    const row = fixture.nativeElement.querySelectorAll('.row')[0] as HTMLElement;
+
+    const open = async () => {
+      row.click();
+      fixture.changeDetectorRef.detectChanges();
+      await fixture.whenStable();
+      fixture.detectChanges();
+    };
+
+    await open();
+    expect(fixture.componentInstance.detail).toBeTruthy();
+
+    // Escape, por el listener del host.
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    fixture.changeDetectorRef.detectChanges();
+    await fixture.whenStable();
+    expect(fixture.componentInstance.detail).toBeNull();
+
+    await open();
+    const close = fixture.nativeElement.querySelector(
+      '.modal-actions .btn-ghost',
+    ) as HTMLButtonElement;
+    close.click();
+    fixture.changeDetectorRef.detectChanges();
+    await fixture.whenStable();
+    expect(fixture.componentInstance.detail).toBeNull();
+
+    // El overlay tambien cierra.
+    await open();
+    (fixture.nativeElement.querySelector('.modal') as HTMLElement).click();
+    fixture.changeDetectorRef.detectChanges();
+    await fixture.whenStable();
+    expect(fixture.componentInstance.detail).toBeNull();
+  });
+
+  it('keeps the detail open when the tap lands inside the sheet', async () => {
+    const fixture = build();
+    const row = fixture.nativeElement.querySelectorAll('.row')[0] as HTMLElement;
+
+    row.click();
+    fixture.changeDetectorRef.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    (fixture.nativeElement.querySelector('.modal-sheet') as HTMLElement).click();
+    fixture.changeDetectorRef.detectChanges();
+    await fixture.whenStable();
+
+    expect(fixture.componentInstance.detail).toBeTruthy();
+  });
+
+  it('says where the scored text came from', () => {
+    const component = build().componentInstance;
+
+    expect(component.scoredFromLabel(VACANCY)).toContain('Solo el titulo');
+    expect(component.scoredFromLabel(OFFER)).toBe('Sobre la oferta del CRM');
+  });
+
+  it('does not call a CRM offer unsaved, because it is already in the pipeline', () => {
+    // La oferta del CRM no se "guarda desde el feed": ya vive en el tablero. Decir
+    // "Sin guardar" seria la misma clase de mentira que Track creando filas en applied.
+    const component = build().componentInstance;
+
+    expect(component.estadoLabel(OFFER)).toContain('En el pipeline');
+    expect(component.estadoLabel(OFFER)).not.toContain('Sin guardar');
+    expect(component.estadoLabel(VACANCY)).toBe('Sin guardar');
+    expect(component.estadoLabel({ ...VACANCY, tracked: true })).toBe(
+      'Guardada en el pipeline',
+    );
   });
 });

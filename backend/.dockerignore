@@ -1,0 +1,21 @@
+# Lo que NO debe entrar al contexto de build.
+#
+# El Dockerfile es multi-stage y la etapa final copia rutas puntuales, asi que un
+# .env no llega a la imagen publicada. Igual se excluye: el contexto manda estos
+# archivos al daemon en cada build, y node_modules solo ya son ~300 MB, asi que
+# sin esto cada build es mas lento de lo que necesita ser y el secreto queda en la
+# capa intermedia del cache local.
+node_modules
+dist
+coverage
+
+# Secretos y entorno local. Los *.example si se versionan: son la plantilla.
+.env
+.env.*
+!.env.example
+
+.git
+.gitignore
+*.log
+npm-debug.log*
+.DS_Store

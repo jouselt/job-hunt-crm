@@ -19,6 +19,9 @@ import { RefreshJob, Scoreboard, ScoreboardItem } from '../../models/scoreboard.
   imports: [DecimalPipe, DatePipe, FormsModule],
   templateUrl: './scoreboard.component.html',
   styleUrls: ['./scoreboard.component.css'],
+  // Escape cierra el detalle. Va en el host y no en el overlay porque el foco
+  // puede estar en cualquier parte cuando el modal esta abierto.
+  host: { '(document:keydown.escape)': 'closeDetail()' },
 })
 export class ScoreboardComponent implements OnInit, OnDestroy {
   private readonly jobHunt = inject(JobHuntService);
@@ -32,6 +35,13 @@ export class ScoreboardComponent implements OnInit, OnDestroy {
   notice = '';
   filter = '';
   showRejected = false;
+  showDismissed = false;
+
+  /** El aviso abierto en el detalle. Null = cerrado. */
+  detail: ScoreboardItem | null = null;
+
+  /** Posicion en el ranking, por `kind:id`. Se arma al cargar, no en cada render. */
+  private ranks = new Map<string, number>();
 
   ngOnInit(): void {
     this.load();
@@ -47,6 +57,11 @@ export class ScoreboardComponent implements OnInit, OnDestroy {
     this.jobHunt.getScoreboard().subscribe({
       next: (scoreboard) => {
         this.scoreboard = scoreboard;
+        // La posicion se calcula sobre la lista completa, no sobre la filtrada: si
+        // filtras, "#7" sigue diciendo el lugar real que ocupa en el ranking.
+        this.ranks = new Map(
+          scoreboard.items.map((item, index) => [this.key(item), index + 1]),
+        );
         this.loading = false;
         this.error = '';
       },
@@ -172,5 +187,127 @@ export class ScoreboardComponent implements OnInit, OnDestroy {
   sourceLabel(item: ScoreboardItem): string {
     if (item.kind === 'offer') return item.status ? `CRM · ${item.status}` : 'CRM';
     return item.scoredFrom === 'index' ? 'Feed · titulo' : 'Feed · aviso';
+  }
+
+  private key(item: ScoreboardItem): string {
+    return `${item.kind}:${item.id}`;
+  }
+
+  /** El lugar en el ranking completo. 0 solo si todavia no cargo. */
+  rank(item: ScoreboardItem): number {
+    return this.ranks.get(this.key(item)) ?? 0;
+  }
+
+  /**
+   * El puntaje como numero relativo (0..100) contra el mejor de la lista.
+   *
+   * El puntaje crudo es una suma sin techo, asi que un 37 no es un 37%: se lee como
+   * una nota que no es. El relativo responde la pregunta que importa, que es que tan
+   * cerca esta esto de lo mejor que hay en la lista.
+   *
+   * Ojo: es relativo a la lista, no a una escala fija. Si un refresco trae algo
+   * mejor, los relativos de abajo bajan aunque su puntaje crudo no cambie.
+   */
+  relativeScore(item: ScoreboardItem): number {
+    const max = this.scoreboard?.meta.maxScore ?? 0;
+    if (max <= 0) return 0;
+    return Math.min(100, Math.round((item.score / max) * 100));
+  }
+
+  /** Convierte la vacante en postulacion del CRM. Idempotente en el backend. */
+  track(item: ScoreboardItem): void {
+    this.busy = true;
+    this.notice = '';
+    this.error = '';
+    this.jobHunt.trackVacancy(item.id).subscribe({
+      next: (result) => {
+        this.busy = false;
+        this.notice = result.created
+          ? `"${item.title}" entro al pipeline.`
+          : `"${item.title}" ya estaba en el pipeline.`;
+        item.tracked = true;
+      },
+      error: () => {
+        this.busy = false;
+        this.error = 'No se pudo trackear la vacante.';
+      },
+    });
+  }
+
+  /**
+   * Que decir del estado.
+   *
+   * Una oferta del CRM ya esta en el pipeline: no es que este "sin guardar", es que
+   * no se guarda desde el feed porque vive en el tablero. Decir "Sin guardar" de algo
+   * que ya esta en el pipeline es la misma clase de mentira que Track creando filas
+   * en `applied`.
+   */
+  estadoLabel(item: ScoreboardItem): string {
+    if (item.kind === 'offer') return 'En el pipeline: vino del CRM';
+    return item.tracked ? 'Guardada en el pipeline' : 'Sin guardar';
+  }
+
+  /** De donde salio el texto que se puntuo, en palabras. */
+  scoredFromLabel(item: ScoreboardItem): string {
+    if (item.scoredFrom === 'description') return 'Sobre el aviso completo';
+    if (item.scoredFrom === 'index')
+      return 'Solo el titulo: el feed no publica la descripcion';
+    return 'Sobre la oferta del CRM';
+  }
+
+  /**
+   * Abre el detalle del aviso.
+   *
+   * El popup muestra lo que sabemos y no mas: el feed publica la descripcion en 59
+   * caracteres, asi que el texto del aviso no esta. Lo que si esta es el desglose
+   * del puntaje, que es lo que responde por que 27 y no 12.
+   */
+  openDetail(item: ScoreboardItem): void {
+    this.detail = item;
+  }
+
+  closeDetail(): void {
+    this.detail = null;
+  }
+
+  /**
+   * Marca el aviso como cerrado y lo saca de la lista.
+   *
+   * El feed no publica si un aviso sigue abierto, asi que la unica fuente confiable
+   * es el usuario. No es un descarte permanente: se puede devolver.
+   */
+  dismiss(item: ScoreboardItem): void {
+    this.busy = true;
+    this.notice = '';
+    this.error = '';
+    this.jobHunt.dismissVacancy(item.id).subscribe({
+      next: () => {
+        this.busy = false;
+        this.notice = `"${item.title}" salio de la lista. Se puede devolver.`;
+        this.load();
+      },
+      error: () => {
+        this.busy = false;
+        this.error = 'No se pudo marcar el aviso.';
+      },
+    });
+  }
+
+  /** Lo devuelve a la lista. Existe por el telefono, donde un toque se pierde. */
+  restore(item: ScoreboardItem): void {
+    this.busy = true;
+    this.notice = '';
+    this.error = '';
+    this.jobHunt.restoreVacancy(item.id).subscribe({
+      next: () => {
+        this.busy = false;
+        this.notice = `"${item.title}" volvio a la lista.`;
+        this.load();
+      },
+      error: () => {
+        this.busy = false;
+        this.error = 'No se pudo devolver el aviso.';
+      },
+    });
   }
 }

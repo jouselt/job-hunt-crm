@@ -78,4 +78,39 @@ describe('AnalyticsService', () => {
     expect(typeof stats.avgDaysInStage).toBe('number');
     expect(stats.avgDaysInStage).toBeGreaterThan(0);
   });
+
+  it('cuenta las guardadas y las suma al total activo', async () => {
+    // Guardar un aviso es estar en el pipeline, no estar muerto: si `saved` quedara
+    // fuera del denominador, las barras de la vista no sumarian 100.
+    repo.count.mockImplementation(({ where }: { where: { stage: string } }) =>
+      Promise.resolve(where.stage === 'saved' ? 5 : where.stage === 'applied' ? 5 : 0),
+    );
+    repo.find.mockResolvedValue([]);
+
+    const stats = await service.getPipelineStats('user-1');
+
+    expect(stats.saved.count).toBe(5);
+    expect(stats.saved.pct).toBe(50);
+    expect(stats.applied.pct).toBe(50);
+    expect(stats.saved.pct + stats.applied.pct).toBe(100);
+  });
+
+  it('no cuenta las guardadas en el promedio de dias, y no devuelve NaN', async () => {
+    // `applied_date` es nula mientras la fila esta guardada, y `null + 'T00:00:00Z'`
+    // da Invalid Date: el promedio se volvia NaN sin fallar, y el bug se veia en la
+    // pantalla, no en el test.
+    repo.count.mockResolvedValue(0);
+    const dayMs = 86400000;
+    const now = new Date();
+    repo.find.mockResolvedValue([
+      { applied_date: null },
+      { applied_date: new Date(now.getTime() - 10 * dayMs).toISOString().slice(0, 10) },
+    ]);
+
+    const stats = await service.getPipelineStats('user-1');
+
+    expect(Number.isNaN(stats.avgDaysInStage)).toBe(false);
+    // Solo la que tiene fecha entra al promedio: 10 dias, no el promedio de dos.
+    expect(stats.avgDaysInStage).toBe(10);
+  });
 });

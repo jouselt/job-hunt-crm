@@ -2,6 +2,16 @@ import { BadRequestException } from '@nestjs/common';
 import { promoteStage, computeFollowUp } from './stage.transitions';
 
 describe('promoteStage', () => {
+  it('promotes saved -> applied: guardar y despues postular es un paso', () => {
+    // Si `saved` no estuviera en el orden, mover la tarjeta fallaba con
+    // "cannot move saved -> applied" y el usuario no podia avanzar su pipeline.
+    expect(promoteStage('saved', 'applied')).toBe('applied');
+  });
+
+  it('rejects skipping from saved straight to screened', () => {
+    expect(() => promoteStage('saved', 'screened')).toThrow(BadRequestException);
+  });
+
   it('promotes in forward order applied -> screened -> interview -> offer', () => {
     expect(promoteStage('applied', 'screened')).toBe('screened');
     expect(promoteStage('screened', 'interview')).toBe('interview');

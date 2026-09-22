@@ -5,6 +5,7 @@ import { PipelineStats } from '../../models/application.model';
 
 type BucketKey = keyof Omit<PipelineStats, 'rejected' | 'avgDaysInStage'>;
 const CANONICAL_KEYS: BucketKey[] = [
+  'saved',
   'applied',
   'screened',
   'interview',

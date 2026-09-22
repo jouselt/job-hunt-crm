@@ -95,6 +95,15 @@ export class Vacancy {
   @Column({ type: 'timestamptz', nullable: true })
   scoredAt?: Date | null;
 
+  /**
+   * Cuando el usuario marco que el aviso ya no esta.
+   *
+   * El feed no publica si un aviso sigue abierto, asi que la unica fuente
+   * confiable es el usuario. Null significa que sigue en juego.
+   */
+  @Column({ type: 'timestamptz', nullable: true })
+  dismissedAt?: Date | null;
+
   @CreateDateColumn()
   createdAt!: Date;
 

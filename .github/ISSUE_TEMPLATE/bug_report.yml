@@ -1,0 +1,53 @@
+name: Bug report
+description: Something behaved in a way you did not expect.
+labels: ['bug']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. The most useful thing you can include is how to
+        reproduce it: what you ran, what you expected, what happened.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you saw, and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Go to the scoreboard
+        2. Press Track on a posting
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Output of `docker compose logs backend` around the failure.
+      render: shell
+    validations:
+      required: false
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      placeholder: v0.1.0, or the commit you are running
+    validations:
+      required: false
+  - type: dropdown
+    id: component
+    attributes:
+      label: Where
+      options:
+        - Backend / API
+        - Frontend
+        - Scoring (Python tools or the TypeScript port)
+        - Docker Compose / deployment
+        - Not sure
+    validations:
+      required: true

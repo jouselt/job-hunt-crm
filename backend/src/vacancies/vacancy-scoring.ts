@@ -30,6 +30,7 @@ import {
   EXPERIENCE_FLAGS,
   EXPERIENCE_PATTERN,
   FRESH_BONUS,
+  FRESH_DAYS,
   MANAGEMENT_TITLE,
   MOBILE_PRIMARY,
   NO_SPONSORSHIP,
@@ -119,7 +120,7 @@ export function hits(patterns: string[], text: string): string[] {
 /**
  * Parte una entrada de `skill_depth` en tokens comparables.
  *
- * Las entradas son texto escrito a mano: "Angular 18 (Disney Parks)",
+ * Las entradas son texto escrito a mano: "Angular 18 (Acme)",
  * "Stencil.js / Web Components", "React (production use 2021-2022)". Cortar por
  * "/" y "," evita que una entrada con dos skills pierda su peso.
  */
@@ -290,19 +291,6 @@ export function disqualifiers(input: ScoreInput): string[] {
   return reasons;
 }
 
-/** Meses transcurridos desde una fecha `YYYY-MM-DD`, o null si no se puede leer. */
-export function monthsOld(value: string | null | undefined, today: Date): number | null {
-  if (!value) return null;
-  const parts = value.slice(0, 10).split('-').map(Number);
-  if (parts.length !== 3 || parts.some((part) => !Number.isFinite(part))) return null;
-  const [year, month, day] = parts;
-  return (
-    (today.getUTCFullYear() - year) * 12 +
-    (today.getUTCMonth() + 1 - month) -
-    (today.getUTCDate() < day ? 1 : 0)
-  );
-}
-
 /** Dias transcurridos desde una fecha `YYYY-MM-DD`, o null si no se puede leer. */
 export function daysOld(value: string | null | undefined, today: Date): number | null {
   if (!value) return null;
@@ -355,10 +343,10 @@ export function scoreVacancy(
     score += SPONSORSHIP_BONUS;
     signals.push('relocation or sponsorship offered');
   }
-  const months = monthsOld(input.date, today);
-  if (months !== null && months <= 1) {
+  const days = daysOld(input.date, today);
+  if (days !== null && days <= FRESH_DAYS) {
     score += FRESH_BONUS;
-    signals.push('posted this month');
+    signals.push('posted recently');
   }
 
   return {

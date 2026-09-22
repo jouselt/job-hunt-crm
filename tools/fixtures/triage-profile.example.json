@@ -1,0 +1,49 @@
+{
+  "roles": [
+    "Senior Fullstack Developer",
+    "Senior Frontend Engineer",
+    "Fullstack Engineer"
+  ],
+  "skills": [
+    "Angular",
+    "TypeScript",
+    "NestJS",
+    "Node.js",
+    "RxJS",
+    "NgRx",
+    "PostgreSQL",
+    "TypeORM",
+    "Docker",
+    "REST APIs",
+    "Jest",
+    "Git",
+    "NixOS"
+  ],
+  "seniority": "senior",
+  "location": "Remote",
+  "remote_ok": true,
+  "years_of_experience": 8,
+  "skill_depth": {
+    "primary_daily": ["Angular", "TypeScript", "RxJS", "Node.js", "NestJS"],
+    "production_experience": ["PostgreSQL", "TypeORM", "Docker", "Jest"],
+    "personal_projects": ["NixOS"],
+    "transferable_not_primary": [
+      "React (used in past roles, not the primary stack)",
+      "Python (used where needed, not a primary language)"
+    ],
+    "note": "Example weights only. Replace with your own profile in Settings."
+  },
+  "disqualifiers": [
+    "Roles whose primary stack is a language outside this profile, with no TypeScript or JavaScript work involved."
+  ],
+  "acceptable_not_disqualifying": [
+    "The role is contract, freelance or fixed-term rather than permanent.",
+    "The role is at a startup or a small company rather than an enterprise.",
+    "The role mentions React, Vue or another framework alongside Angular.",
+    "The role is in a domain the profile has not worked in before."
+  ],
+  "preferences": {
+    "remote_first": true,
+    "compensation_note": "Not stated in the profile. Do not reject an offer on compensation grounds."
+  }
+}

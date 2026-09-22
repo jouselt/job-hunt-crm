@@ -10,6 +10,7 @@ export interface StageBucket {
 }
 
 export interface PipelineStats {
+  saved: StageBucket;
   applied: StageBucket;
   screened: StageBucket;
   interview: StageBucket;
@@ -26,6 +27,9 @@ export class AnalyticsService {
   ) {}
 
   async getPipelineStats(userId: string): Promise<PipelineStats> {
+    const saved = await this.repo.count({
+      where: { user_id: userId, stage: STAGES.SAVED },
+    });
     const applied = await this.repo.count({
       where: { user_id: userId, stage: STAGES.APPLIED },
     });
@@ -42,7 +46,9 @@ export class AnalyticsService {
       where: { user_id: userId, stage: STAGES.REJECTED },
     });
 
-    const activeTotal = applied + screened + interview + offer;
+    // Guardar un aviso es estar en el pipeline, no estar muerto: entra en el total
+    // activo, y asi las barras de la vista suman 100.
+    const activeTotal = saved + applied + screened + interview + offer;
 
     const pct = (count: number) =>
       activeTotal === 0 ? 0 : Math.round((count / activeTotal) * 1000) / 10;
@@ -53,16 +59,24 @@ export class AnalyticsService {
     });
 
     let avgDaysInStage = 0;
-    if (apps.length > 0) {
+    // `applied_date` es nula mientras la fila esta guardada. Guardar un aviso no es
+    // postular, asi que no entra en el promedio: contarla con una fecha inventada
+    // mediria algo que no paso, y `null + 'T00:00:00Z'` da Invalid Date y un NaN.
+    const appliedDates = apps
+      .map((a) => a.applied_date)
+      .filter((d): d is string => typeof d === 'string' && d.length > 0);
+
+    if (appliedDates.length > 0) {
       const now = new Date();
-      const totalDays = apps.reduce((sum, a) => {
-        const applied = new Date(a.applied_date + 'T00:00:00Z');
+      const totalDays = appliedDates.reduce((sum, d) => {
+        const applied = new Date(`${d}T00:00:00Z`);
         return sum + Math.floor((now.getTime() - applied.getTime()) / 86400000);
       }, 0);
-      avgDaysInStage = Math.round((totalDays / apps.length) * 10) / 10;
+      avgDaysInStage = Math.round((totalDays / appliedDates.length) * 10) / 10;
     }
 
     return {
+      saved: { count: saved, pct: pct(saved) },
       applied: { count: applied, pct: pct(applied) },
       screened: { count: screened, pct: pct(screened) },
       interview: { count: interview, pct: pct(interview) },
