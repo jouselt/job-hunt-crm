@@ -1,0 +1,19 @@
+# Lo que NO debe entrar al contexto de build.
+#
+# node_modules (~300 MB) y dist son artefactos que la imagen reconstruye adentro.
+# Mandarlos al daemon en cada build no aporta nada y cuesta tiempo.
+node_modules
+dist
+coverage
+.angular
+
+# Entorno local y secretos. Los *.example si se versionan: son la plantilla.
+.env
+.env.*
+!.env.example
+
+.git
+.gitignore
+*.log
+npm-debug.log*
+.DS_Store
