@@ -103,7 +103,7 @@ describe('las piezas del port que se rompen en silencio', () => {
   it('el token de skill NO tolera el plural, para que Angular no se derrame sobre AngularJS', () => {
     // `skill_matches_token` usa limite de palabra sin el `s?` del keyword. Copiarle
     // el plural haria que el peso alto de Angular cayera sobre AngularJS.
-    expect(skillMatchesToken('Angular', 'Angular 18 (Disney Parks)')).toBe(true);
+    expect(skillMatchesToken('Angular', 'Angular 18 (Acme)')).toBe(true);
     expect(skillMatchesToken('Angular', 'AngularJS (maintenance and migration)')).toBe(false);
     expect(skillMatchesToken('AngularJS', 'AngularJS (maintenance and migration)')).toBe(true);
     // La direccion inversa: el token "Node" tiene que alcanzar al skill "Node.js".
@@ -111,7 +111,7 @@ describe('las piezas del port que se rompen en silencio', () => {
   });
 
   it('parte las entradas de skill_depth por barra y coma, sin perder el peso', () => {
-    expect(entryTokens('Angular 18 (Disney Parks)')).toEqual(['Angular 18']);
+    expect(entryTokens('Angular 18 (Acme)')).toEqual(['Angular 18']);
     expect(entryTokens('Stencil.js / Web Components')).toEqual(['Stencil.js', 'Web Components']);
     expect(entryTokens('React (production use 2021-2022)')).toEqual(['React']);
   });

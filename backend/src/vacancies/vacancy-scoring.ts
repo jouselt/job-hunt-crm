@@ -120,7 +120,7 @@ export function hits(patterns: string[], text: string): string[] {
 /**
  * Parte una entrada de `skill_depth` en tokens comparables.
  *
- * Las entradas son texto escrito a mano: "Angular 18 (Disney Parks)",
+ * Las entradas son texto escrito a mano: "Angular 18 (Acme)",
  * "Stencil.js / Web Components", "React (production use 2021-2022)". Cortar por
  * "/" y "," evita que una entrada con dos skills pierda su peso.
  */
