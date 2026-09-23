@@ -19,3 +19,8 @@ coverage
 *.log
 npm-debug.log*
 .DS_Store
+
+# Estado incremental de tsc. Sin esto, COPY . . lo mete en el contexto y
+# `nest build` cree que dist ya esta al dia, no emite nada, y el guard del
+# script build falla con ENOENT sobre dist/main.js.
+*.tsbuildinfo
